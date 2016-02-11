@@ -1,8 +1,10 @@
 rokfor-slim
 ===========
 
-Complete Rokfor rebuild based on the (Slim Framework)[http://slimframework.com/]
+Complete Rokfor rebuild based on the [Slim Framework](http://slimframework.com/)
 for PHP.
+
+![Dashboard](https://github.com/Rokfor/rokfor-slim/blob/gh-pages/rokfor-screenshots/rf-dashboard.png)
 
 Other components used:
 
@@ -22,7 +24,7 @@ Prerequisites
 
 -   PHP \>= 5.4
 
--   (Composer)[<https://getcomposer.org>]
+-   [Composer](https://getcomposer.org)
 
 
 
