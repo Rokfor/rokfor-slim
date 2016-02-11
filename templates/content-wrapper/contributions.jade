@@ -1,0 +1,100 @@
+// Content Header (Page header)
+section.content-header
+  h1=end($breadcrumb)['name']
+  ol.breadcrumb
+    each crumb in breadcrumb
+      li
+        a(href='#')
+          i.fa(class=crumb.class)
+          span=crumb.name 
+
+// Main content
+section.content(data-path=base_path)
+  .row
+    .col-xs-12
+      .box
+        .box-header
+          if (is_array($templates))
+            .input-group.margin.col-md-3(style="float: right;")
+              span.input-group-btn
+                button.btn.btn-default
+                  i.fa.fa-search
+              input.form-control(id='table_search', type='text', name='table_search', placeholder='Search')
+            .input-group.margin(style="float: right;")
+              button.btn.btn-primary.dropdown-toggle.disabled(id="rf_bulk_action", type="button", data-toggle="dropdown", aria-expanded="false")
+                i.fa.fa-caret-down &nbsp;
+                span=$translations["contribution_actions"]
+              ul.dropdown-menu.rfselector(bulk="contributions")
+                li
+                  a.text-green(href="/rf/contributions/Close")=$translations["status_close"]
+                li
+                  a.text-blue(href="/rf/contributions/Open")=$translations["status_open"]
+                li
+                  a.text-red(href="/rf/contributions/Deleted")=$translations["status_deleted"]
+                li.divider
+                li
+                  a(href="/rf/contributions/clone")=$translations["status_clone"]
+                li.divider
+                li
+                  a.bg-red(href="/rf/contributions/Trash")=$translations["status_destroy"]
+            .input-group.col-md-6.margin(style="float: left;")
+              .input-group-btn
+                button.btn.btn-default.dropdown-toggle.rf-copy-dropdown(type="button", value="", data-toggle="dropdown", aria-expanded="false")
+                  span.fa.fa-caret-down &nbsp;
+                  span=translations['choose_template'] 
+                ul.dropdown-menu
+                  each template in templates
+                    li
+                      a(href=template.id)=template.name
+              input.form-control(type="text")
+              span.input-group-btn
+                button.btn.btn-success#add_contribution
+                  i.fa.fa-edit &nbsp;
+                  span=translations['new_document']
+        // /.box-header
+        .box-body
+          .row
+            .col-sm-12
+              table#rftable.table.table-bordered.table-striped.dataTable
+                thead
+                  tr
+                    th.col-xs-1=translations['contrib_th_seq']
+                    th.col-xs-1=translations['contrib_th_id']
+                    th.col-xs-2=translations['contrib_th_autor']
+                    th.col-xs-2=translations['contrib_th_datum']
+                    th.col-xs-6=translations['contrib_th_name']
+                    th.col-xs-1=translations['contrib_th_status']
+                tbody
+                  each contribution in contributions
+                    tr(id=contribution->getId())
+                      td=contribution->getSort()
+                      td=contribution->getId()
+                      td=($contribution->getuserSysRef() ? $contribution->getuserSysRef()->getUsername() : '-')
+                      td=strftime($translations['day_locale'],$contribution->getNewdate())
+                      td=contribution->getName()
+                      td
+                        a.btn.btn-xs(
+                          data-status=json_encode(["Open"=>$translations["status_open"],"Close"=>$translations["status_close"],"Deleted"=>$translations["status_deleted"]]),
+                          class=(
+                            $contribution->getStatus()=='Open'?
+                              "btn-primary":
+                              ($contribution->getStatus()=='Deleted' ? 
+                                'btn-danger':
+                                'btn-success')
+                            ),
+                          href="/rf/contributions/".$contribution->getStatus()
+                          )=$translations[strtolower("status_".$contribution->getStatus())]
+      // /.box-body
+.modal.modal-danger.fade#rfmodal(tabindex="-1",role="dialog")
+  .modal-dialog(role="document")
+    .modal-content
+      .modal-header
+        button.close(type="button", data-dismiss="modal",  aria-label="Close")
+          span(aria-hidden="true") &times;
+        h4.modal-title=$translations['rfmodal_title']
+      .modal-body=$translations['rfmodal_body']
+      .modal-footer
+        button.btn.btn-default(type="button", data-dismiss="modal")=$translations['rfmodal_close']
+include ../js/csrf.js.jade
+script.
+  $.rokfor.initContributions();

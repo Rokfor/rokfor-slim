@@ -1,0 +1,10 @@
+aside.main-sidebar
+  section.sidebar
+    form.sidebar-form#mainsearch(action='/rf/contributions/search', method='post')
+      .input-group
+        input.form-control(type='text', name='q', placeholder='Search...')
+        span.input-group-btn
+          button#search-btn.btn.btn-flat(type='submit', name='search')
+            i.fa.fa-search
+    ul.sidebar-menu#rfmenu
+      include menu.structure.jade

@@ -1,0 +1,52 @@
+if config.rtfeditor
+
+  // RTF EDITOR
+
+  .col-md-12
+    .box.box-success
+      .box-header
+        h4.box-title=template->getFieldname()
+          span.small.margin
+            span.label.label-default(id="counter_".$field->getId())
+        .box-tools.pull-right
+          button.btn.btn-default.btn-sm(data-widget="collapse")
+           i.fa.fa-minus        
+      .box-body                  
+        .rtftextarea(data-counter="#counter_".$field->getId(), data-maxlength=config.textlength, rows=config.maxlines, id=field->getId())!=field->getContent()
+
+else if config.arrayeditor
+
+  // ARRAY EDITOR
+  :php
+    | $rows = json_decode($field->getContent(), true); $row = 0; if (is_array($rows[0])) {foreach ($rows as &$r) { $r = join(',',$r); } }; if(!is_array($rows)) {$rows = [$rows];}
+  .form-horizontal.col-md-12
+    .box.box-success
+      .box-header
+        h4.box-title=template->getFieldname()
+        .box-tools.pull-right
+          button.btn.btn-default.btn-sm(data-widget="collapse")
+           i.fa.fa-minus        
+      .box-body                  
+        each column in $config['editorcolumns']
+          .form-group
+            label.col-sm-2.control-label=$column['label']
+              br
+              span.label.label-default(id="counter_".$row."_".$field->getId())
+            .col-sm-10
+              textarea.form-control.rfmultieditor(data-counter="#counter_".$row."_".$field->getId(), data-maxlength=config.textlength rows=$column['lines'], id=field->getId(), class=config.codeeditor?'codeeditor':'')=$rows[$row++]
+else
+
+  // BASIC EDITOR
+
+  .col-md-12
+    .box.box-success
+      .box-header
+        h4.box-title=template->getFieldname()
+          span.small.margin
+            span.label.label-default(id="counter_".$field->getId())
+        .box-tools.pull-right
+          button.btn.btn-default.btn-sm(data-widget="collapse")
+           i.fa.fa-minus
+      .box-body
+        .form-group
+          textarea.form-control.rfeditor(data-counter="#counter_".$field->getId(), data-maxlength=config.textlength, rows=config.maxlines, id=field->getId(), class=config.codeeditor?'codeeditor':'')=$field->getContent()

@@ -1,0 +1,91 @@
+section.content
+  if (is_array($contributions))
+    h4=$translations['last_access_contributions']
+    .row
+      each box in contributions
+        .col-sm-6.col-xs-12
+          a.info-box.ajaxload(href=$box[__config__][url], target=".content-wrapper#list")
+            span.info-box-icon.bg-red
+              i.fa.fa-files-o
+            .info-box-content
+              span.info-box-text.text-muted
+                b=date($translations['datefield'], $box['date'])
+              span.info-box-text.text-muted=$box[__config__][book]
+              span.info-box-text.text-muted=$box[__config__][issue]
+              span.info-box-text.text-muted=$box[__config__][chapter]
+  if (is_array($contribution))
+    h4=$translations['last_access_contribution']
+    .row
+      each box in contribution
+        .col-sm-6.col-xs-12
+          a.info-box.ajaxload(href='/rf/contribution/'.$box[__config__]->getId(), target=".content-wrapper#detail")
+            span.info-box-icon.bg-green
+              i.fa.fa-pencil
+            .info-box-content
+              span.info-box-text.text-muted
+                b=date($translations['datefield'], $box['date'])
+              span.info-box-text.text-muted=$box[__config__]->getName()
+              span.info-box-text.text-muted=$box[__config__]->getTemplatenames()->getName()
+  .row
+    .col-md-12
+      .box.box-info
+        .box-header.with-border
+          h3.box-title File Exports
+          .box-tools.pull-right
+            button.btn.btn-box-tool(type='button', data-widget='collapse')
+              i.fa.fa-minus
+            button.btn.btn-box-tool(type='button', data-widget='remove')
+              i.fa.fa-times
+        // /.box-header
+        .box-body
+          .table-responsive
+            table.table.no-margin
+              thead
+                tr
+                  th Datum
+                  th File
+                  th Type
+              tbody
+                tr
+                  td
+                    a(href='pages/examples/invoice.html') OR9842
+                  td Beat Mazenauer
+                  td
+                    span.label.label-success Shipped
+                tr
+                  td
+                    a(href='pages/examples/invoice.html') OR1848
+                  td Samsung Smart TV
+                  td
+                    span.label.label-warning Pending
+                tr
+                  td
+                    a(href='pages/examples/invoice.html') OR7429
+                  td iPhone 6 Plus
+                  td
+                    span.label.label-danger Delivered
+                tr
+                  td
+                    a(href='pages/examples/invoice.html') OR7429
+                  td Samsung Smart TV
+                  td
+                    span.label.label-info Processing
+                tr
+                  td
+                    a(href='pages/examples/invoice.html') OR1848
+                  td Samsung Smart TV
+                  td
+                    span.label.label-warning Pending
+                tr
+                  td
+                    a(href='pages/examples/invoice.html') OR7429
+                  td iPhone 6 Plus
+                  td
+                    span.label.label-danger Delivered
+                tr
+                  td
+                    a(href='pages/examples/invoice.html') OR9842
+                  td Beat Mazenauer
+                  td
+                    span.label.label-success Shipped
+include ../js/csrf.js.jade

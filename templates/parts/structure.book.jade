@@ -1,0 +1,96 @@
+.col-md-12
+  .nav-tabs-custom
+    ul.nav.nav-tabs.pull-right
+      li(class=($type=='chapter'?'active':''))
+        a(href="#chapter_".$book['book']->getId() data-toggle="tab")=$translations['structure_chapters']
+      li(class=($type=='issue'?'active':''))
+        a(href="#issue_".$book['book']->getId() data-toggle="tab")=$translations['structure_issues']
+      li(class=($type=='book'||!$type?'active':''))
+        a(href="#book_".$book['book']->getId() data-toggle="tab")=$translations['structure_book']
+      li.pull-left.header=book.name
+    .tab-content
+      // Chapter Editor
+      .tab-pane.chapter(id="chapter_".$book['book']->getId(), class=($type=='chapter'?'active':''))
+        table.table.table-striped
+          thead
+            th.col-md-2=$translations['structure_chapter_new']
+            th.col-md-8
+              input.rowedit(placeholder=$translations['structure_chapter_placeholder'], id="input_newchapter".$book['book']->getId(), data-button="#button_newchapter".$book['book']->getId())
+            th.col-md-1
+            th.col-md-1
+              a.btn.btn-solid.btn-success.btn-xs.disabled(id="button_newchapter".$book['book']->getId(), data-input="#input_newchapter".$book['book']->getId())=$translations['structure_chapter_add']
+          if (book.chapters)
+            tbody.sortable(data-sort="chapters")
+              each chapter in book.chapters
+                tr.idcontainer(id=$chapter['chapter']->getId())
+                  td.col-md-2
+                    :php
+                      | $r = []; foreach($chapter['chapter']->getRightss() as $b) $r[] = $b->getId();
+                    a.btn.btn-solid.btn-default.btn-xs.rights(href="rights", data-rights=json_encode($r))
+                      span=$translations['structure_chapter_rights']
+                  td.col-md-8
+                    input.rowedit(value=chapter.name)
+                  td.col-md-1
+                    a.btn.btn-solid.btn-danger.btn-xs
+                      i.fa.fa-danger &nbsp;
+                      span=$translations['structure_chapter_delete']
+                  td.col-md-1
+                    a.btn.btn-solid.btn-warning.btn-xs=$translations['structure_chapter_copy']
+      // Issue Editor
+      .tab-pane.issue(id="issue_".$book['book']->getId(), class=($type=='issue'?'active':''))
+        table.table.table-striped
+          thead
+            th.col-md-2(colspan=2)=$translations['structure_issue_new']
+            th.col-md-8
+              input.rowedit(placeholder=$translations['structure_issue_placeholder'], id="input_newissue".$book['book']->getId(), data-button="#button_newissue".$book['book']->getId())
+            th.col-md-1
+            th.col-md-1
+              a.btn.btn-solid.btn-success.btn-xs.disabled(id="button_newissue".$book['book']->getId(), data-input="#input_newissue".$book['book']->getId())=$translations['structure_issue_add']
+          if (book.issues)
+            tbody.sortable(data-sort="issues")
+              each issue in book.issues
+                tr.idcontainer(id=$issue['issue']->getId())
+                  td.col-md-1
+                    .input-group
+                      button.btn.btn-default.dropdown-toggle.btn-xs(type="button", data-toggle="dropdown", aria-expanded="false")=$translations['structure_issue_status']
+                        span.fa.fa-caret-down
+                      ul.dropdown-menu
+                        li
+                          a.changestate(href="open")=$translations['structure_issue_statusopen']
+                            if ($issue['issue']->getStatus() == 'open')
+                              span.fa.fa-check
+                        li
+                          a.changestate(href="close")=$translations['structure_issue_statusclose']
+                            if ($issue['issue']->getStatus() == 'closed')
+                              span.fa.fa-check
+                  td.col-md-1
+                    :php
+                      | $r = []; foreach($issue['issue']->getRightss() as $b) $r[] = $b->getId();
+                    a.btn.btn-solid.btn-default.btn-xs.rights(href="rights", data-rights=json_encode($r))
+                      span=$translations['structure_issue_rights']
+                  td.col-md-8
+                    input.rowedit(value=issue.name)
+                  td.col-md-1
+                    a.btn.btn-solid.btn-danger.btn-xs
+                      i.fa.fa-danger &nbsp;
+                      span=$translations['structure_issue_delete']
+                  td.col-md-1
+                    a.btn.btn-solid.btn-warning.btn-xs=$translations['structure_issue_copy']
+
+      // Book Editor
+      .tab-pane.book(id="book_".$book['book']->getId(), class=(!$type||$type=='book'?'active':''))
+        .input-group.idcontainer(id=$book['book']->getId())
+          input.form-control(type="text", value=book.name)
+          span.input-group-btn
+            :php
+              | $r = []; foreach($book['book']->getRightss() as $b) $r[] = $b->getId();
+            a.btn.btn-solid.btn-default.rights(href="rights", data-rights=json_encode($r))
+              span=$translations['structure_book_rights']
+            a.btn.btn-solid.btn-warning=$translations['structure_book_copy']
+            a.btn.btn-solid.btn-danger
+              i.fa.fa-danger &nbsp;
+              span=$translations['structure_book_delete']
+    //-.overlay
+    //-  i.fa.fa-refresh.fa-spin
+if type
+  include ../js/csrf.js.jade

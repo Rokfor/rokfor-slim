@@ -1,0 +1,162 @@
+if (is_array($alert))
+  .alert.alert-dismissible.margin(class=($alert['success'] ? 'alert-success' : 'alert-danger'), style="position: absolute; z-index: 20000; right: 0;")
+    button.close(type="button", data-dismiss="alert", aria-hidden="true") ×
+    h4
+      i.icon.fa(class=($alert['success'] ? 'fa-check' : 'fa-warning'))
+      span=($alert['success'] ? $translations['alert_success'] : $translations['alert_danger'])
+    span=$alert['text']
+// Content Header (Page header)
+section.content-header
+  h1=$contribution->getName()
+    small
+      span.label.label-success#savestate(style="float: right;") Saved
+    small
+      span.label(
+        style="float: right; margin-right: 0;",
+        class=(
+          $contribution->getStatus()=='Open'?
+            "label-primary":
+            ($contribution->getStatus()=='Deleted' ? 
+              'label-danger':
+              'label-success')
+          )
+        )=$translations[strtolower("status_".$contribution->getStatus())]
+  ol.breadcrumb
+    each crumb in breadcrumb
+      li
+        a(href='#')
+          i.fa(class=crumb.class)
+          span=crumb.name 
+
+// Main content
+section.content(data-path=base_path)
+  .box
+    .box-header.with-border
+      .input-group(style='float: right')
+        a.btn.btn-danger.closebutton.margin(href='#')
+          span.fa.fa-close &nbsp;
+          span=$translations['contribution_close']
+      .input-group.margin.col-xs-6
+        button.btn.btn-default.dropdown-toggle.col-xs-3(type="button", data-toggle="dropdown", aria-expanded="false")
+          span.fa.fa-caret-down &nbsp;
+          span=$translations['contribution_actions']
+        ul.dropdown-menu#contributionaction
+          li
+            a(href="#", data-modal='rfaction_movecontribution')=$translations['contribution_move']
+          li
+            a(href="#", data-modal='rfaction_importdata')=$translations['contribution_import']
+          li.divider
+          li
+            a(href="#", data-modal='rfaction_changetemplate')=$translations['contribution_change']
+        if prev
+          a.btn.btn-default.col-xs-3.ajaxload(href='/rf/contribution/'.$prev, target=".content-wrapper#detail")
+            span.fa.fa-arrow-left
+        else
+          a.btn.btn-default.col-xs-3.disabled
+            span.fa.fa-arrow-left
+        if next
+          a.btn.btn-default.col-xs-3.ajaxload(href='/rf/contribution/'.$next, target=".content-wrapper#detail")
+            span.fa.fa-arrow-right
+        else
+          a.btn.btn-default.col-xs-3.disabled
+            span.fa.fa-arrow-right
+        
+    .box-body
+      :php
+        | $criteria = new \Propel\Runtime\ActiveQuery\Criteria(); $criteria->addAscendingOrderByColumn(__sort__); 
+      each field in $contribution->getDatas($criteria)
+        :php
+          | $template = $field->getTemplates(); $config = json_decode($template->getConfigSys(), true);
+        case template->getFieldtype()
+          // TODO: "TypologyCloud",
+          when 'TypologySelect'
+            include ../parts/contribution.forms.TypologySelect.jade
+          when 'TypologyKeyword'
+            include ../parts/contribution.forms.TypologyKeyword.jade
+          when 'TypologyMatrix'
+            include ../parts/contribution.forms.TypologyMatrix.jade
+          when 'TypologySlider'
+            include ../parts/contribution.forms.TypologySlider.jade
+          when 'Zahl'
+            include ../parts/contribution.forms.Zahl.jade
+          when 'Tabelle'
+            include ../parts/contribution.forms.Tabelle.jade
+          when 'Bild'
+            include ../parts/contribution.forms.Bild.jade
+          when 'Text'
+            include ../parts/contribution.forms.Text.jade
+          when 'Locationpicker'
+            include ../parts/contribution.forms.Locationpicker.jade
+    .box-footer
+      .input-group(style='float: right')
+        a.btn.btn-danger.closebutton.margin(href='#')
+          span.fa.fa-close &nbsp;
+          span=$translations['contribution_close']
+      .small.margin
+        span=$translations['contribution_opened'].": ".strftime($translations['dayhour_locale'],$contribution->getNewdate())
+        br
+        span!=$translations['contribution_modified']."&nbsp;"
+        span.modtime=moddate
+        span!="&nbsp;".$translations['contribution_modifiedby']."&nbsp;"
+        span.username=$username
+
+// MODAL
+.modal.modal-primary.fade#rfaction_movecontribution(tabindex="-1",role="dialog", data-action="move", data-contribution=$contribution->getId())
+  .modal-dialog(role="document")
+    .modal-content
+      .modal-header
+        button.close(type="button", data-dismiss="modal",  aria-label="Close")
+          span(aria-hidden="true") &times;
+        h4.modal-title=$translations['rfmodal_move_title']
+      .modal-body
+        p=$translations['rfmodal_move_body']
+        select.form-control.modal2(style='width: 100%;')
+          if (is_array($dd_formats))
+            each select in dd_formats
+              optgroup(label=select['name']->getName())
+                each value in select['data']
+                  option(value=json_encode([$value->getId(),$select['name']->getId()]))=value->getName()
+      .modal-footer
+        button.btn.btn-primary.pull-left(type="button", data-dismiss="modal")=$translations['rfmodal_close']
+        button.btn.btn-default(type="button")=$translations['rfmodal_continue']
+        
+        
+.modal.modal-primary.fade#rfaction_importdata(tabindex="-1",role="dialog", data-action="import", data-contribution=$contribution->getId())
+  .modal-dialog(role="document")
+    .modal-content
+      .modal-header
+        button.close(type="button", data-dismiss="modal",  aria-label="Close")
+          span(aria-hidden="true") &times;
+        h4.modal-title=$translations['rfmodal_import_title']
+      .modal-body
+        p=$translations['rfmodal_import_body']
+        select.form-control.modal2(style='width: 100%;')
+          if (is_array($dd_contributions))
+            each select in dd_contributions
+              optgroup(label=select['name']->getName())
+                each value in select['data']
+                  option(value=value->getId())=value->getName()
+      .modal-footer
+        button.btn.btn-primary.pull-left(type="button", data-dismiss="modal")=$translations['rfmodal_close']
+        button.btn.btn-default(type="button")=$translations['rfmodal_continue']
+
+.modal.modal-danger.fade#rfaction_changetemplate(tabindex="-1",role="dialog", data-action="chtemp", data-contribution=$contribution->getId())
+  .modal-dialog(role="document")
+    .modal-content
+      .modal-header
+        button.close(type="button", data-dismiss="modal",  aria-label="Close")
+          span(aria-hidden="true") &times;
+        h4.modal-title=$translations['rfmodal_chtemp_title']
+      .modal-body
+        p=$translations['rfmodal_chtemp_body']
+        select.form-control.modal2(style='width: 100%;')
+          if (is_object($dd_templates))
+            each select in dd_templates
+              option(value=select->getId())=select->getName()
+      .modal-footer
+        button.btn.btn-danger.pull-left(type="button", data-dismiss="modal")=$translations['rfmodal_close']
+        button.btn.btn-default(type="button")=$translations['rfmodal_continue']
+
+include ../js/csrf.js.jade
+script.
+  $.rokfor.initContribution();

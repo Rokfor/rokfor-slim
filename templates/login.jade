@@ -1,0 +1,21 @@
+doctype html
+html
+  include parts/layout.meta.jade
+  body.hold-transition.login-page
+    .login-box
+      .login-logo
+        img(src="/assets/img/logo.svg")
+      .login-box-body
+        p.login-box-msg=$message
+        form(action='/rf/login', method='post')
+          input(type="hidden", name=csrf['nameKey'], value=csrf['name'])
+          input(type="hidden", name=csrf['valueKey'], value=csrf['value'])
+          .form-group.has-feedback
+            input.form-control(type='username', name='username', placeholder='Username')
+            span.glyphicon.glyphicon-envelope.form-control-feedback
+          .form-group.has-feedback
+            input.form-control(type='password', name='password', placeholder='Password')
+            span.glyphicon.glyphicon-lock.form-control-feedback
+          .row
+            .col-xs-4
+              button.btn.btn-primary.btn-block.btn-flat(type='submit') Sign In

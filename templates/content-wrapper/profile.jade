@@ -1,0 +1,92 @@
+section.content-header
+  h1=user.username
+section.content
+  .row
+    .col-md-6
+      form.profile
+        .box.box-success
+          .box-header.with-border
+            h4=$translations['profile_title']
+          .box-body
+            .col-md-12.form-horizontal
+                .form-group
+                  label.col-sm-4.control-label=$translations['profile_role']
+                  .col-sm-8
+                    input.form-control.disabled(value=$user[role], disabled)
+                .form-group
+                  label.col-sm-4.control-label=$translations['profile_groups']
+                  .col-sm-8
+                    :php
+                      | $concat = [];
+                    each group in user.group
+                      :php
+                        | $concat[] = $group['Group'];
+                    input.form-control.disabled(value=join(",", $concat), disabled)
+                .form-group
+                  label.col-sm-4.control-label(for="username")=$translations['profile_name']
+                  .col-sm-8
+                    input.form-control#user(value=user.username, name="username", type="text")
+                .form-group
+                  label.col-sm-4.control-label(for="email")=$translations['profile_mail']
+                  .col-sm-8
+                    input.form-control#email(value=user.email, name="email", type="email")
+                .form-group
+                  label.col-sm-4.control-label=$translations['profile_api']
+                  .col-sm-8
+                    .input-group
+                      input(value=user.api, name="api", type="hidden")
+                      input.form-control.disabled(value=user.api, name="api", type="text", disabled)
+                      span.input-group-btn
+                        a.btn.btn-danger.apigen=$translations['profile_newapi']
+          .box-footer
+            input(type="hidden", name="action", value="profile")
+            button.btn.btn-success=$translations['profile_submit']
+    .col-md-6
+      form.password
+        .box.box-warning
+          .box-header.with-border
+            h4=$translations['profile_changepasswordtitle']
+          .box-body
+            .col-md-12.form-horizontal
+              .form-group
+                label.col-sm-4.control-label(for="oldpassword")=$translations['profile_oldpw']
+                .col-sm-8
+                  input.form-control#email(type="password", name="oldpassword")
+              .form-group
+                label.col-sm-4.control-label
+                .col-sm-8
+                  input.form-control(style="visibility: hidden;", disabled)
+              .form-group
+                label.col-sm-4.control-label(for="newpassword1")=$translations['profile_newpw']
+                .col-sm-8
+                  input.form-control#email(type="password", name="newpassword1")
+              .form-group
+                label.col-sm-4.control-label(for="newpassword2")=$translations['profile_newpwrepeat']
+                .col-sm-8
+                  input.form-control#email(type="password", name="newpassword2")
+          .box-footer
+            input(type="hidden", name="action", value="password")
+            button.btn.btn-warning=$translations['profile_pwsubmit']
+.modal.modal-success.fade#rfaction_success(tabindex="-1",role="dialog")
+  .modal-dialog(role="document")
+    .modal-content
+      .modal-header
+        button.close(type="button", data-dismiss="modal",  aria-label="Close")
+          span(aria-hidden="true") &times;
+        h4.modal-title
+      .modal-body
+      .modal-footer
+        button.btn.btn-primary.pull-left(type="button", data-dismiss="modal")=$translations['rfmodal_close']
+.modal.modal-danger.fade#rfaction_error(tabindex="-1",role="dialog")
+  .modal-dialog(role="document")
+    .modal-content
+      .modal-header
+        button.close(type="button", data-dismiss="modal",  aria-label="Close")
+          span(aria-hidden="true") &times;
+        h4.modal-title
+      .modal-body
+      .modal-footer
+        button.btn.btn-primary.pull-left(type="button", data-dismiss="modal")=$translations['rfmodal_close']
+include ../js/csrf.js.jade
+script.
+  $.rokfor.initProfile();

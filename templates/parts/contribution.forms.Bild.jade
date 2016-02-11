@@ -1,0 +1,32 @@
+// FILE UPLOAD
+
+.col-md-12
+  .box.box-warning
+    .box-header 
+      h4.box-title=template->getFieldname()
+      .box-tools.pull-right
+        button.btn.btn-default.btn-sm(data-widget="collapse")
+         i.fa.fa-minus
+    .box-body.rfuploader.uploader(id=field->getId())
+      .margin=$translations['imageform_dnd']
+      .browser
+        label.btn.btn-primary
+          span=$translations['imageform_open']
+          input(type='file', name='files[]', multiple='multiple', title=$translations['imageform_open'])
+    .box-footer
+      table.table.table-bordered.table-striped.box-footer.dataTable.rfimagetable
+        thead
+          tr
+            th=$translations['imageform_image']
+            th=$translations['imageform_caption']
+            th
+        tbody
+          :php
+            | $rows = json_decode($field->getContent(), true);
+          if (is_array($rows))
+            each row in $rows
+              tr
+                td
+                  img(data-file=$row[1], src=$paths['webthumbs'].$row[1].$paths['thmbsuffix'])
+                td=row[0]
+                td

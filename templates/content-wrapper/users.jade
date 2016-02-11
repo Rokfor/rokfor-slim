@@ -1,0 +1,128 @@
+section.content-header
+  h1=$translations['users_title']
+section.content
+  .row
+    .col-xs-12
+      .box.box-success
+        .box-header.with-border
+          .input-group.col-md-6(style="float: right;")
+            span.input-group-btn
+              button.btn.btn-default
+                i.fa.fa-search
+            input.form-control.search(type='text', name='table_search', placeholder='Search')
+          h4=$translations['users_tableuser_title']
+        .box-body
+          include ../parts/users.table.jade
+        .box-footer
+          .input-group.col-md-2.pull-right
+            span.input-group-btn
+              button.btn.btn-default.paginate_right.pull-right
+                i.fa.fa-arrow-right
+              button.btn.btn-default.paginate_left.pull-right
+                i.fa.fa-arrow-left
+          button.btn.btn-success#useradd
+            i.fa.fa-plus &nbsp;
+            span=$translations['users_add']
+  .row
+    .col-xs-12
+      .box.box-success
+        .box-header.with-border
+          .input-group.col-md-6(style="float: right;")
+            span.input-group-btn
+              button.btn.btn-default
+                i.fa.fa-search
+            input.form-control.search(type='text', name='table_search', placeholder='Search')
+          h4=$translations['users_tablegroup_title']
+        .box-body
+          include ../parts/groups.table.jade
+        .box-footer
+          .input-group.col-md-2.pull-right
+            span.input-group-btn
+              button.btn.btn-default.paginate_right.pull-right
+                i.fa.fa-arrow-right
+              button.btn.btn-default.paginate_left.pull-right
+                i.fa.fa-arrow-left
+          button.btn.btn-success#groupadd
+            i.fa.fa-plus &nbsp;
+            span=$translations['users_groupadd']
+.modal.fade#usermodal(tabindex="-1",role="dialog")
+  .modal-dialog(role="document")
+    .modal-content
+      .modal-header
+        button.close(type="button", data-dismiss="modal",  aria-label="Close")
+          span(aria-hidden="true") &times;
+        h4.modal-title=$translations['users_modal_title']
+      .modal-body
+        form.user
+          input#userid(name="id", type="hidden")
+          .form-horizontal
+              .form-group
+                label.col-sm-2.control-label(for="username")=$translations['users_modal_role']
+                .col-sm-10
+                  select.form-control#role(name="role")
+                    option(value="user")=$translations['users_modal_roleuser']
+                    option(value="admin")=$translations['users_modal_roleadmin']
+                    option(value="root")=$translations['users_modal_roleroot']
+              .form-group
+                label.col-sm-2.control-label=$translations['user_modal_groups']
+                .col-sm-10
+                  select.select2.form-control#group(name="group", multiple="multiple", style="width:100%")
+              .form-group
+                label.col-sm-2.control-label(for="username")=$translations['user_modal_name']
+                .col-sm-10
+                  input.form-control#user(name="username", type="text")
+              .form-group
+                label.col-sm-2.control-label(for="nemail")=$translations['user_modal_email']
+                .col-sm-10
+                  input.form-control#nemail(value="", name="email", type="text")
+              .form-group
+                label.col-sm-2.control-label(for="npassword")=$translations['user_modal_password']
+                .col-sm-10
+                  input.form-control#npassword(name="password", type="text")
+      .modal-footer
+        button.btn.pull-left(type="button", data-dismiss="modal")=$translations['rfmodal_close']
+        button.btn.btn-primary.rfmodal_continue(type="button")=$translations['rfmodal_continue']
+
+.modal.fade#groupmodal(tabindex="-1",role="dialog")
+  .modal-dialog(role="document")
+    .modal-content
+      .modal-header
+        button.close(type="button", data-dismiss="modal",  aria-label="Close")
+          span(aria-hidden="true") &times;
+        h4.modal-title=$translations['users_modal_title']
+      .modal-body
+        form.user
+          input#groupid(name="id", type="hidden")
+          .form-horizontal
+              .form-group
+                label.col-sm-2.control-label(for="group")=$translations['user_modal_groupname']
+                .col-sm-10
+                  input.form-control#group(name="group", type="text")
+              .form-group
+                label.col-sm-2.control-label=$translations['user_modal_grouprbook']
+                .col-sm-10
+                  select.select2.form-control#rbook(name="rbook", multiple="multiple", style="width:100%")
+              .form-group
+                label.col-sm-2.control-label=$translations['user_modal_grouprformat']
+                .col-sm-10
+                  select.select2.form-control#rformat(name="rformat", multiple="multiple", style="width:100%")
+              .form-group
+                label.col-sm-2.control-label=$translations['user_modal_grouprissue']
+                .col-sm-10
+                  select.select2.form-control#rissue(name="rissue", multiple="multiple", style="width:100%")
+              .form-group
+                label.col-sm-2.control-label=$translations['user_modal_grouprtemplate']
+                .col-sm-10
+                  select.select2.form-control#rtemplate(name="rtemplate", multiple="multiple", style="width:100%")
+              .form-group
+                label.col-sm-2.control-label=$translations['user_modal_groupruser']
+                .col-sm-10
+                  select.select2.form-control#ruser(name="ruser", multiple="multiple", style="width:100%")
+      .modal-footer
+        button.btn.pull-left(type="button", data-dismiss="modal")=$translations['rfmodal_close']
+        button.btn.btn-primary.rfmodal_continue(type="button")=$translations['rfmodal_continue']
+
+
+include ../js/csrf.js.jade
+script.
+  $.rokfor.initUsers();

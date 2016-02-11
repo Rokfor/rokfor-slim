@@ -1,0 +1,73 @@
+header.main-header
+  a.logo(href='/rf/dashboard')
+    span.logo-mini
+      img(src="/assets/img/logo-small-w.svg")
+    span.logo-lg
+      img(src="/assets/img/logo-w.svg")
+  nav.navbar.navbar-static-top(role='navigation')
+    a.sidebar-toggle(href='#', data-toggle='offcanvas', role='button')
+      span.sr-only Toggle navigation
+      span.icon-bar
+      span.icon-bar
+      span.icon-bar
+    .navbar-custom-menu
+      ul.nav.navbar-nav
+        if (is_array($shortcuts))
+          li.dropdown.tasks-menu
+            a.dropdown-toggle#directtoggle(href='#', data-toggle='dropdown')
+              i.fa.fa-edit
+              span.label.label-success=count($shortcuts)
+            ul.dropdown-menu
+              li.header=$translations['header_direct']
+              li.header
+                input.form-control#directname(name="name")
+              li
+                ul.menu
+                  each shortcut in shortcuts
+                    li
+                      span.pull-right.margin.label.label-success=$shortcut[__config__][template][name]
+                      a.directshortcut(href=$shortcut[__config__][destination][url], data-template=$shortcut[__config__][template][id])
+                        i.fa.fa-book &nbsp;
+                        span=$shortcut[__config__][destination][book]
+                        br
+                        i.fa.fa-files-o &nbsp;
+                        span=$shortcut[__config__][destination][issue]." > ".$shortcut[__config__][destination][chapter]
+        if (is_array($favourites))
+          li.dropdown.tasks-menu
+            a.dropdown-toggle(href='#', data-toggle='dropdown')
+              i.fa.fa-heart-o
+              span.label.label-success=count($favourites)
+            ul.dropdown-menu
+              li.header=$translations['header_favourites']
+              li
+                ul.menu
+                  each favourite in favourites
+                    li
+                      span.pull-right.margin.label.label-success=$favourite['count']
+                      a.ajaxload(href=$favourite[__config__][url], target=".content-wrapper#list")
+                        i.fa.fa-book &nbsp;
+                        span=$favourite[__config__][book]
+                        br
+                        i.fa.fa-files-o &nbsp;
+                        span=$favourite[__config__][issue]." > ".$favourite[__config__][chapter]
+        li.dropdown.user.user-menu#userdrop
+          a.dropdown-toggle(href='#', data-toggle='dropdown')
+            img.user-image(src="http://www.gravatar.com/avatar/".md5($user['email']))
+            span.hidden-xs.username=user.username
+          ul.dropdown-menu
+            li.user-header
+              img.img-circle(src="http://www.gravatar.com/avatar/".md5($user['email']))
+              p
+                span.username=user.username
+                span="/".$user[role]
+                small=$translations['role_member'].": "
+                  each group in user.group
+                    span=group.Group
+            li.user-footer
+              .pull-left
+                a.btn.btn-default.btn-flat.ajaxload(href='/rf/profile', target=".content-wrapper#list", data-close-dropdown="#userdrop")=$translations['role_profile']
+              .pull-right
+                a.btn.btn-default.btn-flat(href='/rf/logout')=$translations['role_signout']
+        li
+          a(href='#', data-toggle='control-sidebar')
+            i.fa.fa-gears
