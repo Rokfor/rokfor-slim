@@ -32,12 +32,23 @@ section.content
                     input.form-control#email(value=user.email, name="email", type="email")
                 .form-group
                   label.col-sm-4.control-label=$translations['profile_api']
+                .form-group
+                  label.col-sm-4.control-label=$translations['profile_roapi']
                   .col-sm-8
                     .input-group
                       input(value=user.api, name="api", type="hidden")
                       input.form-control.disabled(value=user.api, name="api", type="text", disabled)
                       span.input-group-btn
                         a.btn.btn-danger.apigen=$translations['profile_newapi']
+                .form-group
+                  label.col-sm-4.control-label=$translations['profile_rwapi']
+                  .col-sm-8
+                    .input-group
+                      input(value=user.rwapi, name="rwapi", type="hidden")
+                      input.form-control.disabled(value=user.rwapi, name="rwapi", type="text", disabled)
+                      span.input-group-btn
+                        a.btn.btn-danger.apigen=$translations['profile_newapi']
+
           .box-footer
             input(type="hidden", name="action", value="profile")
             button.btn.btn-success=$translations['profile_submit']
