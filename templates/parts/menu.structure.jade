@@ -8,11 +8,17 @@ each book in menu
     ul.treeview-menu
       each issue in book.issues
         li
-          a(href='#')
-            i.fa.fa-folder-o(class=issue.status=='open'?'text-green':'text-red')
-            span=issue.name
-            i.fa.fa-angle-left.pull-right
-          ul.treeview-menu
+          if (count($book['issues'])==1)
+            p.single-item
+              i.fa.fa-folder-o(class=issue.status=='open'?'text-green':'text-red')
+              span=$issue['name']
+              i.fa.fa-angle-left.pull-right
+          else
+            a(href='#')
+              i.fa.fa-folder-o(class=issue.status=='open'?'text-green':'text-red')
+              span=$issue['name']
+              i.fa.fa-angle-left.pull-right
+          ul.treeview-menu(class=(count($book['issues'])==1?'menu-open menu-force':''))
             each chapter in issue.chapters
               li
                 a.ajaxload(id="chapter_".str_replace("/","_",$chapter[url]), href=chapter.url, target=".content-wrapper#list")
