@@ -30,8 +30,11 @@ header.main-header
                         i.fa.fa-book &nbsp;
                         span=$shortcut[__config__][destination][book]
                         br
-                        i.fa.fa-files-o &nbsp;
-                        span=$shortcut[__config__][destination][issue]." > ".$shortcut[__config__][destination][chapter]
+                        if ($shortcut[__config__][destination][book]<>$shortcut[__config__][destination][issue] || $shortcut[__config__][destination][book]<>$shortcut[__config__][destination][chapter])
+                          i.fa.fa-files-o &nbsp;
+                          if ($shortcut[__config__][destination][book]<>$shortcut[__config__][destination][issue])
+                            span=$shortcut[__config__][destination][issue].($shortcut[__config__][destination][chapter]<>$shortcut[__config__][destination][issue]?' > ':'')
+                          span=($shortcut[__config__][destination][chapter]<>$shortcut[__config__][destination][issue]?$shortcut[__config__][destination][chapter]:'')
         if (is_array($favourites))
           li.dropdown.tasks-menu
             a.dropdown-toggle(href='#', data-toggle='dropdown')
@@ -48,8 +51,12 @@ header.main-header
                         i.fa.fa-book &nbsp;
                         span=$favourite[__config__][book]
                         br
-                        i.fa.fa-files-o &nbsp;
-                        span=$favourite[__config__][issue]." > ".$favourite[__config__][chapter]
+                        if ($favourite[__config__][book]<>$favourite[__config__][issue] || $favourite[__config__][book]<>$favourite[__config__][chapter])
+                          i.fa.fa-files-o &nbsp;
+                          if ($favourite[__config__][issue] <> $favourite[__config__][book])
+                            span=$favourite[__config__][issue].($favourite[__config__][issue]<>$favourite[__config__][chapter]?" > ":'')
+                          if ($favourite[__config__][issue]<>$favourite[__config__][chapter])
+                            span=$favourite[__config__][chapter]
         li.dropdown.user.user-menu#userdrop
           a.dropdown-toggle(href='#', data-toggle='dropdown')
             img.user-image(src="http://www.gravatar.com/avatar/".md5($user['email']))
@@ -68,6 +75,7 @@ header.main-header
                 a.btn.btn-default.btn-flat.ajaxload(href='/rf/profile', target=".content-wrapper#list", data-close-dropdown="#userdrop")=$translations['role_profile']
               .pull-right
                 a.btn.btn-default.btn-flat(href='/rf/logout')=$translations['role_signout']
-        li
-          a(href='#', data-toggle='control-sidebar')
-            i.fa.fa-gears
+        if ($__currentuser__['level'] > 1)
+          li
+            a(href='#', data-toggle='control-sidebar')
+              i.fa.fa-gears
