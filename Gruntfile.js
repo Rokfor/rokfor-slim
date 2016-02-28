@@ -35,7 +35,7 @@ module.exports = function(grunt) {
               'vendor/logicify/jquery-locationpicker-plugin/dist/locationpicker.jquery.js',
               'vendor/urshofer/select2sortable/select2sortable.js',
               'vendor/xdan/range2dslider/jquery.range2dslider.js',
-              'vendor/summernote/summernote/dist/summernote.js',
+              'vendor/like2k1/bootstrap3-wysiwyg/dist/bootstrap3-wysihtml5.all.js', //              'vendor/summernote/summernote/dist/summernote.js'
               'vendor/jdorn/json-edit/dist/jsoneditor.js',
               'vendor/danielm/uploader/src/dmuploader.js',
               'build/js/jquery-ui/jquery-ui.js',
@@ -68,21 +68,23 @@ module.exports = function(grunt) {
         shorthandCompacting: false,
         roundingPrecision: -1,
         sourceMap: true,
-        report: "min"
+        report: "min",
       },
       target: {
         files: {
           'public/assets/css/rf.min.css': [
+            '.tmp/rf.css'
+    		  ],
+          'public/assets/css/assets.min.css': [
             'build/js/DataTables/datatables.min.css',
             'vendor/almasaeed2010/adminlte/bootstrap/css/bootstrap.min.css',
             'vendor/almasaeed2010/adminlte/plugins/iCheck/square/blue.css',
-            'vendor/summernote/summernote/dist/summernote.css',
+            'vendor/like2k1/bootstrap3-wysiwyg/dist/bootstrap3-wysihtml5.min.css', //'vendor/summernote/summernote/dist/summernote.css',
             'vendor/almasaeed2010/adminlte/plugins/select2/select2.min.css',
             'vendor/almasaeed2010/adminlte/plugins/ionslider/ion.rangeSlider.css',
             'vendor/almasaeed2010/adminlte/plugins/ionslider/ion.rangeSlider.skinNice.css',
             'vendor/xdan/range2dslider/jquery.range2dslider.css',
-            'vendor/danielm/uploader/src/uploader.css',
-            '.tmp/rf.css'
+            'vendor/danielm/uploader/src/uploader.css'
     		  ]
         }
       }
