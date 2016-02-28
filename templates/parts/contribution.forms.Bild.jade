@@ -4,6 +4,9 @@
   .box.box-warning
     .box-header 
       h4.box-title=template->getFieldname()
+        if (template->getHelpdescription())
+          .btn(data-toggle="tooltip", title=template->getHelpdescription())
+            i.fa.fa-question-circle 
       .box-tools.pull-right
         button.btn.btn-default.btn-sm(data-widget="collapse")
          i.fa.fa-minus
@@ -18,7 +21,11 @@
         thead
           tr
             th=$translations['imageform_image']
-            th=$translations['imageform_caption']
+            if (count($config['caption_variants']) > 1)
+              each caption_variant in config.caption_variants
+                th=$translations['imageform_caption'].' '.$caption_variant
+            else
+              th=$translations['imageform_caption']
             th
         tbody
           :php
@@ -28,5 +35,12 @@
               tr
                 td
                   img(data-file=$row[1], src=$paths['webthumbs'].$row[1].$paths['thmbsuffix'])
-                td=row[0]
+                if (count($config['caption_variants']) > 1)
+                  :php
+                    | $keyvariant = 0;
+                  each caption_variant in config.caption_variants
+                    td=(is_array($row[0])?$row[0][$keyvariant++]:$row[0])
+                else
+                  td=(is_array($row[0])?join(', ',$row[0]):$row[0])
+                  
                 td
