@@ -5,12 +5,15 @@
     "keywords": ["rokfor", "slim","framework","view","template","jade"],
     "homepage": "http://www.rokfor.ch",
     "license": "MIT",
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
+    "version": "3.0.0-alpha",
+    "type": "project",
+    "time": "2016-02-28",
     "authors": [
         {
-            "name": "Urs Hofer",
+            "name": "Rokfor",
             "email": "inquiries@rokfor.ch",
-            "homepage": "http://www.urshofer.ch"
+            "homepage": "http://www.rokfor.ch"
         }
     ],
     "repositories": [
@@ -45,10 +48,15 @@
         {
             "type": "vcs",
             "url": "https://github.com/urshofer/select2sortable"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/liKe2k1/bootstrap3-wysiwyg"
         }
     ],
     "require": {
         "php": ">=5.4.0",
+        "propel/propel": "~2.0.0-alpha5",
         "slim/slim": "~3.0",
         "jlndk/slim-jade": "dev-master",
         "rokfor/db": "dev-master",
@@ -57,7 +65,7 @@
         "jdorn/json-edit": "dev-master",
         "xdan/range2dslider": "dev-master",
         "danielm/uploader": "dev-master",
-        "summernote/summernote": "^0.7.3", 
+        "like2k1/bootstrap3-wysiwyg": "dev-master",
         "monolog/monolog": "^1.17",
         "slim/csrf": "^0.6.0",
         "jeremykendall/slim-auth": "dev-slim-3.x",
@@ -69,10 +77,5 @@
     },
     "require-dev": {
         "phpunit/phpunit": "*"
-    },
-    "scripts": {
-          "post-install-cmd": [
-              "vendor/propel/propel/bin/propel sql:insert --config-dir vendor/rokfor/db/config"
-          ]
     }
 }
