@@ -85,7 +85,7 @@
 
 body {
   font-weight: 400;
-  font-family: Inconsolata;
+  font-family: Roboto;
 }
 
 // Width variables (appears count calculates by raw css)
@@ -93,7 +93,6 @@ body {
 
 input.rowedit {
 	background-color: transparent;
-	border-bottom: 1px solid #cccccc;
 	border: none;
 	outline: none;
 	width: @width0;
@@ -101,6 +100,7 @@ input.rowedit {
 textarea.rowedit {
 	background-color: transparent;
 	border: none;
+	border-bottom: 1px solid #CCC;
 	height: 100%;
 	outline: none;
 	width: @width0;
@@ -153,4 +153,55 @@ p.divider {
   height: 0.5em;
   margin-bottom: 0.5em;
   line-height: 0;
+}
+.rfmultieditorcounter {
+  position: absolute;
+  right: 2.25em;
+  top: 0.5em;
+  background: rgba(30,30,30,0.1);
+}
+
+.info-box-text {
+  text-transform: none;
+}
+
+.menu-force {
+  display:block !important;
+}
+
+.treeview-menu {
+/*  > li {
+    > p.single-item {
+      color: @sidebar-dark-color;
+      padding: 5px 5px 5px 15px;
+      display: block;
+      font-size: 14px;
+      > .fa,
+      > .glyphicon,
+      > .ion {
+        width: 20px;
+      }
+      > .fa-angle-left,
+      > .fa-angle-down {
+        width: auto;
+      }
+    }
+  }*/
+  p.single-item {
+    display: none !important;
+  }
+}
+
+.rtftextarea {
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+#rftable {
+  tr {
+    cursor: pointer;
+    td:first-child {
+      cursor: move;
+    }
+  }
 }
