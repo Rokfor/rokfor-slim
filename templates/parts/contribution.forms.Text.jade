@@ -1,4 +1,4 @@
-if config.rtfeditor
+if ($config[rtfeditor] && !$config[arrayeditor])
 
   // RTF EDITOR
 
@@ -6,13 +6,16 @@ if config.rtfeditor
     .box.box-success
       .box-header
         h4.box-title=template->getFieldname()
+          if (template->getHelpdescription())
+            .btn(data-toggle="tooltip", title=template->getHelpdescription())
+              i.fa.fa-question-circle 
           span.small.margin
             span.label.label-default(id="counter_".$field->getId())
         .box-tools.pull-right
           button.btn.btn-default.btn-sm(data-widget="collapse")
            i.fa.fa-minus        
       .box-body                  
-        .rtftextarea(data-counter="#counter_".$field->getId(), data-maxlength=config.textlength, rows=config.maxlines, id=field->getId())!=field->getContent()
+        .rtftextarea.form-control(data-counter="#counter_".$field->getId(), data-maxlength=config.textlength, style="min-height:".(str_replace(',', '.', $config['maxlines']*1.5))."em;", rows=config.maxlines, id=field->getId())!=field->getContent()
 
 else if config.arrayeditor
 
@@ -23,6 +26,9 @@ else if config.arrayeditor
     .box.box-success
       .box-header
         h4.box-title=template->getFieldname()
+          if (template->getHelpdescription())
+            .btn(data-toggle="tooltip", title=template->getHelpdescription())
+              i.fa.fa-question-circle 
         .box-tools.pull-right
           button.btn.btn-default.btn-sm(data-widget="collapse")
            i.fa.fa-minus        
@@ -30,10 +36,13 @@ else if config.arrayeditor
         each column in $config['editorcolumns']
           .form-group
             label.col-sm-2.control-label=$column['label']
-              br
-              span.label.label-default(id="counter_".$row."_".$field->getId())
             .col-sm-10
-              textarea.form-control.rfmultieditor(data-counter="#counter_".$row."_".$field->getId(), data-maxlength=config.textlength rows=$column['lines'], id=field->getId(), class=config.codeeditor?'codeeditor':'')=$rows[$row++]
+              span.label.label-default.rfmultieditorcounter(id="counter_".$row."_".$field->getId())
+              if config.rtfeditor
+                .rtftextarea.rfmultieditor.form-control(data-counter="#counter_".$row."_".$field->getId(), data-maxlength=config.textlength, style="min-height:".(str_replace(',', '.', $column['lines']*1.5))."em;", rows=config.maxlines, id=field->getId())!=$rows[$row++]
+              else
+                textarea.form-control.rfmultieditor(data-counter="#counter_".$row."_".$field->getId(), data-maxlength=config.textlength rows=$column['lines'], id=field->getId(), class=config.codeeditor?'codeeditor':'')=$rows[$row++]
+
 else
 
   // BASIC EDITOR
@@ -42,6 +51,9 @@ else
     .box.box-success
       .box-header
         h4.box-title=template->getFieldname()
+          if (template->getHelpdescription())
+            .btn(data-toggle="tooltip", title=template->getHelpdescription())
+              i.fa.fa-question-circle 
           span.small.margin
             span.label.label-default(id="counter_".$field->getId())
         .box-tools.pull-right

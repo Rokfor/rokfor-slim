@@ -4,6 +4,9 @@
   .box.box-info
     .box-header
       h4.box-title=template->getFieldName()
+        if (template->getHelpdescription())
+          .btn(data-toggle="tooltip", title=template->getHelpdescription())
+            i.fa.fa-question-circle 
       .box-tools.pull-right
         button.btn.btn-default.btn-sm(data-widget="collapse")
          i.fa.fa-minus      
@@ -17,6 +20,6 @@
           span.input-group-addon
             i.fa.fa-calendar
           :php
-            | $formatted_date = @date($translations['datefield'], $field->getContent());
-          input.form-control.rfmask(id=field->getId(), type="text", value=$formatted_date, data-inputmask='"alias": "datetime"')
+            | $d = helpers::timeFormatHelper($field->getContent(), $config['dateformat']);
+          input.form-control.rfmask(id=field->getId(), type="text", value=d.value, data-inputmask=d.mask, data-inputmask-placeholder=d.placeholder)
         
