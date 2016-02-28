@@ -1,11 +1,14 @@
 /*
  * Rokfor Client Side Extensions
  * -----------------------------
- * This addes ajax action to all elements with the .ajaxload class
- *
  */
 
 (function ($) {
+  
+  if (typeof console === "undefined" || typeof console.log === "undefined") {
+    console = {};
+    console.log = function(msg) {};
+  }
 
   // Some Modal Overrules if a select 2 is within a modal
   $.fn.modal.Constructor.prototype.enforceFocus = function() {};
@@ -73,6 +76,14 @@
   // XHR Callback, in POST and GET Function
   
   $.rokfor.xhr = function() {
+    
+    // Keep Default on IE9
+    if (/msie/.test(navigator.userAgent.toLowerCase()))
+      return window.XMLHttpRequest && window.location.protocol !== "file:" || window.ActiveXObject ?
+        new window.XMLHttpRequest() :
+        new window.ActiveXObject("Microsoft.XMLHTTP");
+
+    // Implement Progress Bar on other Browsers
     var xhr = new window.XMLHttpRequest();
     //Upload progress
     xhr.upload.addEventListener("progress", function(evt){
@@ -351,6 +362,7 @@
     }
     return false;
   })   
-  
+
+//  $('ul.menu-force').prev().unbind();
 
 })(jQuery);

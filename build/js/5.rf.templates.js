@@ -68,6 +68,7 @@
         e.stopPropagation();
         var m  = $(this).parents('.modal');
         var json = m.modal.editor.getValue();
+        console.log(json);
         m.modal.data.val(JSON.stringify(json));
         m.modal('hide');
         m.modal.data.trigger('change');

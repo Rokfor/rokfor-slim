@@ -50,16 +50,26 @@
         },
         onUploadSuccess: function(id, data){
           $.rokfor.progressbar.hide();
-          console.log(data);
+          // console.log(data);
           // Update csrf string
           $.rokfor.csrf_name  = data.name;
           $.rokfor.csrf_value = data.value;
-          var t = this.next().find('table').DataTable();
-          if (data.growing) {
-            t.row.add(['<img data-file="' + data.original + '" src="' + data.thumb + '">',data.caption]).draw();
-          }
-          else {
-            t.row( 0 ).data( ['<img data-file="' + data.original + '" src="' + data.thumb + '">',data.caption] ).draw();
+          if (data.success) {
+            var t = this.next().find('table').DataTable();
+            var template = [];
+            template.push('<img data-file="' + data.original + '" src="' + data.thumb + '">');
+            for (var i = 0; i < t.columns().nodes().length - 2; i++) {
+              template.push(data.caption);
+            }
+            if (data.growing) {
+              t.row.add(template).draw();
+            }
+            else {
+              if (t.row( 0 ) == undefined || t.row( 0 ).length == 0)
+                t.row.add(template).draw();
+              else
+                t.row( 0 ).data(template).draw();
+            }
           }
         },
         onUploadError: function(id, message){
@@ -142,16 +152,26 @@
       var serialize = function() {
         var d = [];
         var cols = $(table.row(0).node()).children('td').length;
+        console.log(cols)
         table.cells().every( function ( rowIdx, cellIdx) {
           if (d[rowIdx] == undefined) d[rowIdx] = [];
           if (cellIdx==0) {
             var v = $(this.node()).find('img').attr('data-file');
             d[rowIdx][1] = (v ? v : false);
           }
-          if (cellIdx==1) {
-            var v = $(this.node()).find('textarea').val();
-            d[rowIdx][0] = (v ? v : false);
-          }        
+          else {
+            // Storing captions: either in d[0] as string or array if multiple legends are selected
+            if (cellIdx < cols - 1) {
+              var v = $(this.node()).find('textarea').val();
+              if (cols>3) {
+                if (d[rowIdx][0] == undefined) d[rowIdx][0] = [];
+                d[rowIdx][0][cellIdx-1] = (v ? v : false);
+              }
+              else {
+                d[rowIdx][0] = (v ? v : false);
+              }
+            }        
+          }
         });
         return (d);
       }      
@@ -242,7 +262,7 @@
 
     // Summernote
 
-    $(".rtftextarea").summernote({
+    /*$(".rtftextarea").summernote({
       toolbar: [
         ['style', ['bold', 'italic', 'underline', 'clear']],
         ['fontsize', ['fontsize']],
@@ -262,25 +282,34 @@
         }
       }
     })
-    
-  /*    
+    */
+  
     $(".rtftextarea").each(function(i,n) {
         var e = $(this);
-        var editor = e.wysihtml5({
+        e.wysihtml5({
           toolbar: {
               "fa": true
-          },
-          "events": {
-             "change:composer": function() { 
-               $.rokfor.contribution.store(e.attr('id'), this.composer.getValue(false,false));
-             }
           }
-        })
-        e.contents().find('body').on("keydown",function() {
-          console.log("Handler for .keypress() called.");
         });
+        e.on("keyup",function() {
+          // Jsonize if RTF Editor is part of multi form
+          if (e.hasClass('rfmultieditor')){
+            var v = [];
+            $.rokfor.calcMaxInput(e, e);
+            $(this).parents('.form-horizontal').find('.rtftextarea').each(function(i,x) {
+              v.push($(x).html());
+            });
+            $.rokfor.contribution.store($(this).attr('id'), JSON.stringify(v));
+          }
+          // Store directly
+          else { 
+            $.rokfor.contribution.store(e.attr('id'), e.html());
+            $.rokfor.calcMaxInput(e, e);
+          }
+        });
+        $.rokfor.calcMaxInput(e, e);
+        
       });
-    */
 
     // Tables
     
@@ -391,5 +420,10 @@
         return false;
       })
     })
+    
+    // Tooltips
+    
+    $('[data-toggle="tooltip"]').tooltip(); 
+    
   }
 })(jQuery);
