@@ -33,17 +33,28 @@ $container['view'] = function ($c) {
 // monolog
 $container['logger'] = function ($c) {
   $settings = $c->get('settings')['logger'];
-  $logger = new Monolog\Logger($settings['name']);
+  $logger = new Monolog\Logger('rokfor');
   $logger->pushProcessor(new Monolog\Processor\UidProcessor());
-  $logger->pushHandler(new Monolog\Handler\StreamHandler($settings['path'], Monolog\Logger::DEBUG));
+  $logger->pushHandler(new Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
   return $logger;
 };
 
 // rokfor database & update paths
 $container['db'] = function ($c) {
-  $settings = $c->get('settings')['db'];
-  $db = new Rokfor\DB($settings['host'],$settings['user'],$settings['pass'],$settings['dbname'],$settings['log']);
-  $db->updatePaths($c->paths['sys'],$c->paths['systhumbs']);
+  $settings = require __DIR__ . '/../config/database.php';
+  $db = new Rokfor\DB($settings['host'],$settings['user'],$settings['pass'],$settings['dbname'],$settings['log'], $settings['level']);
+  $db->updatePaths(
+    $c->paths['sys'],
+    $c->paths['systhumbs'],
+    $c->paths['web'],
+    $c->paths['webthumbs'],
+    $c->paths['thmbsuffix'],
+    $c->paths['scaled'],
+    $c->paths['quality'],
+    $c->paths['process'],
+    $c->paths['store'],
+    $c->paths['icon']
+  );
   return $db;
 };
 

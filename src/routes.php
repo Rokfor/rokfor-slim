@@ -9,7 +9,7 @@
  */
 
 $app->get('/rf', function ($request, $response, $args) {return $response->withRedirect('/rf/dashboard');}); 
-$app->get('/rf/', function ($request, $response, $args) {return $response->withRedirect('/rf/dashboard');}); 
+
 
 /* Rokfor Application Routes
  * 
@@ -40,8 +40,12 @@ $app->group('/rf', function () {
     });
     // User drop down stuff
     $args['user']  = $this->db->getUser();
-    $args['version'] = $this->get('settings')['version'];
-    $args['copy'] = $this->get('settings')['copy'];    
+
+    $composer = json_decode(file_get_contents(__DIR__ . '/../composer.json'));
+
+
+    $args['version'] = $composer->version;
+    $args['copy'] = '&copy; <a href="'.$composer->homepage.'" target="_blank">'.$composer->authors[0]->name. "</a> ".date('Y').". All rights reserved.";
     // Header
     $args['favourites'] = $this->db->getFavouriteLog('get_contributions', function($data){
       return $this->valid_paths[$data] ? $this->valid_paths[$data] : false;
@@ -102,7 +106,7 @@ $app->group('/rf', function () {
         break;
       case 'profile':
         $errors =[];
-        if ($this->db->updateProfile($form[0]['value'], $form[1]['value'], $form[2]['value'], $errors)) {
+        if ($this->db->updateProfile($form[0]['value'], $form[1]['value'], $form[2]['value'], $errors, $form[3]['value'])) {
           $json['success'] = $this->translations['general_success'];
           $json['message'] = $this->translations['profile_updated'];
           $json['trigger']['username'] = $this->db->getUser()['username'];
@@ -165,7 +169,7 @@ $app->group('/rf', function () {
           $u->setUsergroup($data["role"])
             ->setUsername($data["username"])
             ->setRightss($this->db->getRights()->filterById($data["group"])->find())
-            ->setFilerights($data["email"]);
+            ->setEmail($data["email"]);
           if ($data["password"]) {
             $u->setPassword(md5($data["password"]));
           }
@@ -200,7 +204,7 @@ $app->group('/rf', function () {
         }      
         $json['user']  = [
           "username"  => $u->getUsername(),
-          "email"     => $u->getFilerights(),
+          "email"     => $u->getEmail(),
           "role"      => $u->getUsergroup(),
           "id"        => $u->getId(),
           "password"  => "",
@@ -632,11 +636,13 @@ $app->group('/rf', function () {
         break;
         // Number Uploads: Determine if Date
         case 'Zahl':
-          $json['success'] = $this->db->setField($args['id'],  
-                                                 $settings['integer'] ? 
-                                                   $request->getParsedBody()['data'] : 
-                                                   strtotime($request->getParsedBody()['data'])
-                                                );
+          if ($settings['integer'] == true) {
+            $value = $request->getParsedBody()['data']; 
+          }
+          else {
+            $value = strtotime($request->getParsedBody()['data']);
+          }
+          $json['success'] = $this->db->setField($args['id'], $value);
         break;
         
         default:
@@ -918,4 +924,4 @@ $app->group('/rf', function () {
     return $r;
   });  
 
-});
+})->add($identificator)->add($csrf)->add($authentification)->add($ajaxcheck);

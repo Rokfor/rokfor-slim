@@ -112,6 +112,32 @@ class helpers
     return $difftime ? $difftime : $this->container->translations['diff_time_now'];
   }
 
+
+  public function timeFormatHelper($timestamp, $format) {
+    if (!$format) {
+      $format = 'd/m/Y H:i';
+    }
+    $placeholders = [
+      'd/m/Y H:i:s' => 'dd/mm/yyyy hh:mm:ss', 
+      'd/m/Y H:i'   => 'dd/mm/yyyy hh:mm', 
+      'd/m/Y'       => 'dd/mm/yyyy', 
+      'm/Y'         => 'mm/yyyy', 
+      'Y'           => 'yyyy',
+    ];
+    $mask = [
+      'd/m/Y H:i:s' => 'd/m/y h:s:s', 
+      'd/m/Y H:i'   => 'd/m/y h:s', 
+      'd/m/Y'       => 'd/m/y', 
+      'm/Y'         => 'm/y', 
+      'Y'           => 'y', 
+    ];
+    return [
+      'placeholder' => $placeholders[$format],
+      'mask'        => '"mask": "'.$mask[$format].'"',
+      'value'       => @date($format, $timestamp)
+    ];
+  }
+
   /**
    * prepares the args for the contribution template
    * populates the args array which is passed as a reference.
@@ -281,6 +307,19 @@ class helpers
                 ]
               ]
             ],
+            'caption_variants' => [
+              'title'  => $this->container->translations['field_config'.'imagecaptions'],
+              'options' => [
+                'collapsed' => true
+              ],
+              'propertyOrder' => 11,
+              'type' => 'array',
+              'format' => 'table',
+              'items' => [
+                'type' => 'string',
+                'title' => $this->container->translations['field_config'.'imagecaption'],
+              ]
+            ],            
             'history' => [
               'title'  => $this->container->translations['field_config'.'history'],
               'type' => 'boolean',
@@ -375,10 +414,29 @@ class helpers
                 'title'  => $this->container->translations['field_config'.'colnames'.'labels'],
               ]
             ],
+            'latitude' => [
+              'title'  => $this->container->translations['field_config'.'latitude'],
+              'type' => 'number',
+              'propertyOrder' => 0
+            ],
+            'longitude' => [
+              'title'  => $this->container->translations['field_config'.'longitude'],
+              'type' => 'number',
+              'propertyOrder' => 0
+            ],
             'dateformat' => [
               'title'  => $this->container->translations['field_config'.'dateformat'],
               'type' => 'string',
-              'propertyOrder' => 2
+              'propertyOrder' => 2,
+              'uniqueItems' => true,
+              'enum' => [
+                'd/m/Y H:i:s', 'd/m/Y H:i', 'd/m/Y', 'm/Y', 'Y'
+              ],
+              'options' => [
+                'enum_titles' => [
+                  'dd/mm/yyyy hh:mm:ss', 'dd/mm/yyyy hh:mm', 'dd/mm/yyyy', 'mm/yyyy', 'yyyy'
+                ]
+              ]
             ],
             'integer' => [
               'title'  => $this->container->translations['field_config'.'integer'],
@@ -398,6 +456,13 @@ class helpers
               'propertyOrder' => 0,
               'format' => 'checkbox'
             ],
+            //cloud
+            'threeDee' => [
+              'title'  => $this->container->translations['field_config'.'threeDee'],
+              'type' => 'boolean',
+              'propertyOrder' => 0,
+              'format' => 'checkbox'
+            ],                                       
             'history_command' => [
               'title'  => $this->container->translations['field_config'.'history_command'],
               'format' => 'select',
@@ -444,32 +509,18 @@ class helpers
               'propertyOrder' => 0,
               'format' => 'checkbox'
             ],                                       
-            //cloud, other, self, contributional            
-            'restrict_to_issue' => [
-              'title'  => $this->container->translations['field_config'.'restrict_to_issue'],
-              'type' => 'boolean',
-              'propertyOrder' => 0,
-              'format' => 'checkbox'
-            ],                                       
-           //contributional,
-            'restrict_to_chapter' => [
-              'title'  => $this->container->translations['field_config'.'restrict_to_chapter'],
-              'type' => 'boolean',
-              'propertyOrder' => 0,
-              'format' => 'checkbox'
-            ],
             // not implemented so far
             'restrict_to_book' => [
               'title'  => $this->container->translations['field_config'.'restrict_to_book'],
               'type' => 'boolean',
-              'propertyOrder' => 0,
+              'propertyOrder' => 2,
               'format' => 'checkbox'
             ],
             //issues, chapters            
             'frombook' => [
               'title'  => $this->container->translations['field_config'.'frombook'],
               'format' => 'select',
-              'type'   => 'boolean',
+              'type'   => 'integer',
               'propertyOrder' => 1,
               'uniqueItems' => true,
               'enum' => $frombook['id'],
@@ -477,52 +528,61 @@ class helpers
                 'enum_titles' => $frombook['labels'],
                 'grid_columns' => 12,
               ]                
-            ],
-            //contributional 
-            'fromchapter' => [
-              'title'  => $this->container->translations['field_config'.'fromchapter'],
-              'format' => 'select',
-              'type'   => 'boolean',
-              'propertyOrder' => 1,
-              'uniqueItems' => true,
-              'enum' => $fromchapter['id'],
-              'options' => [
-                'enum_titles' => $fromchapter['labels'],
-                'grid_columns' => 12,
-              ]                    
-            ],
+            ],            
+            //cloud, other, self, contributional            
+            'restrict_to_issue' => [
+              'title'  => $this->container->translations['field_config'.'restrict_to_issue'],
+              'type' => 'boolean',
+              'propertyOrder' => 4,
+              'format' => 'checkbox'
+            ],                                       
             //cloud, other, self, contributional
             'fromissue' => [
               'title'  => $this->container->translations['field_config'.'fromissue'],
               'format' => 'select',
-              'type'   => 'boolean',
-              'propertyOrder' => 1,
+              'type'   => 'integer',
+              'propertyOrder' => 3,
               'uniqueItems' => true,
               'enum' => $fromissue['id'],
               'options' => [
                 'enum_titles' => $fromissue['labels'],
                 'grid_columns' => 12,
               ]                    
-            ],                                       
-            //issues, chapters
-            'frombook' => [
-              'title'  => $this->container->translations['field_config'.'frombook'],
+            ],   
+            
+           //contributional,
+            'restrict_to_chapter' => [
+              'title'  => $this->container->translations['field_config'.'restrict_to_chapter'],
+              'type' => 'boolean',
+              'propertyOrder' => 6,
+              'format' => 'checkbox'
+            ],
+            //contributional 
+            'fromchapter' => [
+              'title'  => $this->container->translations['field_config'.'fromchapter'],
               'format' => 'select',
-              'type'   => 'boolean',
-              'propertyOrder' => 1,
+              'type'   => 'integer',
+              'propertyOrder' => 5,
               'uniqueItems' => true,
-              'enum' => $frombook['id'],
+              'enum' => $fromchapter['id'],
               'options' => [
-                'enum_titles' => $frombook['labels'],
+                'enum_titles' => $fromchapter['labels'],
                 'grid_columns' => 12,
-              ]                                    
-            ],                                       
+              ]                    
+            ],            
+            // not implemented so far
+            'restrict_to_template' => [
+              'title'  => $this->container->translations['field_config'.'restrict_to_template'],
+              'type' => 'boolean',
+              'propertyOrder' => 7,
+              'format' => 'checkbox'
+            ],            
             //contributional, structural
             'fromtemplate' => [
               'title'  => $this->container->translations['field_config'.'fromtemplate'],
               'format' => 'select',
-              'type'   => 'boolean',
-              'propertyOrder' => 1,
+              'type'   => 'integer',
+              'propertyOrder' => 8,
               'uniqueItems' => true,
               'enum' => $fromtemplate['id'],
               'options' => [
@@ -534,21 +594,14 @@ class helpers
             'fromfield' => [
               'title'  => $this->container->translations['field_config'.'fromfield'],
               'format' => 'select',
-              'type'   => 'boolean',
-              'propertyOrder' => 1,
+              'type'   => 'integer',
+              'propertyOrder' => 9,
               'uniqueItems' => true,
               'enum' => $fromfield['id'],
               'options' => [
                 'enum_titles' => $fromfield['labels'],
                 'grid_columns' => 12,
               ]                 
-            ],                                       
-            //cloud
-            'threeDee' => [
-              'title'  => $this->container->translations['field_config'.'threeDee'],
-              'type' => 'boolean',
-              'propertyOrder' => 0,
-              'format' => 'checkbox'
             ],                                       
           ],
       ];
