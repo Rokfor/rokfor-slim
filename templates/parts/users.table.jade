@@ -9,7 +9,7 @@ table#userstable.table.table-bordered.table-striped.dataTable
       tr
         td=$user->getId()
         td=$user->getUsername()
-        td=$user->getFilerights()
+        td=$user->getEmail()
           span.pull-right
             a.btn.btn-danger.btn-xs(data-modal="#usermodal")=$translations['users_delete']
             span &nbsp;
