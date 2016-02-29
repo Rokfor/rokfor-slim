@@ -1,4 +1,5 @@
 <?php
+
 // DIC configuration
 use JeremyKendall\Password\Decorator\UpgradeDecorator;  
 
