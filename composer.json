@@ -1,6 +1,5 @@
 {
     "name": "rokfor/rokfor-slim",
-    "type": "cms",
     "description": "Admin Backend for a Rokfor Database built on slim using bootstrap, adminLte and jade",
     "keywords": ["rokfor", "slim","framework","view","template","jade"],
     "homepage": "http://www.rokfor.ch",
