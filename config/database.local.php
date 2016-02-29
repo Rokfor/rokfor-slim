@@ -3,10 +3,12 @@
 // Database settings
 
 return [
-  'host'                            => 'localhost',
-  'user'                            => '',
-  'pass'                            => '',
-  'dbname'                          => '',
-  'log'                             => __DIR__ . '/../logs/propel.log',
-  'level'                           => \Monolog\Logger::ERROR
+  'host'      => 'localhost',                     // Server Address
+  'user'      => '',                              // User Name
+  'pass'      => '',                              // Password
+  'dbname'    => '',                              // Database Name
+  'log'       => __DIR__ . '/../logs/propel.log', // Log File for Propel
+  'level'     => \Monolog\Logger::ERROR,          // Error Level
+  //'socket'  => '/tmp/mysql.sock',               // Unix Socket, normally not needed
+  //'port'    => 3306,                            // Port, if default not needed
 ];

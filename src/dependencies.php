@@ -43,7 +43,16 @@ $container['logger'] = function ($c) {
 // rokfor database & update paths
 $container['db'] = function ($c) {
   $settings = require __DIR__ . '/../config/database.php';
-  $db = new Rokfor\DB($settings['host'],$settings['user'],$settings['pass'],$settings['dbname'],$settings['log'], $settings['level']);
+  $db = new Rokfor\DB(
+      $settings['host'],
+      $settings['user'],
+      $settings['pass'],
+      $settings['dbname'],
+      $settings['log'], 
+      $settings['level'],
+      $settings['socket'],
+      $settings['port']
+    );
   $db->updatePaths(
     $c->paths['sys'],
     $c->paths['systhumbs'],
