@@ -679,8 +679,9 @@ $app->group('/rf', function () {
         ->setModdate($_t)
         ->setUserSys($this->db->getUser()['id'])
         ->save();
-      $json['trigger']['modtime']  = $this->helpers->diffTime(time() - $_t);
-      $json['trigger']['username'] = $this->db->getUser()['username'];
+      $json['trigger']['modtime']         = $this->helpers->diffTime(time() - $_t);
+      $json['trigger']['username']        = $this->db->getUser()['username'];
+      $json['trigger']['contribversion']  = 'rev. '.$field->getContributions()->getVersion();
     }
     else {
         $json['error']  = "Field not existing";

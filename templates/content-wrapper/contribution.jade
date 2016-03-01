@@ -21,6 +21,8 @@ section.content-header
               'label-success')
           )
         )=$translations[strtolower("status_".$contribution->getStatus())]
+    small
+      span.label.label-success.contribversion(style="float: right;")='rev. '.$contribution->getVersion()
   ol.breadcrumb
     each crumb in breadcrumb
       li
