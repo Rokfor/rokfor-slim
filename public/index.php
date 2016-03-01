@@ -8,13 +8,14 @@ if (PHP_SAPI == 'cli-server') {
     if (is_file($file)) {
         return false;
     }
+    /* 
+     * Clear the template cache on every call
+     * to keep the output up to date on template changes.
+     */
+    foreach (glob(__DIR__ . '/../cache/*') as $file) {
+      unlink($file);
+    }
 }
-
-/* Only used in development, clearing compiled templates on every call*/
-foreach (glob(__DIR__ . '/../cache/*') as $file) {
-  unlink($file);
-}
-
 
 require __DIR__ . '/../vendor/autoload.php';
 
