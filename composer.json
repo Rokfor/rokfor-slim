@@ -58,7 +58,7 @@
         "propel/propel": "~2.0.0-alpha5",
         "slim/slim": "~3.0",
         "jlndk/slim-jade": "dev-master",
-        "rokfor/db": "dev-master",
+        "rokfor/db": "dev-versioning",
         "urshofer/select2sortable": "dev-master",
         "logicify/jquery-locationpicker-plugin": "dev-master",
         "jdorn/json-edit": "dev-master",
