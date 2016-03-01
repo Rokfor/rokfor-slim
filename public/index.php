@@ -10,11 +10,11 @@ if (PHP_SAPI == 'cli-server') {
     }
 }
 
-/* Only used in development, clearing compiled templates on every call
+/* Only used in development, clearing compiled templates on every call*/
 foreach (glob(__DIR__ . '/../cache/*') as $file) {
   unlink($file);
 }
-*/
+
 
 require __DIR__ . '/../vendor/autoload.php';
 

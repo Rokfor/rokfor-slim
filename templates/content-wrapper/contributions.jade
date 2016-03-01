@@ -14,29 +14,29 @@ section.content(data-path=base_path)
     .col-xs-12
       .box
         .box-header
+          .input-group.margin.col-md-3(style="float: right;")
+            span.input-group-btn
+              button.btn.btn-default
+                i.fa.fa-search
+            input.form-control(id='table_search', type='text', name='table_search', placeholder='Search')
+          .input-group.margin(style="float: right;")
+            button.btn.btn-primary.dropdown-toggle.disabled(id="rf_bulk_action", type="button", data-toggle="dropdown", aria-expanded="false")
+              i.fa.fa-caret-down &nbsp;
+              span=$translations["contribution_actions"]
+            ul.dropdown-menu.rfselector(bulk="contributions")
+              li
+                a.text-green(href="/rf/contributions/Close")=$translations["status_close"]
+              li
+                a.text-blue(href="/rf/contributions/Open")=$translations["status_open"]
+              li
+                a.text-red(href="/rf/contributions/Deleted")=$translations["status_deleted"]
+              li.divider
+              li
+                a(href="/rf/contributions/clone")=$translations["status_clone"]
+              li.divider
+              li
+                a.bg-red(href="/rf/contributions/Trash")=$translations["status_destroy"]
           if (is_array($templates))
-            .input-group.margin.col-md-3(style="float: right;")
-              span.input-group-btn
-                button.btn.btn-default
-                  i.fa.fa-search
-              input.form-control(id='table_search', type='text', name='table_search', placeholder='Search')
-            .input-group.margin(style="float: right;")
-              button.btn.btn-primary.dropdown-toggle.disabled(id="rf_bulk_action", type="button", data-toggle="dropdown", aria-expanded="false")
-                i.fa.fa-caret-down &nbsp;
-                span=$translations["contribution_actions"]
-              ul.dropdown-menu.rfselector(bulk="contributions")
-                li
-                  a.text-green(href="/rf/contributions/Close")=$translations["status_close"]
-                li
-                  a.text-blue(href="/rf/contributions/Open")=$translations["status_open"]
-                li
-                  a.text-red(href="/rf/contributions/Deleted")=$translations["status_deleted"]
-                li.divider
-                li
-                  a(href="/rf/contributions/clone")=$translations["status_clone"]
-                li.divider
-                li
-                  a.bg-red(href="/rf/contributions/Trash")=$translations["status_destroy"]
             .input-group.col-md-6.margin(style="float: left;")
               .input-group-btn
                 button.btn.btn-default.dropdown-toggle.rf-copy-dropdown(type="button", value="", data-toggle="dropdown", aria-expanded="false")

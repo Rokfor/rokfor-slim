@@ -218,6 +218,7 @@
 
   $.rokfor.contributions = {
     bulkaction: function(command, data, callback) {
+      console.log(command, data, callback);
       $.rokfor.post(command, data, callback);      
     }
   }  

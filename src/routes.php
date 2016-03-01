@@ -415,15 +415,38 @@ $app->group('/rf', function () {
    */
 
   $this->post('/contributions/search', function ($request, $response, $args) {
-    $searchterm   = $request->getParsedBody()['data'];
-    $args['contributions'] = $this->db->searchContributions($searchterm);
-    $args['breadcrumb'] = [
-      [
-        "class" => "fa-search",
-        "name"  => $this->translations['searchresults_title']
-      ]
-    ];
-    $this->view->render($response, 'content-wrapper/contributions.jade', $args);
+    $data = $request->getParsedBody()['data'];
+    if (is_array($data) && array_key_exists('action', $data)) {
+      switch ($data['action']) {
+        case 'Deleted':
+        case 'Open':
+        case 'Close':
+          $this->db->ChangeStateContributions($data['id'], $data['action']);
+        break;
+        case 'Trash':
+          $this->db->DeleteContributions($data['id']);
+        break;
+        case 'clone':
+          $this->db->CloneContributions($data['id'], $this->translations["copy"]);
+        break;
+      }
+      $r = $response->withHeader('Content-type', 'application/json');
+      $json = $this->view->offsetGet('csrf');
+      $json['action']  = $data['action'];
+      $r->getBody()->write(json_encode($json));
+      return $r;
+    }
+    else {
+      $args['base_path'] = '/rf/contributions/search';
+      $args['breadcrumb'] = [
+        [
+          "class" => "fa-search",
+          "name"  => $this->translations['searchresults_title']
+        ]
+      ];
+      $args['contributions'] = $this->db->searchContributions($data);
+      $this->view->render($response, 'content-wrapper/contributions.jade', $args);
+    }
   });
 
   /* Ajax Call: 

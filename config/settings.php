@@ -8,7 +8,7 @@ return [
         
         'projectname'       => "ROKFOR",                           // Shown in the sidebar
         'timezone'          => "Europe/Zurich",                    // Ref. http://php.net/manual/de/timezones.php
-        'locale'            => 'de_DE',                            // Currently only de_DE
+        'locale'            => 'de_DE.utf8',                            // Currently only de_DE
 
         /*
          * Upload Handling

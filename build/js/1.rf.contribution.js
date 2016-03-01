@@ -57,7 +57,11 @@
           if (data.success) {
             var t = this.next().find('table').DataTable();
             var template = [];
-            template.push('<img data-file="' + data.original + '" src="' + data.thumb + '">');
+            template.push('
+            <a class="rfimagetablepreview" href=' + data.original + ' target="_blank">
+              <img data-file="' + data.original + '" src="' + data.thumb + '">
+            </a>
+            ');
             for (var i = 0; i < t.columns().nodes().length - 2; i++) {
               template.push(data.caption);
             }
@@ -110,7 +114,7 @@
                         }
                       ]    
         })
-        .on('click', 'a', function(e){
+        .on('click', 'a.btn-danger', function(e){
             e.stopPropagation();
             var row = table.row($(this).parents('tr'));
             row.remove().draw();
@@ -123,6 +127,14 @@
             );
             return false;
         })
+        .on('click', 'a.rfimagetablepreview', function(e){
+            e.stopPropagation();
+//            return false;
+        })        
+        .on('mousedown', 'a.rfimagetablepreview', function(e){
+            e.stopPropagation();
+//            return false;
+        })                
         .on('row-reorder', function(a,b,c) {
           table.reorder = true;
         })
@@ -174,7 +186,7 @@
           }
         });
         return (d);
-      }      
+      }
     });
 
     // Slider

@@ -1,6 +1,6 @@
 <?php
 return [
-    'de_DE' => [
+    'de_DE.utf8' => [
         'version'                       => version,
         'loginIntro'                    => "Bitte melden sie sich an",
         'logout'                        => "Sie wurden erfolgreich abgemeldet",
