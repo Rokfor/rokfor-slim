@@ -201,29 +201,38 @@
   
     // New Contributions Click
     $('#add_contribution').click(function(e){
+      $('#rfmodalnew').modal({keyboard: true}).on('shown.bs.modal', function () {
+        $(this).find('input').focus();
+      });
+    });
+
+    // Modal Continue Action
+
+    $('#rfmodalnew').find('button.btn-default, form').on('click, submit', function(e) {
       e.stopPropagation();
-      var name = $(this).parent().prev().val();
-      var template = $(this).parent().prev().prev().find('button').val();
+      var name = $(this).parents('.modal-content').find('input').val();
+      var template = $(this).parents('.modal-content').find('select').val();
       if (template && name) {
-        $.rokfor.contributions.bulkaction($(this).parents('section.content').attr('data-path') , {
-          action: 'new', 
-          name: name,
-          template: template
-        }, function (data) {
-          var d = data;
-          $.rokfor.refreshList(function(){
-            $.rokfor.showDetail();
-            $('.content-wrapper#detail').html(d);
+        $('#rfmodalnew').modal('hide').on('hidden.bs.modal', function () {
+          $.rokfor.contributions.bulkaction($(this).prev().attr('data-path') , {
+            action: 'new', 
+            name: name,
+            template: template
+          }, function (data) {
+            var d = data;
+            $.rokfor.refreshList(function(){
+              $.rokfor.showDetail();
+              $('.content-wrapper#detail').html(d);
+            });
           });
         });
-
       }
       else {
         $('#rfmodal').modal({keyboard: true});
       }
-      return false;
+      return false;      
     })
-    
+
     // Check if the tree is really open
     $.rokfor.recursivetree($('section.content').attr('data-path'));
     
