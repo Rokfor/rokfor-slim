@@ -59,7 +59,7 @@ header.main-header
                             span=$favourite[__config__][chapter]
         li.dropdown.user.user-menu#userdrop
           a.dropdown-toggle(href='#', data-toggle='dropdown')
-            img.user-image(src="http://www.gravatar.com/avatar/".md5($user['email']))
+            img.user-image(src="//www.gravatar.com/avatar/".md5($user['email']))
             span.hidden-xs.username=user.username
           ul.dropdown-menu
             li.user-header
