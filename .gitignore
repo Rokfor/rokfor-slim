@@ -9,3 +9,4 @@ public/udb/*
 public/udb/thumbs/*
 !public/udb/thumbs/thumb.jpg
 config/database.php
+config/settings.php
