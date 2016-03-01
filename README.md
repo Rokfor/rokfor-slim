@@ -2,20 +2,63 @@ rokfor-slim
 ===========
 
 Complete Rokfor rebuild based on the [Slim
-Framework](<http://slimframework.com/>) for PHP.
+Framework](<http://slimframework.com/>) for PHP. Rokfor is a api first data
+centristic content management. It currently features:
+
+ 
+
+-   Flexible structures called "Books", divided into parts, called "Chapters".
+
+-   Every book can have multiple instances called "Issues".
+
+-   Every Chapter contains data, called "Contributions".
+
+-   Flexible data templates supporting various data types: Text, Text Arrays,
+    RTF Text, Tables, Numbers, Dates, Locations, Image and File uploads, Tags,
+    Selectors, Sliders, Two Way Sliders.
+
+-   Selectors with various relations: to other fields, to structures, fixed
+    values and many more.
+
+-   Read only api (simple bearer authentification).
+
+ 
+
+Todos:
+
+ 
+
+In the current state, Rokfor is useful to store data. On the roadmap there are
+some additional functions which will be implemented soon:
+
+ 
+
+-   Read / write api (jwt authentification).
+
+-   Batch functions: Run an action over all contributions of a certain chapter.
+
+-   Field processors: Run an action when storing data.
+
+-   Exporters: Convert data into other formats (i.e. PDF)
+
+ 
 
 ![Dashboard](<https://github.com/Rokfor/rokfor-slim/blob/gh-pages/rokfor-screenshots/rf-dashboard.png>)
 
-Other components used:
+ 
+
+Rokfor is a project with a longer history. The [first
+build](<https://github.com/Rokfor/rokfor-cms>) is mainly used to create printed
+matter. In order to make it more useful for the public, we decided to rewrite it
+completely using standard tools and a modern way of writing php applications.
+
+ 
 
 -   Installable via composer
 
 -   AdminLTE as Templates
 
 -   Propel ORM
-
-Please note: This repository is still under development. There's no need to
-check it out so far.
 
 Prerequisites
 -------------
@@ -39,13 +82,17 @@ $ composer install
 $ composer update
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Configure MySQL Database
+Copy Configuration Files
 ------------------------
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 $ cd config
 $ cp database.local.php database.php
+$ cp settings.local.php settings.php
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Configure MySQL Database
+------------------------
 
 You need to change the database settings in *database.php*. It's pretty straight
 forward. Change the following lines:
@@ -102,6 +149,9 @@ $ php -S 0.0.0.0:8080 -t public public/index.php
 
 Now you should be able to browse to http://localhost:8080/rf and log in with the
 default user root and password 1234.
+
+Using Rokfor with Apache
+------------------------
 
 If you run Rokfor with Apache make sure, that the server's document root points
 to *public*. *mod\_rewrite* is also necessary to redirect all traffic over
