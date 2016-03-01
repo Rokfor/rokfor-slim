@@ -51,7 +51,8 @@ $container['db'] = function ($c) {
       $settings['log'], 
       $settings['level'],
       $settings['socket'],
-      $settings['port']
+      $settings['port'],
+      $settings['versioning']
     );
   $db->updatePaths(
     $c->paths['sys'],
