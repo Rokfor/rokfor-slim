@@ -1,16 +1,16 @@
-/*! Select for DataTables 1.1.0
- * 2015 SpryMedia Ltd - datatables.net/license/mit
+/*! Select for DataTables 1.1.2
+ * 2015-2016 SpryMedia Ltd - datatables.net/license/mit
  */
 
 /**
  * @summary     Select for DataTables
  * @description A collection of API methods, events and buttons for DataTables
  *   that provides selection options of the items in a DataTable
- * @version     1.1.0
+ * @version     1.1.2
  * @file        dataTables.select.js
  * @author      SpryMedia Ltd (www.sprymedia.co.uk)
  * @contact     datatables.net/forums
- * @copyright   Copyright 2015 SpryMedia Ltd.
+ * @copyright   Copyright 2015-2016 SpryMedia Ltd.
  *
  * This source file is free software, available under the following license:
  *   MIT license - http://datatables.net/license/mit
@@ -53,7 +53,86 @@ var DataTable = $.fn.dataTable;
 
 // Version information for debugger
 DataTable.select = {};
-DataTable.select.version = '1.1.0';
+
+DataTable.select.version = '1.1.2';
+
+DataTable.select.init = function ( dt ) {
+	var ctx = dt.settings()[0];
+	var init = ctx.oInit.select;
+	var defaults = DataTable.defaults.select;
+	var opts = init === undefined ?
+		defaults :
+		init;
+
+	// Set defaults
+	var items = 'row';
+	var style = 'api';
+	var blurable = false;
+	var info = true;
+	var selector = 'td, th';
+	var className = 'selected';
+
+	ctx._select = {};
+
+	// Initialisation customisations
+	if ( opts === true ) {
+		style = 'os';
+	}
+	else if ( typeof opts === 'string' ) {
+		style = opts;
+	}
+	else if ( $.isPlainObject( opts ) ) {
+		if ( opts.blurable !== undefined ) {
+			blurable = opts.blurable;
+		}
+
+		if ( opts.info !== undefined ) {
+			info = opts.info;
+		}
+
+		if ( opts.items !== undefined ) {
+			items = opts.items;
+		}
+
+		if ( opts.style !== undefined ) {
+			style = opts.style;
+		}
+
+		if ( opts.selector !== undefined ) {
+			selector = opts.selector;
+		}
+
+		if ( opts.className !== undefined ) {
+			className = opts.className;
+		}
+	}
+
+	dt.select.selector( selector );
+	dt.select.items( items );
+	dt.select.style( style );
+	dt.select.blurable( blurable );
+	dt.select.info( info );
+	ctx._select.className = className;
+
+
+	// Sort table based on selected rows. Requires Select Datatables extension
+	$.fn.dataTable.ext.order['select-checkbox'] = function ( settings, col ) {
+		return this.api().column( col, {order: 'index'} ).nodes().map( function ( td ) {
+			if ( settings._select.items === 'row' ) {
+				return $( td ).parent().hasClass( settings._select.className );
+			} else if ( settings._select.items === 'cell' ) {
+				return $( td ).hasClass( settings._select.className );
+			}
+			return false;
+		});
+	};
+
+	// If the init options haven't enabled select, but there is a selectable
+	// class name, then enable
+	if ( $( dt.table().node() ).hasClass( 'selectable' ) ) {
+		dt.select.style( 'os' );
+	}
+};
 
 /*
 
@@ -263,10 +342,16 @@ function enableMouseSelection ( dt )
 			var items = dt.select.items();
 			var idx;
 
+			// If text was selected (click and drag), then we shouldn't change
+			// the row's selected state
+			if ( window.getSelection && window.getSelection().toString() ) {
+				return;
+			}
+
 			var ctx = dt.settings()[0];
 
 			// Ignore clicks inside a sub-table
-			if ( $(e.target).closest('tbody')[0] != body[0] ) {
+			if ( $(e.target).closest('div.dataTables_wrapper')[0] != dt.table().container() ) {
 				return;
 			}
 
@@ -646,7 +731,11 @@ DataTable.ext.selector.cell.push( function ( settings, opts, cells ) {
 var apiRegister = DataTable.Api.register;
 var apiRegisterPlural = DataTable.Api.registerPlural;
 
-apiRegister( 'select()', function () {} );
+apiRegister( 'select()', function () {
+	return this.iterator( 'table', function ( ctx ) {
+		DataTable.select.init( new DataTable.Api( ctx ) );
+	} );
+} );
 
 apiRegister( 'select.blurable()', function ( flag ) {
 	if ( flag === undefined ) {
@@ -935,6 +1024,19 @@ $.extend( DataTable.ext.buttons, {
 		className: 'buttons-select-none',
 		action: function () {
 			clear( this.settings()[0], true );
+		},
+		init: function ( dt, button, config ) {
+			var that = this;
+
+			dt.on( 'draw.dt.DT select.dt.DT deselect.dt.DT', function () {
+				var count = dt.rows( { selected: true } ).flatten().length +
+				            dt.columns( { selected: true } ).flatten().length +
+				            dt.cells( { selected: true } ).flatten().length;
+
+				that.enable( count > 0 );
+			} );
+
+			this.disable();
 		}
 	}
 } );
@@ -964,73 +1066,16 @@ $.each( [ 'Row', 'Column', 'Cell' ], function ( i, item ) {
  * Initialisation
  */
 
-// DataTables creation - check if the buttons have been defined for this table,
-// they will have been if the `B` option was used in `dom`, otherwise we should
-// create the buttons instance here so they can be inserted into the document
-// using the API
-$(document).on( 'preInit.dt.dtSelect', function (e, ctx, json) {
+// DataTables creation - check if select has been defined in the options. Note
+// this required that the table be in the document! If it isn't then something
+// needs to trigger this method unfortunately. The next major release of
+// DataTables will rework the events and address this.
+$(document).on( 'preInit.dt.dtSelect', function (e, ctx) {
 	if ( e.namespace !== 'dt' ) {
 		return;
 	}
 
-	var opts = ctx.oInit.select || DataTable.defaults.select;
-	var dt = new DataTable.Api( ctx );
-
-	// Set defaults
-	var items = 'row';
-	var style = 'api';
-	var blurable = false;
-	var info = true;
-	var selector = 'td, th';
-	var className = 'selected';
-
-	ctx._select = {};
-
-	// Initialisation customisations
-	if ( opts === true ) {
-		style = 'os';
-	}
-	else if ( typeof opts === 'string' ) {
-		style = opts;
-	}
-	else if ( $.isPlainObject( opts ) ) {
-		if ( opts.blurable !== undefined ) {
-			blurable = opts.blurable;
-		}
-
-		if ( opts.info !== undefined ) {
-			info = opts.info;
-		}
-
-		if ( opts.items !== undefined ) {
-			items = opts.items;
-		}
-
-		if ( opts.style !== undefined ) {
-			style = opts.style;
-		}
-
-		if ( opts.selector !== undefined ) {
-			selector = opts.selector;
-		}
-
-		if ( opts.className !== undefined ) {
-			className = opts.className;
-		}
-	}
-
-	dt.select.selector( selector );
-	dt.select.items( items );
-	dt.select.style( style );
-	dt.select.blurable( blurable );
-	dt.select.info( info );
-	ctx._select.className = className;
-
-	// If the init options haven't enabled select, but there is a selectable
-	// class name, then enable
-	if ( $( dt.table().node() ).hasClass( 'selectable' ) ) {
-		dt.select.style( 'os' );
-	}
+	DataTable.select.init( new DataTable.Api( ctx ) );
 } );
 
 

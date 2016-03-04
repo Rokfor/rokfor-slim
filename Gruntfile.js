@@ -23,10 +23,10 @@ module.exports = function(grunt) {
               'vendor/almasaeed2010/adminlte/dist/js/app.js',
               'vendor/almasaeed2010/adminlte/bootstrap/js/bootstrap.js',
               'vendor/almasaeed2010/adminlte/plugins/slimscroll/jquery.slimscroll.js',
-              'build/js/DataTables/DataTables-1.10.10/js/jquery.dataTables.js',
-              'build/js/DataTables/DataTables-1.10.10/js/dataTables.bootstrap.js',
-              'build/js/DataTables/RowReorder-1.1.0/js/dataTables.rowReorder.js',
-              'build/js/DataTables/Select-1.1.0/js/dataTables.select.js',
+              'build/js/DataTables-1.10.11/DataTables-1.10.11/js/jquery.dataTables.js',
+              'build/js/DataTables-1.10.11/DataTables-1.10.11/js/dataTables.bootstrap.js',
+              'build/js/DataTables-1.10.11/RowReorder-1.1.1/js/dataTables.rowReorder.js',
+              'build/js/DataTables-1.10.11/Select-1.1.2/js/dataTables.select.js',
               'vendor/almasaeed2010/adminlte/plugins/select2/select2.full.js',
               'vendor/robinherbots/jquery.inputmask/dist/jquery.inputmask.bundle.js',
               'vendor/almasaeed2010/adminlte/plugins/ionslider/ion.rangeSlider.min.js',
@@ -74,7 +74,7 @@ module.exports = function(grunt) {
             '.tmp/rf.css'
     		  ],
           'public/assets/css/assets.min.css': [
-            'build/js/DataTables/datatables.min.css',
+            'build/js/DataTables-1.10.11/datatables.min.css',
             'vendor/almasaeed2010/adminlte/bootstrap/css/bootstrap.min.css',
             'vendor/almasaeed2010/adminlte/plugins/iCheck/square/blue.css',
             'vendor/like2k1/bootstrap3-wysiwyg/dist/bootstrap3-wysihtml5.min.css', 
