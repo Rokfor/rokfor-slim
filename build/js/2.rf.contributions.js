@@ -28,7 +28,7 @@
                       {
                         "targets": 4,
                         "render": function(data) {
-                          return ('<textarea type="text" rows="1" class="rowedit">' + data + '</textarea>');
+                          return ('<input class="form-control nameedit" type="text" rows="1" value="' + data + '"><span style="display:none;">' + data + '</span>');
                         }
                       }
                     ]    
@@ -88,6 +88,15 @@
         $('#rf_bulk_action').addClass('disabled');
       }
     }
+    
+    /* Release Date Action */
+    $(".rfmask").inputmask()
+      .on("keyup", function(){
+        if ($(this).inputmask("isComplete")){
+          $.rokfor.contribution.releasedate($(this).parents('tr').attr('id'),$(this).val());
+        }
+      });      
+    
 
     /* Row Editor Field */
   
@@ -124,11 +133,12 @@
         }
         return false;
       })
-      .on('click dblclick', 'textarea', function(e) {
+      .on('click dblclick', 'input', function(e) {
         e.stopPropagation();
         return false;    
       })
-      .on('keyup', 'textarea', function(e) {
+      .on('keyup', 'input.nameedit', function(e) {
+        $(this).next().html($(this).val());
         $.rokfor.contribution.rename($(this).parents('tr').attr('id'),$(this).val());
       })
 
@@ -208,10 +218,10 @@
 
     // Modal Continue Action
 
-    $('#rfmodalnew').find('button.btn-default, form').on('click, submit', function(e) {
+    $('#rfmodalnew').find('button.btn-default').on('click', function(e) {
       e.stopPropagation();
-      var name = $(this).parents('.modal-content').find('input').val();
-      var template = $(this).parents('.modal-content').find('select').val();
+      var name = $(this).closest('.modal-content').find('input').val();
+      var template = $(this).closest('.modal-content').find('select').val();
       if (template && name) {
         $('#rfmodalnew').modal('hide').on('hidden.bs.modal', function () {
           $.rokfor.contributions.bulkaction($(this).prev().attr('data-path') , {
@@ -232,6 +242,11 @@
       }
       return false;      
     })
+    $('#rfmodalnew').find('form').on('submit', function(e) {
+      e.stopPropagation();
+      $('#rfmodalnew').find('button.btn-default').trigger('click');
+      return false;
+    });
 
     // Check if the tree is really open
     $.rokfor.recursivetree($('section.content').attr('data-path'));

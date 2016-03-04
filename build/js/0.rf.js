@@ -232,6 +232,12 @@
         $.rokfor.post('/rf/contribution/rename/'+id, value); 
       }, 250 );
     },
+    releasedate: function(id, value) {
+      $.rokfor.delay(function(){
+        /* Executes a ajax call, updates csrf globals on success */
+        $.rokfor.post('/rf/contribution/releasedate/'+id, value); 
+      }, 250 );
+    },    
     modify: function(action, id, value, callback) {
       $.rokfor.post('/rf/contribution/' + action + '/' + id, value, callback);
     },    

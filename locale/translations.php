@@ -82,6 +82,7 @@ return [
         'contrib_th_datum'              => "Datum",
         'contrib_th_name'               => "Name",
         'contrib_th_status'             => "Status",
+        'contrib_th_lock'               => "Publikationsdatum",
         'choose_template'               => "Vorlage",
         'choose_name'                   => "Bezeichnung",
         'new_document'                  => "Neues Dokument",

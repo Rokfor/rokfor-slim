@@ -561,6 +561,19 @@ $app->group('/rf', function () {
     $_c = $this->db->getContribution($args['id']);    
     switch ($args['action']) {
       // Json Return (list mode)
+      case 'releasedate':
+        $config = json_decode($_c->getConfigSys(), true);
+        if ($config === NULL || !$config['lockdate']) $config = json_decode($this->db->ContributionDefaultConfig(), true);
+        $config['lockdate'] = strtotime($data);
+        $_c
+          ->setConfigSys(json_encode($config))
+          ->save();
+        $r = $response->withHeader('Content-type', 'application/json');
+        $r->getBody()->write(json_encode($this->view->offsetGet('csrf')));
+        return $r;
+        break;
+
+      // Json Return (list mode)
       case 'rename':
         $_c
           ->setName($data)

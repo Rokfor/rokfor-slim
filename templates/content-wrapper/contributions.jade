@@ -55,10 +55,13 @@ section.content(data-path=base_path)
                     th.col-xs-1=translations['contrib_th_id']
                     th.col-xs-2=translations['contrib_th_autor']
                     th.col-xs-2=translations['contrib_th_datum']
-                    th.col-xs-6=translations['contrib_th_name']
+                    th.col-xs-5=translations['contrib_th_name']
                     th.col-xs-1=translations['contrib_th_status']
+                    th.col-xs-1=translations['contrib_th_lock']
                 tbody
                   each contribution in contributions
+                    :php
+                      | $configuration = json_decode($contribution->getConfigSys());
                     tr(id=contribution->getId())
                       td=contribution->getSort()
                       td=contribution->getId()
@@ -77,51 +80,56 @@ section.content(data-path=base_path)
                             ),
                           href="/rf/contributions/".$contribution->getStatus()
                           )=$translations[strtolower("status_".$contribution->getStatus())]
+                      td
+                        :php
+                          | $d = helpers::timeFormatHelper($configuration->lockdate ? $configuration->lockdate : time(), 'd/m/Y H:i');
+                        input.form-control.rfmask(id=$contribution->getId(), type="text", value=d.value, data-inputmask=d.mask, data-inputmask-placeholder=d.placeholder)
       // /.box-body
-.modal.modal-success.fade#rfmodalnew(tabindex="-1",role="dialog")
-  .modal-dialog(role="document")
-    .modal-content
-      .modal-header
-        button.close(type="button", data-dismiss="modal",  aria-label="Close")
-          span(aria-hidden="true") &times;
-        h4.modal-title=$translations['rfmodalnew_title']
-      .modal-body
-        form
-          .row
-            .form-group
-              label.col-sm-2.control-label=translations['choose_template'] 
-              .col-sm-10
-                select.form-control
-                  :php
-                    | $count=0;
-                  each template in templates
-                    if ($count==0)
-                      option(value=template.id, selected="selected")=template.name
-                    else 
-                      option(value=template.id)=template.name
+if (is_array($templates))
+  .modal.modal-success.fade#rfmodalnew(tabindex="-1",role="dialog")
+    .modal-dialog(role="document")
+      .modal-content
+        .modal-header
+          button.close(type="button", data-dismiss="modal",  aria-label="Close")
+            span(aria-hidden="true") &times;
+          h4.modal-title=$translations['rfmodalnew_title']
+        .modal-body
+          form
+            .row
+              .form-group
+                label.col-sm-2.control-label=translations['choose_template'] 
+                .col-sm-10
+                  select.form-control
                     :php
-                      | $count++;
-          .row.margin
-          .row
-            .form-group
-              label.col-sm-2.control-label=translations['choose_name'] 
-              .col-sm-10
-                input.form-control(type="text")      
+                      | $count=0;
+                    each template in templates
+                      if ($count==0)
+                        option(value=template.id, selected="selected")=template.name
+                      else 
+                        option(value=template.id)=template.name
+                      :php
+                        | $count++;
+            .row.margin
+            .row
+              .form-group
+                label.col-sm-2.control-label=translations['choose_name'] 
+                .col-sm-10
+                  input.form-control(type="text")      
       
-      .modal-footer
-        button.btn.btn-default.btn-success.pull-left(type="button", data-dismiss="modal")=$translations['rfmodal_close']
-        button.btn.btn-default(type="button", data-dismiss="modal")=$translations['rfmodal_continue']
+        .modal-footer
+          button.btn.btn-default.btn-success.pull-left(type="button", data-dismiss="modal")=$translations['rfmodal_close']
+          button.btn.btn-default(type="button", data-dismiss="modal")=$translations['rfmodal_continue']
 
-.modal.modal-danger.fade#rfmodal(tabindex="-1",role="dialog")
-  .modal-dialog(role="document")
-    .modal-content
-      .modal-header
-        button.close(type="button", data-dismiss="modal",  aria-label="Close")
-          span(aria-hidden="true") &times;
-        h4.modal-title=$translations['rfmodal_title']
-      .modal-body=$translations['rfmodal_body']
-      .modal-footer
-        button.btn.btn-default(type="button", data-dismiss="modal")=$translations['rfmodal_close']
+  .modal.modal-danger.fade#rfmodal(tabindex="-1",role="dialog")
+    .modal-dialog(role="document")
+      .modal-content
+        .modal-header
+          button.close(type="button", data-dismiss="modal",  aria-label="Close")
+            span(aria-hidden="true") &times;
+          h4.modal-title=$translations['rfmodal_title']
+        .modal-body=$translations['rfmodal_body']
+        .modal-footer
+          button.btn.btn-default(type="button", data-dismiss="modal")=$translations['rfmodal_close']
 include ../js/csrf.js.jade
 script.
   $.rokfor.initContributions();
