@@ -87,6 +87,7 @@ return [
         'new_document'                  => "Neues Dokument",
         'copy'                          => "Kopie",
         'datefield'                     => "d.m.Y H:i",
+        'imageform_sort'                => "Sort",
         'imageform_dnd'                 => "Daten hier reinziehen oder",
         'imageform_open'                => "Klicken um den Dialog zu öffnen",
         'imageform_image'               => "Bild",
