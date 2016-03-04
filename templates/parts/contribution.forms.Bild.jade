@@ -20,6 +20,7 @@
       table.table.table-bordered.table-striped.box-footer.dataTable.rfimagetable
         thead
           tr
+            th=$translations['imageform_sort']
             th=$translations['imageform_image']
             if (count($config['caption_variants']) > 1)
               each caption_variant in config.caption_variants
@@ -29,10 +30,11 @@
             th
         tbody
           :php
-            | $rows = json_decode($field->getContent(), true);
+            | $rows = json_decode($field->getContent(), true); $sortcount = 1;
           if (is_array($rows))
             each row in $rows
               tr
+                td=$sortcount++
                 td
                   a.rfimagetablepreview(href=$paths['web'].$row[1], target="_blank")
                     img(data-file=$row[1], src=$paths['webthumbs'].$row[1].$paths['thmbsuffix'])
@@ -42,6 +44,8 @@
                   each caption_variant in config.caption_variants
                     td=(is_array($row[0])?$row[0][$keyvariant++]:$row[0])
                 else
-                  td=(is_array($row[0])?join(', ',$row[0]):$row[0])
-                  
+                  td=((is_array($row[0]) && count($row[0]) > 1)?join(', ',$row[0]):$row[0])
                 td
+    .overlay(style="display:none;")
+      i.fa.fa-refresh.fa-spin
+                
