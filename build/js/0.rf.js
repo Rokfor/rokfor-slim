@@ -246,7 +246,8 @@
     close: function() {
       $.rokfor.showList($.rokfor.scrollpos)
     },
-    store: function(id, value, callback) {
+    store: function(id, value, callback, delay) {
+      delay = delay || 2000;
       $.rokfor.savecount[id] = true;
       cb = function(_c, _i) {
         delete $.rokfor.savecount[_i];
@@ -256,7 +257,7 @@
       $.rokfor.delay(function(timer){
         /* Executes a ajax call, updates csrf globals on success */        
         $.rokfor.post('/rf/field/' + id, value, cb(callback, id));
-      }, 2000, id );
+      }, delay, id );
     }
   }
   
