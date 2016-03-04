@@ -13,3 +13,7 @@ html
       .content-wrapper#detail(style="display:none")
       include parts/layout.footer.jade
       include parts/layout.sidebar.jade
+  :php
+    | $dev = (PHP_SAPI == 'cli-server');
+  if dev
+    script(src="//localhost:35729/livereload.js")
