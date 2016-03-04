@@ -42,6 +42,7 @@
             data: JSON.stringify({action: "add"})
           };
           $.rokfor.progressbar.init();
+          uploader.closest('.box').find('.overlay').css('display','block');
         },
 
         onUploadProgress: function(id, percent){
@@ -50,15 +51,17 @@
         },
         onUploadSuccess: function(id, data){
           $.rokfor.progressbar.hide();
-          // console.log(data);
+          uploader.closest('.box').find('.overlay').css('display','none');
           // Update csrf string
           $.rokfor.csrf_name  = data.name;
           $.rokfor.csrf_value = data.value;
           if (data.success) {
             var t = this.next().find('table').DataTable();
+            t.positions = false;
             var template = [];
+            template.push(data.newindex);
             template.push('
-            <a class="rfimagetablepreview" href=' + data.original + ' target="_blank">
+            <a class="rfimagetablepreview" href=' + data.relative + ' target="_blank">
               <img data-file="' + data.original + '" src="' + data.thumb + '">
             </a>
             ');
@@ -78,6 +81,7 @@
         },
         onUploadError: function(id, message){
           $.rokfor.progressbar.hide();
+          uploader.closest('.box').find('.overlay').css('display','none');
           console.log("Upload Error", id, 'error', message);
         }
       });
@@ -85,14 +89,24 @@
         "paging": false,
         "lengthChange": false,
         "searching": false,
-        "ordering": true,
-        "rowReorder": true,
+        "ordering": false,
+        "rowReorder": {
+          selector: 'td:first-child',
+          update: false
+        },
         "info": false,
-        "autoWidth": true,
+        "autoWidth": false,
         "dom": 'rt',
         "columnDefs": [ 
                         {
                           "targets": 0,
+                          "defaultContent": '',
+                          "render": function(data) {
+                            return (data);
+                          }
+                        },
+                        {
+                          "targets": 1,
                           "defaultContent": '',
                           "render": function(data) {
                             return (data);
@@ -118,74 +132,85 @@
             e.stopPropagation();
             var row = table.row($(this).parents('tr'));
             row.remove().draw();
-            $.rokfor.contribution.store( 
-              uploader.attr('id'), 
-              JSON.stringify({
-                action: "modify",
-                data: serialize()
-              })
-            );
+            table.positions = false;
+            serialize(table, false, true);
             return false;
         })
         .on('click', 'a.rfimagetablepreview', function(e){
-            e.stopPropagation();
-//            return false;
+          e.stopPropagation();
         })        
         .on('mousedown', 'a.rfimagetablepreview', function(e){
-            e.stopPropagation();
-//            return false;
+          e.stopPropagation();
         })                
-        .on('row-reorder', function(a,b,c) {
-          table.reorder = true;
+        .on('row-reorder', function(a,diff,c) {
+          serialize(table,diff, true);
         })
-        .on('order', function(a,b,c) {
-          if (table.reorder) {
-            $.rokfor.contribution.store( 
-              uploader.attr('id'), 
-              JSON.stringify({
-                action: "modify",
-                data: serialize()
-              })
-            );
-            table.reorder = false;
-          }
-        })
+/*        .on('order', function(a,b,c) {
+          serialize(table);
+        })*/
         .on('keyup', 'textarea', function(e){
           e.stopPropagation();
-          $.rokfor.contribution.store( 
-            uploader.attr('id'), 
-            JSON.stringify({
-              action: "modify",
-              data: serialize()
-            })
-          );
+          serialize(table);
           return false;
         });
-      var serialize = function() {
-        var d = [];
-        var cols = $(table.row(0).node()).children('td').length;
-        console.log(cols)
-        table.cells().every( function ( rowIdx, cellIdx) {
-          if (d[rowIdx] == undefined) d[rowIdx] = [];
-          if (cellIdx==0) {
-            var v = $(this.node()).find('img').attr('data-file');
-            d[rowIdx][1] = (v ? v : false);
+      var serialize = function(tbl, diff, force) {
+        force = force || false;   // Force: Store without timeout
+        diff  = diff || false;    // Delta after Re-Sort
+        // Re-Sort if diff has more than 0 elements
+        tbl.positions = tbl.positions || false;
+        console.log(diff);
+        if (!tbl.positions) {
+          tbl.positions = [];
+          tbl.rows().every( function(rowId) {
+            console.log(rowId);
+            tbl.positions.push(rowId);
+          })
+        }
+        if (diff) {
+          for ( var i=0, ien=diff.length ; i<ien ; i++ ) {
+            tbl.positions[diff[i].oldPosition] = diff[i].newPosition;
           }
-          else {
-            // Storing captions: either in d[0] as string or array if multiple legends are selected
-            if (cellIdx < cols - 1) {
-              var v = $(this.node()).find('textarea').val();
-              if (cols>3) {
-                if (d[rowIdx][0] == undefined) d[rowIdx][0] = [];
-                d[rowIdx][0][cellIdx-1] = (v ? v : false);
-              }
-              else {
-                d[rowIdx][0] = (v ? v : false);
-              }
-            }        
+        }
+        
+        
+        var d = [];
+        var cols = $(tbl.row(0).node()).children('td').length;
+//        console.log(this.cols(0).data())
+        tbl.cells().every( function ( OrigrowIdx, cellIdx) {
+          rowIdx = tbl.positions[OrigrowIdx];
+          if (cellIdx > 0) {
+            if (d[rowIdx] == undefined) d[rowIdx] = [];
+            if (cellIdx==1) {
+              var v = $(this.node()).find('img').attr('data-file');
+              d[rowIdx][1] = (v ? v : false);
+            }
+            else {
+              // Storing captions: either in d[0] as string or array if multiple legends are selected
+              if (cellIdx < cols - 1) {
+                var v = $(this.node()).find('textarea').val();
+                // If rows have more than 4 cols there must be
+                // multiple captions
+                if (cols>4) {
+                  if (d[rowIdx][0] == undefined) d[rowIdx][0] = [];
+                  d[rowIdx][0][cellIdx-1] = (v ? v : false);
+                }
+                else {
+                  d[rowIdx][0] = (v ? v : false);
+                }
+              }        
+            }
           }
         });
-        return (d);
+        
+        $.rokfor.contribution.store( 
+          uploader.attr('id'), 
+          JSON.stringify({
+            action: "modify",
+            data: d
+          }),
+          false,
+          force ? 1 : 2000
+        );
       }
     });
 
