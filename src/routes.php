@@ -564,7 +564,8 @@ $app->group('/rf', function () {
       case 'releasedate':
         $config = json_decode($_c->getConfigSys(), true);
         if ($config === NULL || !$config['lockdate']) $config = json_decode($this->db->ContributionDefaultConfig(), true);
-        $config['lockdate'] = strtotime($data);
+        $parsed = date_parse_from_format('d/m/Y H:i', $data);
+        $config['lockdate'] = mktime($parsed[hour], $parsed[minute], $parsed[second], $parsed[month], $parsed[day], $parsed[year]);
         $_c
           ->setConfigSys(json_encode($config))
           ->save();
@@ -676,7 +677,8 @@ $app->group('/rf', function () {
             $value = $request->getParsedBody()['data']; 
           }
           else {
-            $value = strtotime($request->getParsedBody()['data']);
+            $parsed = date_parse_from_format($settings['dateformat'] ? $settings['dateformat'] : 'd/m/Y H:i', $request->getParsedBody()['data']);
+            $value = mktime($parsed[hour], $parsed[minute], $parsed[second], $parsed[month], $parsed[day], $parsed[year]);
           }
           $json['success'] = $this->db->setField($args['id'], $value);
         break;
