@@ -83,7 +83,7 @@ section.content(data-path=base_path)
                       td
                         :php
                           | $d = helpers::timeFormatHelper($configuration->lockdate ? $configuration->lockdate : time(), 'd/m/Y H:i');
-                        input.form-control.rfmask(id=$contribution->getId(), type="text", value=d.value, data-inputmask=d.mask, data-inputmask-placeholder=d.placeholder)
+                        input.form-control.rfreleasemask(id=$contribution->getId(), type="text", value=d.value, data-inputmask=d.mask, data-inputmask-placeholder=d.placeholder)
       // /.box-body
 if (is_array($templates))
   .modal.modal-success.fade#rfmodalnew(tabindex="-1",role="dialog")

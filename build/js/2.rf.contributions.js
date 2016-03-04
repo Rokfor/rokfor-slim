@@ -15,14 +15,16 @@
       "paging": false,
       "lengthChange": false,
       "searching": true,
-      "ordering": $('#rftable').parents('section.content').attr('data-path') ? true : false,
-      "rowReorder": {
-          selector: 'td:first-child',
-          update: true
-      },
+      "ordering": ($('#rftable').parents('section.content').attr('data-path') && $('#rftable').parents('section.content').attr('data-path').indexOf('search') == -1) ? true : false,
+      "rowReorder": ($('#rftable').parents('section.content').attr('data-path') && $('#rftable').parents('section.content').attr('data-path').indexOf('search') == -1) 
+                    ? {
+                      selector: 'td:first-child',
+                      update: true
+                    }
+                    : false,
       "info": false,
       "autoWidth": false,
-      "dom": 'rt',
+      "dom": 'rtp',
       "select": true,
       "columnDefs": [ 
                       {
@@ -53,7 +55,7 @@
           table.column(0).nodes().each( function (d,x,y) {
             data.id.push({id:$(d).parents('tr').attr('id'), sort:$(d).text()});
           });
-          if ($(this).parents('section.content').attr('data-path'))
+          if ($(this).parents('section.content').attr('data-path') && $(this).parents('section.content').attr('data-path').indexOf('search') == -1)
             $.rokfor.contributions.bulkaction($(this).parents('section.content').attr('data-path'), data);
         }
         else
@@ -90,13 +92,18 @@
     }
     
     /* Release Date Action */
-    $(".rfmask").inputmask()
-      .on("keyup", function(){
-        if ($(this).inputmask("isComplete")){
-          $.rokfor.contribution.releasedate($(this).parents('tr').attr('id'),$(this).val());
+    $(".rfreleasemask").click(function(){
+      if (!this.hasmask) {
+        this.hasmask = true;
+        $(this).inputmask()
+          .on("keyup", function(){
+            if ($(this).inputmask("isComplete")){
+              $.rokfor.contribution.releasedate($(this).parents('tr').attr('id'),$(this).val());
+            }
+          });
         }
-      });      
-    
+    });
+
 
     /* Row Editor Field */
   

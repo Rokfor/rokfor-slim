@@ -414,8 +414,11 @@ $app->group('/rf', function () {
    *
    */
 
-  $this->post('/contributions/search', function ($request, $response, $args) {
+  $this->map(['get','post'], '/contributions/search', function ($request, $response, $args) {
     $data = $request->getParsedBody()['data'];
+    if (!$data) {
+      $data = $request->getQueryParams()['q'];
+    }
     if (is_array($data) && array_key_exists('action', $data)) {
       switch ($data['action']) {
         case 'Deleted':
@@ -437,7 +440,7 @@ $app->group('/rf', function () {
       return $r;
     }
     else {
-      $args['base_path'] = '/rf/contributions/search';
+      $args['base_path'] = '/rf/contributions/search?q=' . rawurlencode($data);
       $args['breadcrumb'] = [
         [
           "class" => "fa-search",
