@@ -650,7 +650,7 @@ $app->group('/rf', function () {
           $file = $request->getUploadedFiles()['file'];
           $data = json_decode($request->getParsedBody()['data'], true);
           if ((is_object($file) && $file->getError() == 0) && $data['action'] == 'add') {
-            $json['success'] = $this->db->FileStore($args['id'], $file, $json['original'], $json['thumb'], $json['caption']);
+            $json['success'] = $this->db->FileStore($args['id'], $file, $json['original'], $json['relative'], $json['thumb'], $json['caption'], $json['newindex']);
             $json['growing'] = $settings['growing'];
           }
           else if ($data['action'] == 'modify') {
