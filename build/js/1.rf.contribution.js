@@ -367,6 +367,10 @@
         "dom": 'rt',
         "columnDefs": [ 
                         {
+                          "targets": '_all',
+                          "defaultContent": '<textarea class="rowedit"></textarea>',
+                        },
+                        {
                           "targets": 0,
                           "data": function( data, type, full, meta) {if (meta) return meta.row;},
                           "defaultContent": '',
@@ -374,11 +378,7 @@
                         {
                           "targets": -1,
                           "defaultContent": '<a class="btn btn-xs btn-danger"><i class="fa fa-minus"></i></a>',
-                        },
-                        {
-                          "targets": '_all',
-                          "defaultContent": '<textarea class="rowedit"></textarea>',
-                        } 
+                        }
                       ]
       });
       dt.on('keyup', 'textarea', function(){
