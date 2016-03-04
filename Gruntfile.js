@@ -20,9 +20,9 @@ module.exports = function(grunt) {
       },
       build: {
         src: ['vendor/almasaeed2010/adminlte/plugins/jQuery/jQuery-2.1.4.min.js',
-              'vendor/almasaeed2010/adminlte/dist/js/app.js',
               'vendor/almasaeed2010/adminlte/bootstrap/js/bootstrap.js',
               'vendor/almasaeed2010/adminlte/plugins/slimscroll/jquery.slimscroll.js',
+              'vendor/almasaeed2010/adminlte/dist/js/app.js',
               'build/js/DataTables-1.10.11/DataTables-1.10.11/js/jquery.dataTables.js',
               'build/js/DataTables-1.10.11/DataTables-1.10.11/js/dataTables.bootstrap.js',
               'build/js/DataTables-1.10.11/RowReorder-1.1.1/js/dataTables.rowReorder.js',
