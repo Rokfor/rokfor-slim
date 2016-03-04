@@ -60,11 +60,7 @@
             t.positions = false;
             var template = [];
             template.push(data.newindex);
-            template.push('
-            <a class="rfimagetablepreview" href=' + data.relative + ' target="_blank">
-              <img data-file="' + data.original + '" src="' + data.thumb + '">
-            </a>
-            ');
+            template.push('<a class="rfimagetablepreview" href=' + data.relative + ' target="_blank"><img data-file="' + data.original + '" src="' + data.thumb + '"></a>');
             for (var i = 0; i < t.columns().nodes().length - 2; i++) {
               template.push(data.caption);
             }
