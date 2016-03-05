@@ -1,9 +1,9 @@
 node_modules
+bower_components
 composer.phar
-vendor/
+vendor
 .tmp/rf.css
 cache/*.php
-.idea/
 composer.lock
 public/udb/*
 public/udb/thumbs/*

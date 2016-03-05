@@ -5,7 +5,7 @@
     "homepage": "http://www.rokfor.ch",
     "license": "MIT",
     "minimum-stability": "stable",
-    "version": "3.0.0-alpha",
+    "version": "3.0.0-beta",
     "type": "project",
     "time": "2016-02-28",
     "authors": [
@@ -27,30 +27,6 @@
         {
             "type": "vcs",
             "url": "https://github.com/urshofer/slim-auth"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/urshofer/json-editor"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/urshofer/jquery-locationpicker-plugin"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/urshofer/uploader"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/urshofer/range2dslider"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/urshofer/select2sortable"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/liKe2k1/bootstrap3-wysiwyg"
         }
     ],
     "require": {
@@ -59,20 +35,11 @@
         "slim/slim": "~3.0",
         "jlndk/slim-jade": "dev-master",
         "rokfor/db": "dev-versioning",
-        "urshofer/select2sortable": "dev-master",
-        "logicify/jquery-locationpicker-plugin": "dev-master",
-        "jdorn/json-edit": "dev-master",
-        "xdan/range2dslider": "dev-master",
-        "danielm/uploader": "dev-master",
-        "like2k1/bootstrap3-wysiwyg": "dev-master",
         "monolog/monolog": "^1.17",
         "slim/csrf": "^0.6.0",
         "jeremykendall/slim-auth": "dev-slim-3.x",
         "slim/flash": "^0.1.0",
-        "akrabat/rka-ip-address-middleware": "^0.4.0",
-        "almasaeed2010/adminlte": "~2.3.2",
-        "fortawesome/font-awesome": "^4.4.0",
-        "robinherbots/jquery.inputmask": "^3.2"
+        "akrabat/rka-ip-address-middleware": "^0.4.0"
     },
     "require-dev": {
         "phpunit/phpunit": "*"

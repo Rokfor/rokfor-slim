@@ -19,24 +19,24 @@ module.exports = function(grunt) {
         sourceMap: true
       },
       build: {
-        src: ['vendor/almasaeed2010/adminlte/plugins/jQuery/jQuery-2.1.4.min.js',
-              'vendor/almasaeed2010/adminlte/bootstrap/js/bootstrap.js',
-              'vendor/almasaeed2010/adminlte/plugins/slimscroll/jquery.slimscroll.js',
-              'vendor/almasaeed2010/adminlte/dist/js/app.js',
-              'build/js/DataTables-1.10.11/DataTables-1.10.11/js/jquery.dataTables.js',
-              'build/js/DataTables-1.10.11/DataTables-1.10.11/js/dataTables.bootstrap.js',
-              'build/js/DataTables-1.10.11/RowReorder-1.1.1/js/dataTables.rowReorder.js',
-              'build/js/DataTables-1.10.11/Select-1.1.2/js/dataTables.select.js',
-              'vendor/almasaeed2010/adminlte/plugins/select2/select2.full.js',
-              'vendor/robinherbots/jquery.inputmask/dist/jquery.inputmask.bundle.js',
-              'vendor/almasaeed2010/adminlte/plugins/ionslider/ion.rangeSlider.min.js',
-              'vendor/logicify/jquery-locationpicker-plugin/dist/locationpicker.jquery.js',
-              'vendor/urshofer/select2sortable/select2sortable.js',
-              'vendor/xdan/range2dslider/jquery.range2dslider.js',
-              'vendor/like2k1/bootstrap3-wysiwyg/dist/bootstrap3-wysihtml5.all.js',
-              'vendor/jdorn/json-edit/dist/jsoneditor.js',
-              'vendor/danielm/uploader/src/dmuploader.js',
-              'build/js/jquery-ui/jquery-ui.js',
+        src: ['bower_components/jquery/dist/jquery.js',
+              'bower_components/bootstrap/dist/js/bootstrap.js',
+              'bower_components/AdminLTE/plugins/slimscroll/jquery.slimscroll.js',
+              'bower_components/AdminLTE/dist/js/app.js',
+              'bower_components/AdminLTE/plugins/select2/select2.full.js',
+              'bower_components/AdminLTE/plugins/ionslider/ion.rangeSlider.min.js',
+              'bower_components/datatables.net/js/jquery.dataTables.js',
+              'bower_components/datatables.net-bs/js/dataTables.bootstrap.js',
+              'bower_components/datatables.net-rowreorder/js/dataTables.rowReorder.js',
+              'bower_components/datatables.net-select/js/dataTables.select.js',
+              'bower_components/jquery.inputmask/dist/jquery.inputmask.bundle.js',
+              'bower_components/jquery-locationpicker-plugin/dist/locationpicker.jquery.js',
+              'bower_components/select2sortable/select2sortable.js',
+              'bower_components/range2dslider/jquery.range2dslider.js',
+              'bower_components/bootstrap3-wysiwyg/dist/bootstrap3-wysihtml5.all.js',
+              'bower_components/json-editor/dist/jsoneditor.js',
+              'bower_components/uploader/src/dmuploader.js',
+              'bower_components/jquery-ui/jquery-ui.js',
               'build/js/*.js'],
         dest: 'public/assets/js/rf.min.js'
       }
@@ -54,9 +54,12 @@ module.exports = function(grunt) {
   		  expand: true,
         flatten: true,
   		  src: [
-          'build/font/*',
-          'vendor/almasaeed2010/adminlte/bootstrap/fonts/*',
-          'vendor/fortawesome/font-awesome/fonts/*'
+          'bower_components/AdminLTE/bootstrap/fonts/*',
+          'bower_components/font-awesome/fonts/*',
+          'bower_components/roboto-fontface/fonts/Roboto-Regular.*',
+          'bower_components/roboto-fontface/fonts/Roboto-RegularItalic.*',
+          'bower_components/roboto-fontface/fonts/Roboto-Bold.*',
+          'bower_components/roboto-fontface/fonts/Roboto-BoldItalic.*',
   		  ], 
   		  dest: 'public/assets/fonts'
   	  }
@@ -74,15 +77,17 @@ module.exports = function(grunt) {
             '.tmp/rf.css'
     		  ],
           'public/assets/css/assets.min.css': [
-            'build/js/DataTables-1.10.11/datatables.min.css',
-            'vendor/almasaeed2010/adminlte/bootstrap/css/bootstrap.min.css',
-            'vendor/almasaeed2010/adminlte/plugins/iCheck/square/blue.css',
-            'vendor/like2k1/bootstrap3-wysiwyg/dist/bootstrap3-wysihtml5.min.css', 
-            'vendor/almasaeed2010/adminlte/plugins/select2/select2.min.css',
-            'vendor/almasaeed2010/adminlte/plugins/ionslider/ion.rangeSlider.css',
-            'vendor/almasaeed2010/adminlte/plugins/ionslider/ion.rangeSlider.skinNice.css',
-            'vendor/xdan/range2dslider/jquery.range2dslider.css',
-            'vendor/danielm/uploader/src/uploader.css'
+            'bower_components/datatables.net-bs/css/dataTables.bootstrap.css',
+            'bower_components/datatables.net-select-bs/css/select.bootstrap.css',
+            'bower_components/datatables.net-rowreorder-bs/css/rowReorder.bootstrap.css',
+            'bower_components/AdminLTE/bootstrap/css/bootstrap.min.css',
+            'bower_components/AdminLTE/plugins/iCheck/square/blue.css',
+            'bower_components/bootstrap3-wysiwyg/dist/bootstrap3-wysihtml5.min.css', 
+            'bower_components/AdminLTE/plugins/select2/select2.min.css',
+            'bower_components/AdminLTE/plugins/ionslider/ion.rangeSlider.css',
+            'bower_components/AdminLTE/plugins/ionslider/ion.rangeSlider.skinNice.css',
+            'bower_components/range2dslider/jquery.range2dslider.css',
+            'bower_components/uploader/src/uploader.css'
     		  ]
         }
       }
