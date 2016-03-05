@@ -1,9 +1,9 @@
 rokfor-slim
 ===========
 
-Complete Rokfor rebuild based on the [Slim
-Framework](<http://slimframework.com/>) for PHP. Rokfor is a api first data
-centristic content management. It currently features:
+Rokfor rebuild based on the [Slim Framework](<http://slimframework.com/>) for
+PHP. Rokfor is a api first data centristic content management. It currently
+features:
 
  
 
@@ -13,33 +13,21 @@ centristic content management. It currently features:
 
 -   Every Chapter contains data, called "Contributions".
 
--   Flexible data templates supporting various data types: Text, Text Arrays,
-    RTF Text, Tables, Numbers, Dates, Locations, Image and File uploads, Tags,
-    Selectors, Sliders, Two Way Sliders.
+-   "Contributions" are collections of fields, gathered in templates.
 
--   Selectors with various relations: to other fields, to structures, fixed
-    values and many more.
+-   Various data types supported: Text, Text Arrays, RTF Text, Tables, Numbers,
+    Dates, Locations, Image and File uploads, Tags, Selectors, Sliders, Two Way
+    Sliders.
 
--   Read only api (simple bearer authentification).
+-   Various data relations: field to fields, field to structures, fixed values
+    and many more.
 
- 
+-   Read only api with a simple bearer-key authentification based on user
+    rights.
 
-Todos:
+-   Fine grained roles and rights system.
 
- 
-
-In the current state, Rokfor is useful to store data. On the roadmap there are
-some additional functions which will be implemented soon:
-
- 
-
--   Read / write api (jwt authentification).
-
--   Batch functions: Run an action over all contributions of a certain chapter.
-
--   Field processors: Run an action when storing data.
-
--   Exporters: Convert data into other formats (i.e. PDF)
+-   Installable via composer, using grunt and bower as build system.
 
  
 
@@ -50,18 +38,24 @@ some additional functions which will be implemented soon:
 Rokfor is a project with a longer history. The [first
 build](<https://github.com/Rokfor/rokfor-cms>) is mainly used to create printed
 matter. In order to make it more useful for the public, we decided to rewrite it
-completely using standard tools and a modern way of writing php applications.
+completely applying a modern way of writing php applications:
 
  
 
--   Installable via composer
+-   Composer install system
 
--   AdminLTE as Templates
+-   AdminLTE backend theme
 
 -   Propel ORM
 
-Prerequisites
--------------
+ 
+
+Setup and Installation
+----------------------
+
+ 
+
+### 1. Prerequisites
 
 -   MySQL Database: Server, username, password and database name
 
@@ -69,8 +63,9 @@ Prerequisites
 
 -   [Composer](<https://getcomposer.org>)
 
-Installation process
---------------------
+ 
+
+### 2. Install Dependencies
 
 Open a terminal, clone the repository and install the dependencies with
 composer:
@@ -82,8 +77,12 @@ $ composer install
 $ composer update
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Copy Configuration Files
-------------------------
+ 
+
+### 3. Copy and Edit Configuration Files
+
+First, you need a copy of the database and settings configuration file. Move or
+copy the .local.php files to .php files:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 $ cd config
@@ -91,20 +90,37 @@ $ cp database.local.php database.php
 $ cp settings.local.php settings.php
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Configure MySQL Database
-------------------------
+Then, you need to change the database settings in *database.php*. You need to
+know the User, Password, Database and Server for your MySQL Account.
 
-You need to change the database settings in *database.php*. It's pretty straight
-forward. Change the following lines:
+If you enable **versioning**, all changes within contributions are stored as
+versions. This can be useful if you need to track the editing history, but it
+will create a lot of data.
+
+If you change the log **level** to \\Monolog\\Logger::DEBUG, all sql queries are
+logged. The path to the log file can be adjusted in the **log** setting.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-'user'               => '',
-'pass'               => '',
-'dbname'             => '',
+// Database settings
+
+return [
+  'host'      => 'localhost',                     // Server Address
+  'user'      => '',                              // User Name
+  'pass'      => '',                              // Password
+  'dbname'    => '',                              // Database Name
+  'log'       => __DIR__ . '/../logs/propel.log', // Log File for Propel
+  'level'     => \Monolog\Logger::ERROR,          // Error Level
+  'versioning'=> false,                           // Store Versions of  
+                                                  // Contributions and Data
+  //'socket'  => '/tmp/mysql.sock',               // Unix Socket, normally 
+                                                  // not needed
+  //'port'    => 3306,                            // Port, if default not needed
+];
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Popuplate Database
-------------------
+ 
+
+### 4. Populate Database
 
 Rokfor relies on [Propel](<http://propelorg.org>) and as database object mapper.
 Propel is loaded via composer and installed like all other dependencies in the
@@ -115,8 +131,7 @@ You need a running Propel CLI tool to populate the database. The first step is a
 correct configuration file:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-$ cd vendor/rokfor/db/config
-$ pico propel.yaml
+$ pico vendor/rokfor/db/config/propel.yaml
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Edit the connection settings in the *propel.yaml* file similar to the
@@ -133,25 +148,34 @@ Run the Propel CLI utility with the insert parameter. The command below assumes
 that you are still in the directory where the propel.yaml file resides:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-$ ../../../propel/propel/bin/propel sql:insert
+$ ./vendor/bin/propel sql:insert \
+--config-dir ./vendor/rokfor/db/config \
+--sql-dir ./vendor/rokfor/db/config/generated-sql/
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Now, the database should be populated with the correct strucuture and a default
 user is automatically added.
 
-Run php as a local server
--------------------------
+ 
+
+Running Rokfor
+--------------
+
+ 
+
+### PHP Server Mode (Debug)
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 $ cd rokfor-slim (base directory of the repository)
 $ php -S 0.0.0.0:8080 -t public public/index.php
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Now you should be able to browse to http://localhost:8080/rf and log in with the
-default user root and password 1234.
+Now you should be able to browse to **http://localhost:8080/rf** and log in with
+the default user **root** and password **1234**.
 
-Using Rokfor with Apache
-------------------------
+ 
+
+### Behind Apache
 
 If you run Rokfor with Apache make sure, that the server's document root points
 to *public*. *mod\_rewrite* is also necessary to redirect all traffic over
@@ -159,4 +183,101 @@ to *public*. *mod\_rewrite* is also necessary to redirect all traffic over
 
  
 
-more to come - this is still an alpha release.
+Building Rokfor
+---------------
+
+ 
+
+Rokfor uses grunt to build and bower to install dependencies. Assuming you have
+installed node and npm:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ npm install
+$ bower install 
+$ grunt
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ 
+
+Read Only API
+-------------
+
+ 
+
+### Access Key
+
+In order to access data, you need to set a user and define a read only api key
+in the user profile. Adding a user is only possible if you are signed in as
+root. There are two reasons why we use api keys for read only access. First, you
+can define which data is published, second, a key is not a password. Even by
+publishing a key, there's no way to log into the system and edit content.
+
+Sending the key is done via a bearer authentification header or a access\_token
+query string. Sending a header is probably a better solution since the query
+string won't be too cluttered and the api key probably does not show up in the
+server log. The GET-call is probably a little bit more difficult to generate
+though.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+GET /api/contributions/1/1?access_token=[key]
+
+$ curl -H "Authorization: Bearer [key]" http://localhost:8080/api/contributions/1/1
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ 
+
+### Current API Routes
+
+**Loading a collection of contributions with options:**
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+GET /api/contributions/[:issueid]/[:chapterid]?[options]
+
+Options:
+
+- query=string
+- sort=[id|date|name:]asc|desc
+- limit=int
+- offset=int
+- populate=[Fieldname|Fieldname|XX]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-   Query: search for a string within the contribution name or the text fields
+
+-   Sort: Sort the results by id, date or name either ascending or descending
+
+-   Limit and Offset: Create pages with a length of [limit] elements starting at
+    [offset].
+
+-   Populate: Add additional field infos to the result set of a contributions.
+    For example, you need the title field of a contribution already in the
+    result set to create a multilingual menu. Or you need all images for a
+    slideshow over multiple contributions.
+
+ 
+
+**Loading a single contribution:**
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+GET /api/contribution/[:id]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Loads all available data from a single contribution.
+
+ 
+
+Roadmap
+-------
+
+ 
+
+In the current state, Rokfor is able to store and organize data. On the roadmap
+there are additional functions which will be re-implemented:
+
+ 
+
+>   \- Read / write api (jwt authentification).  
+>   - Batch functions: Run an action over all contributions of a certain
+>   chapter.  
+>   - Field processors: Run an action when storing data.  
+>   - Exporters: Convert data into other formats (i.e. PDF)
