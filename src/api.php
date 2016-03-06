@@ -11,18 +11,45 @@ $app->group('/api', function () {
    *  - sort=[id|date|name:]asc|desc
    *  - limit=int
    *  - offset=int
+   *  - data=[Fieldname|Fieldname|XX]
    */
    
   $this->get('/contributions/{issue:[0-9]*}/{chapter:[0-9]*}', function ($request, $response, $args) {
     $j = [];
+    $_fids = [];
+
     $c = $request->getQueryParams()['query']
           ? $this->db->searchContributions($request->getQueryParams()['query'], $args['issue'], $args['chapter'], 'Close', $request->getQueryParams()['limit'], $request->getQueryParams()['offset'])
           : $this->db->getContributions($args['issue'], $args['chapter'], $request->getQueryParams()['sort'], 'Close', $request->getQueryParams()['limit'], $request->getQueryParams()['offset']);
     if (is_object($c)) foreach ($c as $_c) {
-      $j[]  = $_c->toArray();
+      $_contribution = $_c->toArray(); 
+      if ($request->getQueryParams()['data']) {
+        // Populate Field Ids on the first call
+        if (count($_fids) == 0) {
+          foreach (explode('|', $request->getQueryParams()['data']) as $fieldname) {
+            $_f = $this->db->getTemplatefields()
+                           ->filterByFieldname($fieldname)
+                           ->filterByFortemplate($_c->getFortemplate())
+                           ->findOne();
+            if (!$_f) {
+              $errcode = 404;
+              $newResponse = $response->withStatus($errcode);
+              $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'Population failed. Field unknown.'], JSON_CONSTANTS));
+              return $newResponse;            
+            }
+            else $_fids[] = $_f->getId();
+          }
+        }
+        $criteria = new \Propel\Runtime\ActiveQuery\Criteria();
+        $criteria->add('_fortemplatefield', $_fids, \Propel\Runtime\ActiveQuery\Criteria::IN);  
+        foreach ($_c->getDatas($criteria) as $field) {
+          $_contribution['data'][] = $this->helpers->prepareApiData($field);
+        }
+      }
+      $j[] = $_contribution;
     }
     else {
-      $errcode = 204;
+      $errcode = 200;
       $newResponse = $response->withStatus($errcode);
       $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'Request contains no content'], JSON_CONSTANTS));
       return $newResponse;
@@ -41,46 +68,19 @@ $app->group('/api', function () {
       $criteria = new \Propel\Runtime\ActiveQuery\Criteria(); 
       $criteria->addAscendingOrderByColumn(__sort__); 
       foreach ($c->getDatas($criteria) as $field) {
-        $t = $field->getTemplates();
-        $_content = $field->getIsjson() ? json_decode($field->getContent()) : $field->getContent();
-        if ($t->getFieldtype() == "Bild") {
-          $_protocol = stristr($_SERVER['SERVER_PROTOCOL'], 'HTTPS') ? 'https://' : 'http://';
-          foreach ($_content as &$_row) {
-            $_row[1] = $_protocol.$_SERVER['HTTP_HOST'].$this->paths['web'].$_row[1];
-          }
-        }
-        $d[$t->getFieldname()] = [
-            "template"  => [
-                  "Id"               => $t->getId(),
-                  "Fortemplate"      => $t->getFortemplate(),
-                  "Fieldname"        => $t->getFieldname(),
-                  "Fieldtype"        => $t->getFieldtype(),
-                  "ConfigSys"        => json_decode($t->getConfigSys())
-            ],
-            "field"     => [
-                  "Id"               => $field->getId(),
-                  "Forcontribution"  => $field->getForcontribution(),
-                  "Fortemplatefield" => $field->getFortemplatefield(),
-                  "Content"          => $_content,
-                  "Isjson"           => $field->getIsjson()
-                ]
-          ];
+        $_data = $this->helpers->prepareApiData($field);
+        $d[$_data['template']['Fieldname']] = $_data;
       }
-
-
       $response->getBody()->write(json_encode([
-        "contribution"              => [
-          "Id"                      => $c->getId(),
-          "Fortemplate"             => $c->getFortemplate(),
-          "Forissue"                => $c->getForissue(),
-          "Name"                    => $c->getName(),
-          "Status"                  => $c->getStatus(),
-          "Newdate"                 => $c->getNewdate(),
-          "Moddate"                 => $c->getModdate(),
-          "Forchapter"              => $c->getForchapter()
-        ],
+        "contribution"              => $this->helpers->prepareApiContribution($c),
         "data"                      => $d
       ], JSON_CONSTANTS));
+    }
+    else if ($c === false) {
+      $errcode = 404;
+      $newResponse = $response->withStatus($errcode);
+      $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'No access to Element'], JSON_CONSTANTS));
+      return $newResponse;      
     }
     else {
       $errcode = 404;

@@ -23,9 +23,7 @@ session_start();
 
 // Instantiate the app
 $settings = require __DIR__ . '/../config/settings.php';
-
 date_default_timezone_set($settings['settings']['timezone']);
-
 $app = new \Slim\App($settings);
 
 // Set up acl
@@ -45,6 +43,7 @@ require __DIR__ . '/../src/routes.php';
 
 // Register API specific routes
 require __DIR__ . '/../src/api.php';
+
 
 // Run app
 $app->run();

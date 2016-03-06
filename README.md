@@ -181,14 +181,14 @@ Options:
 - sort=[id|date|name:]asc|desc
 - limit=int
 - offset=int
-- populate=[Fieldname|Fieldname|XX]
+- data=[Fieldname|Fieldname|XX]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -   Query: search for a string within the contribution name or the text fields
 -   Sort: Sort the results by id, date or name either ascending or descending
 -   Limit and Offset: Create pages with a length of [limit] elements starting at
     [offset].
--   Populate: Add additional field infos to the result set of a contributions.
+-   Data: Add additional field infos to the result set of a contributions.
     For example, you need the title field of a contribution already in the
     result set to create a multilingual menu. Or you need all images for a
     slideshow over multiple contributions.

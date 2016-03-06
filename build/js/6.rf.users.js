@@ -14,7 +14,7 @@
         "searching": true,
         "ordering": true,
         "info": false,
-        "autoWidth": true,
+        "autoWidth": false,
         "select": false,
         "dom": '',
       };

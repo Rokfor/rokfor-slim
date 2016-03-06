@@ -676,6 +676,69 @@ class helpers
     ];
   }
 
+
+  /**
+   * prepares the return array for a field if accessed over the json api
+   *
+   * @return void
+   * @author Urs Hofer
+   */
+  public function prepareApiData($field) {
+    $t = $field->getTemplates();
+    $_content = $field->getIsjson() ? json_decode($field->getContent()) : $field->getContent();
+    $_fieldsettings = json_decode($t->getConfigSys());
+    if ($t->getFieldtype() == "Bild") {
+      $_protocol = stristr($_SERVER['SERVER_PROTOCOL'], 'HTTPS') ? 'https://' : 'http://';
+      foreach ($_content as &$_row) {
+        $_versions = [];
+        $_versions['original'] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_row[1];
+        foreach ($_fieldsettings->imagesize as $key => $value) {
+          $_versions['resized'][] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_row[1].'-preview'.$key.'.jpg';
+        }
+        $_row = [
+          "files" => $_versions,
+          "captions" => $_row[0]
+        ];
+      }
+    }
+    return [
+      "template"  => [
+        "Id"               => $t->getId(),
+        "Fortemplate"      => $t->getFortemplate(),
+        "Fieldname"        => $t->getFieldname(),
+        "Fieldtype"        => $t->getFieldtype(),
+        "ConfigSys"        => $_fieldsettings
+      ],
+      "field"     => [
+        "Id"               => $field->getId(),
+        "Forcontribution"  => $field->getForcontribution(),
+        "Fortemplatefield" => $field->getFortemplatefield(),
+        "Content"          => $_content,
+        "Isjson"           => $field->getIsjson()
+      ]
+    ];
+  }
+  
+  
+  /**
+   * prepares the return array for a contribution if accessed over the json api
+   *
+   * @return void
+   * @author Urs Hofer
+   */
+  function prepareApiContribution($c)
+  {
+    return [
+      "Id"                      => $c->getId(),
+      "Fortemplate"             => $c->getFortemplate(),
+      "Forissue"                => $c->getForissue(),
+      "Name"                    => $c->getName(),
+      "Status"                  => $c->getStatus(),
+      "Newdate"                 => $c->getNewdate(),
+      "Moddate"                 => $c->getModdate(),
+      "Forchapter"              => $c->getForchapter()
+    ];
+  }
 }
 
 $container = $app->getContainer();
