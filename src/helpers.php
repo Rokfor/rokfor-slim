@@ -683,7 +683,7 @@ class helpers
    * @return void
    * @author Urs Hofer
    */
-  public function prepareApiData($field) {
+  public function prepareApiData($field, $compact = true) {
     $t = $field->getTemplates();
     $_content = $field->getIsjson() ? json_decode($field->getContent()) : $field->getContent();
     $_fieldsettings = json_decode($t->getConfigSys());
@@ -702,22 +702,31 @@ class helpers
         ];
       }
     }
-    return [
-      "template"  => [
-        "Id"               => $t->getId(),
-        "Fortemplate"      => $t->getFortemplate(),
-        "Fieldname"        => $t->getFieldname(),
-        "Fieldtype"        => $t->getFieldtype(),
-        //"ConfigSys"        => $_fieldsettings
-      ],
-      "field"     => [
-        "Id"               => $field->getId(),
-        "Forcontribution"  => $field->getForcontribution(),
-        "Fortemplatefield" => $field->getFortemplatefield(),
-        "Content"          => $_content,
-        "Isjson"           => $field->getIsjson()
-      ]
-    ];
+    if ($compact) {
+     return [
+       "Id"               => $field->getId(),
+       "Fieldname"        => $t->getFieldname(),
+       "Content"          => $_content
+     ]; 
+    }
+    else {
+      return [
+        "template"  => [
+          "Id"               => $t->getId(),
+          "Fortemplate"      => $t->getFortemplate(),
+          "Fieldname"        => $t->getFieldname(),
+          "Fieldtype"        => $t->getFieldtype(),
+          //"ConfigSys"        => $_fieldsettings
+        ],
+        "field"     => [
+          "Id"               => $field->getId(),
+          "Forcontribution"  => $field->getForcontribution(),
+          "Fortemplatefield" => $field->getFortemplatefield(),
+          "Content"          => $_content,
+          "Isjson"           => $field->getIsjson()
+        ]
+      ];
+    }
   }
   
   
@@ -727,18 +736,26 @@ class helpers
    * @return void
    * @author Urs Hofer
    */
-  function prepareApiContribution($c)
+  function prepareApiContribution($c, $compact = true)
   {
-    return [
-      "Id"                      => $c->getId(),
-      "Fortemplate"             => $c->getFortemplate(),
-      "Forissue"                => $c->getForissue(),
-      "Name"                    => $c->getName(),
-      "Status"                  => $c->getStatus(),
-      "Newdate"                 => $c->getNewdate(),
-      "Moddate"                 => $c->getModdate(),
-      "Forchapter"              => $c->getForchapter()
-    ];
+    if ($compact) {
+      return [
+        "Id"                      => $c->getId(),
+        "Name"                    => $c->getName(),
+      ];
+    }
+    else {
+        return [
+        "Id"                      => $c->getId(),
+        "Fortemplate"             => $c->getFortemplate(),
+        "Forissue"                => $c->getForissue(),
+        "Name"                    => $c->getName(),
+        "Status"                  => $c->getStatus(),
+        "Newdate"                 => $c->getNewdate(),
+        "Moddate"                 => $c->getModdate(),
+        "Forchapter"              => $c->getForchapter()
+      ];
+    }
   }
 }
 

@@ -34,6 +34,7 @@ $app->group('/api', function () {
    *  - limit=int
    *  - offset=int
    *  - data=[Fieldname|Fieldname|XX]
+   *  - verbose=true|false
    */
   $this->options('/contributions/{issue:[0-9]*}/{chapter:[0-9]*}', 
     function ($request, $response, $args) {}
@@ -41,7 +42,7 @@ $app->group('/api', function () {
   $this->get('/contributions/{issue:[0-9]*}/{chapter:[0-9]*}', function ($request, $response, $args) {
     $j = [];
     $_fids = [];
-
+    $compact = $request->getQueryParams()['verbose'] ? false : true;
     $c = $request->getQueryParams()['query']
           ? $this->db->searchContributions($request->getQueryParams()['query'], $args['issue'], $args['chapter'], 'Close', $request->getQueryParams()['limit'], $request->getQueryParams()['offset'])
           : $this->db->getContributions($args['issue'], $args['chapter'], $request->getQueryParams()['sort'], 'Close', $request->getQueryParams()['limit'], $request->getQueryParams()['offset']);
@@ -52,7 +53,7 @@ $app->group('/api', function () {
         continue;
       }
 
-      $_contribution = $this->helpers->prepareApiContribution($_c); 
+      $_contribution = $this->helpers->prepareApiContribution($_c, $compact); 
       if ($request->getQueryParams()['data']) {
         // Populate Field Ids on the first call
         if (count($_fids) == 0) {
@@ -73,8 +74,7 @@ $app->group('/api', function () {
         $criteria = new \Propel\Runtime\ActiveQuery\Criteria();
         $criteria->add('_fortemplatefield', $_fids, \Propel\Runtime\ActiveQuery\Criteria::IN);  
         foreach ($_c->getDatas($criteria) as $field) {
-          $_data = $this->helpers->prepareApiData($field);
-          $_contribution['data'][$_data['template']['Fieldname']] = $_data;
+          $_contribution['data'][$field->getTemplates()->getFieldname()] = $this->helpers->prepareApiData($field, $compact);
         }
       }
       $j[] = $_contribution;
@@ -90,22 +90,24 @@ $app->group('/api', function () {
 
   /* Single Contribution
    * 
+   *  - verbose=true|false
    */
   $this->options('/contribution/{id:[0-9]*}', 
     function ($request, $response, $args) {}
   )->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));  
+  
   $this->get('/contribution/{id:[0-9]*}', function ($request, $response, $args) {
     $j = [];
+    $compact = $request->getQueryParams()['verbose'] ? false : true;
     $c = $this->db->getContribution($args['id']);
     if ($c && $c->getStatus()=="Close") {
       $criteria = new \Propel\Runtime\ActiveQuery\Criteria(); 
       $criteria->addAscendingOrderByColumn(__sort__); 
       foreach ($c->getDatas($criteria) as $field) {
-        $_data = $this->helpers->prepareApiData($field);
-        $d[$_data['template']['Fieldname']] = $_data;
+        $d[$field->getTemplates()->getFieldname()] = $this->helpers->prepareApiData($field, $compact);
       }
       $response->getBody()->write(json_encode([
-        "contribution"              => $this->helpers->prepareApiContribution($c),
+        "contribution"              => $this->helpers->prepareApiContribution($c, $compact),
         "data"                      => $d
       ], JSON_CONSTANTS));
     }
