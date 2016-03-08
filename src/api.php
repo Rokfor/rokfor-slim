@@ -31,7 +31,9 @@ $app->group('/api', function () {
    *  - offset=int
    *  - data=[Fieldname|Fieldname|XX]
    */
-   
+  $this->options('/contributions/{issue:[0-9]*}/{chapter:[0-9]*}', 
+    function ($request, $response, $args) {}
+  )->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));
   $this->get('/contributions/{issue:[0-9]*}/{chapter:[0-9]*}', function ($request, $response, $args) {
     $j = [];
     $_fids = [];
@@ -84,7 +86,9 @@ $app->group('/api', function () {
   /* Single Contribution
    * 
    */
-  
+  $this->options('/contribution/{id:[0-9]*}', 
+    function ($request, $response, $args) {}
+  )->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));  
   $this->get('/contribution/{id:[0-9]*}', function ($request, $response, $args) {
     $j = [];
     $c = $this->db->getContribution($args['id']);
