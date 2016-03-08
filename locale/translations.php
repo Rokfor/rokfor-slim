@@ -1,7 +1,6 @@
 <?php
 return [
     'de_DE.utf8' => [
-        'version'                       => version,
         'loginIntro'                    => "Bitte melden sie sich an",
         'logout'                        => "Sie wurden erfolgreich abgemeldet",
         'loginFailed'                   => "Benutzername oder Passwort fehlerhaft",

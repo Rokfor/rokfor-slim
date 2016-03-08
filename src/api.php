@@ -2,7 +2,7 @@
 
 $app->group('/api', function () {
 
-  define(JSON_CONSTANTS, JSON_PRETTY_PRINT);
+  define('JSON_CONSTANTS', JSON_PRETTY_PRINT);
 
   /**
    * Cors Options

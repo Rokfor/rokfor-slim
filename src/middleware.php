@@ -169,6 +169,15 @@ $identificator = function ($request, $response, $next) {
  */
 
 $apiauth = function ($request, $response, $next) {
+  
+  // Option Requests
+  
+  if ($request->isOptions()) {
+    $response = $next($request, $response);
+    return $response;      
+  }
+  
+  
   $response = $response->withHeader('Content-type', 'application/json');
   $apikey = false;
   

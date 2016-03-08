@@ -1,10 +1,13 @@
 <?php
 
+error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+
 /* To help the built-in PHP dev server, check if the request was actually for
  * something which should probably be served as a static file
  */
 if (PHP_SAPI == 'cli-server') {
-    $file = reset(explode("?",__DIR__ . $_SERVER['REQUEST_URI']));
+    $_p = explode("?",__DIR__ . $_SERVER['REQUEST_URI']);
+    $file = reset($_p);
     if (is_file($file)) {
         return false;
     }
