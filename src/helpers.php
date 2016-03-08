@@ -707,7 +707,7 @@ class helpers
         "Fortemplate"      => $t->getFortemplate(),
         "Fieldname"        => $t->getFieldname(),
         "Fieldtype"        => $t->getFieldtype(),
-        "ConfigSys"        => $_fieldsettings
+        //"ConfigSys"        => $_fieldsettings
       ],
       "field"     => [
         "Id"               => $field->getId(),

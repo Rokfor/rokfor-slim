@@ -52,7 +52,7 @@ $app->group('/api', function () {
         continue;
       }
 
-      $_contribution = $_c->toArray(); 
+      $_contribution = $this->helpers->prepareApiContribution($_c); 
       if ($request->getQueryParams()['data']) {
         // Populate Field Ids on the first call
         if (count($_fids) == 0) {
