@@ -41,6 +41,17 @@ return [
         ],
 
         /*
+         * CORS Header
+         *
+         * Allowed Domains for R/O and R/W Api
+         */
+        
+        'cors' => [
+          'ro'  => '*',
+          'rw'  => '*'
+        ],
+
+        /*
          * Paths and Error Handling
          * 
          * Unless you change something in the directory structure, there's
@@ -48,16 +59,16 @@ return [
          */
 
         'view' => [                                               // Jade Renderer settings
-            'template_path' => __DIR__ . '/../templates/',        // Path to templates
-            'cache_path'    => __DIR__ . '/../cache/',            // Path to cache dir
+          'template_path' => __DIR__ . '/../templates/',        // Path to templates
+          'cache_path'    => __DIR__ . '/../cache/',            // Path to cache dir
         ],
         'logger' => [                                             // Monolog settings
-            'path'          => __DIR__ . '/../logs/app.log',      // Path to Log File
-            'level'         => Monolog\Logger::ERROR,             // Error Level
+          'path'          => __DIR__ . '/../logs/app.log',      // Path to Log File
+          'level'         => Monolog\Logger::ERROR,             // Error Level
         ],
         'translations' => [                                       // Translations
-            'strings'       => require                            // Path to translation file
-                               __DIR__ .  '/../locale/translations.php'
+          'strings'       => require                            // Path to translation file
+                             __DIR__ .  '/../locale/translations.php'
         ],
         'displayErrorDetails' => false,                           // Display Error Settings: set to false in production
         

@@ -4,6 +4,24 @@ $app->group('/api', function () {
 
   define(JSON_CONSTANTS, JSON_PRETTY_PRINT);
 
+  /**
+   * Cors Options
+   * 
+   * Rokfor does not restrict the api to a certain domain. Probably this can be changed in the future
+   * when the R/W api is ready
+   *
+   * @author Urs Hofer
+   */
+  $container = $this->getContainer();
+  $corsGetOptions = [
+    "origin" => $container->get('settings')['cors']['ro'],
+    "maxAge" => 1728000,
+    "allowCredentials" => true,
+    "allowMethods" => array("GET")
+  ];
+
+
+
   /*  Contributions Access
    * 
    *  Additional query parameters: 
@@ -22,6 +40,12 @@ $app->group('/api', function () {
           ? $this->db->searchContributions($request->getQueryParams()['query'], $args['issue'], $args['chapter'], 'Close', $request->getQueryParams()['limit'], $request->getQueryParams()['offset'])
           : $this->db->getContributions($args['issue'], $args['chapter'], $request->getQueryParams()['sort'], 'Close', $request->getQueryParams()['limit'], $request->getQueryParams()['offset']);
     if (is_object($c)) foreach ($c as $_c) {
+      // Check for publish date.
+      $_config = json_decode($_c->getConfigSys());
+      if (is_object($_config) && $_config->lockdate > time()) {
+        continue;
+      }
+
       $_contribution = $_c->toArray(); 
       if ($request->getQueryParams()['data']) {
         // Populate Field Ids on the first call
@@ -55,7 +79,7 @@ $app->group('/api', function () {
       return $newResponse;
     }
     $response->getBody()->write(json_encode($j, JSON_CONSTANTS));
-  });  
+  })->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));
 
   /* Single Contribution
    * 
@@ -88,7 +112,7 @@ $app->group('/api', function () {
       $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'Element not found'], JSON_CONSTANTS));
       return $newResponse;
     }
-  });  
+  })->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));
 
 
 
