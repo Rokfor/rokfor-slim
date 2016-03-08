@@ -691,6 +691,7 @@ class helpers
       $_protocol = stristr($_SERVER['SERVER_PROTOCOL'], 'HTTPS') ? 'https://' : 'http://';
       foreach ($_content as &$_row) {
         $_versions = [];
+        $_versions['thumbnail'] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['webthumbs'].$_row[1].$this->container->paths['thmbsuffix'];
         $_versions['original'] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_row[1];
         foreach ($_fieldsettings->imagesize as $key => $value) {
           $_versions['resized'][] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_row[1].'-preview'.$key.'.jpg';
