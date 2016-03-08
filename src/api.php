@@ -73,7 +73,8 @@ $app->group('/api', function () {
         $criteria = new \Propel\Runtime\ActiveQuery\Criteria();
         $criteria->add('_fortemplatefield', $_fids, \Propel\Runtime\ActiveQuery\Criteria::IN);  
         foreach ($_c->getDatas($criteria) as $field) {
-          $_contribution['data'][] = $this->helpers->prepareApiData($field);
+          $_data = $this->helpers->prepareApiData($field);
+          $_contribution['data'][$_data['template']['Fieldname']] = $_data;
         }
       }
       $j[] = $_contribution;
