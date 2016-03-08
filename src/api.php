@@ -3,12 +3,10 @@
 $app->group('/api', function () {
 
   /*
-   * Debug Mode: Pretty Print JSON
+   * Pretty Print JSON
    */
   
-  if (PHP_SAPI == 'cli-server') {
     define('JSON_CONSTANTS', JSON_PRETTY_PRINT);
-  }
 
   /**
    * Cors Options
