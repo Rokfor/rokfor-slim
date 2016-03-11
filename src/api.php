@@ -56,6 +56,7 @@ $app->group('/api', function () {
     $c = $request->getQueryParams()['query']
           ? $this->db->searchContributions($request->getQueryParams()['query'], $args['issue'], $args['chapter'], 'Close', $request->getQueryParams()['limit'], $request->getQueryParams()['offset'])
           : $this->db->getContributions($args['issue'], $args['chapter'], $request->getQueryParams()['sort'], 'Close', $request->getQueryParams()['limit'], $request->getQueryParams()['offset']);
+    $_oldtemplate = false;
     if (is_object($c)) foreach ($c as $_c) {
       // Check for publish date.
       $_config = json_decode($_c->getConfigSys());
@@ -65,6 +66,10 @@ $app->group('/api', function () {
 
       $_contribution = $this->helpers->prepareApiContribution($_c, $compact); 
       if ($request->getQueryParams()['data'] || $request->getQueryParams()['populate'] == "true") {
+        // Reset fids on template change
+        if ($_c->getFortemplate() <> $_oldtemplate) {
+          $_fids = [];
+        }
         // Populate Field Ids on the first call
         if (count($_fids) == 0) {
           if ($request->getQueryParams()['populate'] == "true") {
@@ -89,6 +94,7 @@ $app->group('/api', function () {
         }
       }
       $j[] = $_contribution;
+      $_oldtemplate = $_c->getFortemplate();
     }
     else {
       $errcode = 200;
