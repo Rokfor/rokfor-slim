@@ -28,21 +28,31 @@ $app->group('/api', function () {
 
   /*  Contributions Access
    * 
+   *  Issue and chapter is either an integer or a combination of values seperated 
+   *  with a Hypen: i.e. x or x-x
+   * 
    *  Additional query parameters: 
    *  - query=string
-   *  - sort=[id|date|name:]asc|desc
+   *  - sort=[id|date|name|sort]:[asc|desc]
    *  - limit=int
    *  - offset=int
-   *  - data=[Fieldname|Fieldname|XX]
-   *  - verbose=true|false
+   *  - data=[Fieldname|Fieldname|XX]   (default: empty)
+   *  - populate=true|false             (default: false)
+   *  - verbose=true|false              (default: false)
    */
-  $this->options('/contributions/{issue:[0-9]*}/{chapter:[0-9]*}', 
+  $this->options('/contributions/{issue:[0-9-]*}/{chapter:[0-9-]*}', 
     function ($request, $response, $args) {}
   )->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));
-  $this->get('/contributions/{issue:[0-9]*}/{chapter:[0-9]*}', function ($request, $response, $args) {
+  $this->get('/contributions/{issue:[0-9-]*}/{chapter:[0-9-]*}', function ($request, $response, $args) {
     $j = [];
     $_fids = [];
-    $compact = $request->getQueryParams()['verbose'] ? false : true;
+    if (stristr($args['issue'],'-')) {
+      $args['issue'] = explode('-', $args['issue']);
+    }
+    if (stristr($args['chapter'],'-')) {
+      $args['chapter'] = explode('-', $args['chapter']);
+    }      
+    $compact = $request->getQueryParams()['verbose'] == "true" ? false : true;
     $c = $request->getQueryParams()['query']
           ? $this->db->searchContributions($request->getQueryParams()['query'], $args['issue'], $args['chapter'], 'Close', $request->getQueryParams()['limit'], $request->getQueryParams()['offset'])
           : $this->db->getContributions($args['issue'], $args['chapter'], $request->getQueryParams()['sort'], 'Close', $request->getQueryParams()['limit'], $request->getQueryParams()['offset']);
@@ -54,21 +64,22 @@ $app->group('/api', function () {
       }
 
       $_contribution = $this->helpers->prepareApiContribution($_c, $compact); 
-      if ($request->getQueryParams()['data']) {
+      if ($request->getQueryParams()['data'] || $request->getQueryParams()['populate'] == "true") {
         // Populate Field Ids on the first call
         if (count($_fids) == 0) {
-          foreach (explode('|', $request->getQueryParams()['data']) as $fieldname) {
-            $_f = $this->db->getTemplatefields()
-                           ->filterByFieldname($fieldname)
-                           ->filterByFortemplate($_c->getFortemplate())
-                           ->findOne();
-            if (!$_f) {
-              $errcode = 404;
-              $newResponse = $response->withStatus($errcode);
-              $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'Population failed. Field unknown.'], JSON_CONSTANTS));
-              return $newResponse;            
+          if ($request->getQueryParams()['populate'] == "true") {
+            foreach ($this->db->getTemplatefields()->filterByFortemplate($_c->getFortemplate()) as $_f) {
+              if ($_f) $_fids[] = $_f->getId();
             }
-            else $_fids[] = $_f->getId();
+          }
+          else {
+            foreach (explode('|', $request->getQueryParams()['data']) as $fieldname) {
+              $_f = $this->db->getTemplatefields()
+                             ->filterByFieldname($fieldname)
+                             ->filterByFortemplate($_c->getFortemplate())
+                             ->findOne();
+              if ($_f) $_fids[] = $_f->getId();
+            }
           }
         }
         $criteria = new \Propel\Runtime\ActiveQuery\Criteria();
