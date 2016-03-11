@@ -204,25 +204,19 @@ Examples:
 
 GET /api/contributions/1/14-5?query=New+York
 
-    Searches for all contributions within issue 1 and chapters 14 and 5 for 
-    the String "New York"
+    Searches for all contributions within issue 1 and chapters 14 and 5 for the String "New York".
 
 GET /api/contributions/12/19?limit=10&offset=20
 
-    Returns 10 contributions of issue 12 and chapter 19 starting after 
-    contribution 20.
+    Returns 10 contributions of issue 12 and chapter 19 starting after contribution 20.
 
 GET /api/contributions/5-6-7/1-2-3?sort=date:desc&data=Title|Subtitle
 
-    Returns all contributions of issue 5, 6 and 7 and chapter 1, 2 and 3 ordered
-    by date, descending. Additionally, populates each contribution entry with the
-    content of the fields Title and Subtitle.
+    Returns all contributions of issue 5, 6 and 7 and chapter 1, 2 and 3 ordered by date, descending. Additionally, populates each contribution entry with the content of the fields Title and Subtitle.
 
 GET /api/contributions/1/1?populate=true&verbose=true
 
-    Returns all contributions of chapter 1 and issue 1. Adds all fields to
-    each contribution and additionally prints a lot of information to each
-    field and contribution.
+    Returns all contributions of chapter 1 and issue 1. Adds all fields to each contribution and additionally prints a lot of information to each field and contribution.
 
 
 **Loading a single contribution:**
