@@ -688,7 +688,7 @@ class helpers
     $_content = $field->getIsjson() ? json_decode($field->getContent()) : $field->getContent();
     $_fieldsettings = json_decode($t->getConfigSys());
     if ($t->getFieldtype() == "Bild") {
-      $_protocol = stristr($_SERVER['SERVER_PROTOCOL'], 'HTTPS') ? 'https://' : 'http://';
+      $_protocol = '//';
       foreach ($_content as &$_row) {
         $_versions = [];
         $_versions['thumbnail'] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['webthumbs'].$_row[1].$this->container->paths['thmbsuffix'];
