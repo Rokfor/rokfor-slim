@@ -5,8 +5,7 @@
     .box-header 
       h4.box-title=template->getFieldname()
         if (template->getHelpdescription())
-          .btn(data-toggle="tooltip", title=template->getHelpdescription())
-            i.fa.fa-question-circle 
+          i.fa.fa-question-circle(data-toggle="tooltip", title=template->getHelpdescription())
       .box-tools.pull-right
         button.btn.btn-default.btn-sm(data-widget="collapse")
          i.fa.fa-minus

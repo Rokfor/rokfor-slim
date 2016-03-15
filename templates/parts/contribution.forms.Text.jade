@@ -7,14 +7,13 @@ if ($config[rtfeditor] && !$config[arrayeditor])
       .box-header
         h4.box-title=template->getFieldname()
           if (template->getHelpdescription())
-            .btn(data-toggle="tooltip", title=template->getHelpdescription())
-              i.fa.fa-question-circle 
+            i.fa.fa-question-circle(data-toggle="tooltip", title=template->getHelpdescription())
           span.small.margin
             span.label.label-default(id="counter_".$field->getId())
         .box-tools.pull-right
           button.btn.btn-default.btn-sm(data-widget="collapse")
            i.fa.fa-minus        
-      .box-body                  
+      .box-body
         .rtftextarea.form-control(data-counter="#counter_".$field->getId(), data-maxlength=config.textlength, style="min-height:".(str_replace(',', '.', $config['maxlines']*1.5))."em;", rows=config.maxlines, id=field->getId())!=field->getContent()
 
 else if config.arrayeditor
@@ -27,8 +26,7 @@ else if config.arrayeditor
       .box-header
         h4.box-title=template->getFieldname()
           if (template->getHelpdescription())
-            .btn(data-toggle="tooltip", title=template->getHelpdescription())
-              i.fa.fa-question-circle 
+            i.fa.fa-question-circle(data-toggle="tooltip", title=template->getHelpdescription())
         .box-tools.pull-right
           button.btn.btn-default.btn-sm(data-widget="collapse")
            i.fa.fa-minus        
@@ -52,8 +50,7 @@ else
       .box-header
         h4.box-title=template->getFieldname()
           if (template->getHelpdescription())
-            .btn(data-toggle="tooltip", title=template->getHelpdescription())
-              i.fa.fa-question-circle 
+            i.fa.fa-question-circle(data-toggle="tooltip", title=template->getHelpdescription())
           span.small.margin
             span.label.label-default(id="counter_".$field->getId())
         .box-tools.pull-right

@@ -28,7 +28,6 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap3-wysiwyg": "https://github.com/liKe2k1/bootstrap3-wysiwyg.git",
     "select2sortable": "https://github.com/urshofer/select2sortable.git",
     "range2dslider": "https://github.com/urshofer/range2dslider.git",
     "uploader": "https://github.com/urshofer/uploader.git",
@@ -44,6 +43,9 @@
     "jquery-ui": "^1.11.4",
     "roboto-fontface": "^0.4.5",
     "datatables.net-rowreorder": "^1.1.1",
-    "datatables.net-rowreorder-bs": "^1.1.1"
+    "datatables.net-rowreorder-bs": "^1.1.1",
+    "bower": "*",
+    "install": "^1.0.4",
+    "bootstrap3-wysihtml5-bower": "^0.3.3"
   }
 }

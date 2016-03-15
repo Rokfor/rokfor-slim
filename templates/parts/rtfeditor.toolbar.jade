@@ -1,0 +1,21 @@
+div#toolbar
+  a.btn.fa.fa-bold(data-wysihtml5-command="bold")
+  a.btn.fa.fa-italic(data-wysihtml5-command="italic")
+  a.btn.fa.fa-underline(data-wysihtml5-command="underline")
+
+  a.btn.fa.fa-header(data-wysihtml5-command="formatBlock", data-wysihtml5-command-value="h1")
+  a.btn.fa.fa-paragraph(data-wysihtml5-command="formatBlock", data-wysihtml5-command-value="p")
+  a.btn.fa.fa-quote-right(data-wysihtml5-command="formatBlock", data-wysihtml5-command-value="blockquote")
+
+  a.btn.fa.fa-link(data-wysihtml5-command="createLink")
+  div(data-wysihtml5-dialog="createLink", style="display: none; position: absolute;") Link: 
+    input(data-wysihtml5-dialog-field="href", value="http://")
+    input(data-wysihtml5-dialog-field="target", value="_blank")
+    a(data-wysihtml5-dialog-action="save") OK
+    a(data-wysihtml5-dialog-action="cancel") Cancel
+  a.btn.fa.fa-unlink(data-wysihtml5-command="removeLink")
+
+  a.btn.fa.fa-list-ol(data-wysihtml5-command="insertOrderedList")
+  a.btn.fa.fa-list-ul(data-wysihtml5-command="insertUnorderedList")
+  
+  a.btn.fa.fa-code(data-behavior="showSource")

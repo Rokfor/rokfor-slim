@@ -316,13 +316,42 @@
       }
     })
     */
-  
+    var wysihtml5ParserRules = {
+      tags: {
+        h1:     {},
+        strong: {},
+        b:      {},
+        i:      {},
+        em:     {},
+        br:     {},
+        p:      {},
+        ul:     {},
+        ol:     {},
+        li:     {},
+        iframe: {},
+        a:      {
+          set_attributes: {
+            rel:    "nofollow"
+          },
+          check_attributes: {
+            href:   "href"
+          }
+        }
+      }
+    };      
+
     $(".rtftextarea").each(function(i,n) {
         var e = $(this);
+/*        editor = new wysihtml5.Editor(e[0], {
+          toolbar: e.prev()[0],
+          parserRules:  wysihtml5ParserRules, // defined in file parser rules javascript
+        });*/
         e.wysihtml5({
           toolbar: {
-              "fa": true
-          }
+            "fa": true
+          },
+          useLineBreaks: false,
+          parserRules:  wysihtml5ParserRules, // defined in file parser rules javascript           
         });
         e.on("keyup",function() {
           // Jsonize if RTF Editor is part of multi form

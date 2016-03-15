@@ -20,6 +20,7 @@ module.exports = function(grunt) {
       },
       build: {
         src: ['bower_components/jquery/dist/jquery.js',
+              'bower_components/jquery-ui/jquery-ui.js',
               'bower_components/bootstrap/dist/js/bootstrap.js',
               'bower_components/AdminLTE/plugins/slimscroll/jquery.slimscroll.js',
               'bower_components/AdminLTE/dist/js/app.js',
@@ -33,10 +34,11 @@ module.exports = function(grunt) {
               'bower_components/jquery-locationpicker-plugin/dist/locationpicker.jquery.js',
               'bower_components/select2sortable/select2sortable.js',
               'bower_components/range2dslider/jquery.range2dslider.js',
-              'bower_components/bootstrap3-wysiwyg/dist/bootstrap3-wysihtml5.all.js',
+              'bower_components/bootstrap3-wysihtml5-bower/dist/bootstrap3-wysihtml5.all.js',
+              //'bower_components/wysihtml/dist/wysihtml-toolbar.min.js',
+              //'bower_components/wysihtml/parser_rules/simple.js',
               'bower_components/json-editor/dist/jsoneditor.js',
               'bower_components/uploader/src/dmuploader.js',
-              'bower_components/jquery-ui/jquery-ui.js',
               'build/js/*.js'],
         dest: 'public/assets/js/rf.min.js'
       }
@@ -82,7 +84,7 @@ module.exports = function(grunt) {
             'bower_components/datatables.net-rowreorder-bs/css/rowReorder.bootstrap.css',
             'bower_components/AdminLTE/bootstrap/css/bootstrap.min.css',
             'bower_components/AdminLTE/plugins/iCheck/square/blue.css',
-            'bower_components/bootstrap3-wysiwyg/dist/bootstrap3-wysihtml5.min.css', 
+            'bower_components/bootstrap3-wysihtml5-bower/dist/bootstrap3-wysihtml5.min.css', 
             'bower_components/AdminLTE/plugins/select2/select2.min.css',
             'bower_components/AdminLTE/plugins/ionslider/ion.rangeSlider.css',
             'bower_components/AdminLTE/plugins/ionslider/ion.rangeSlider.skinNice.css',
