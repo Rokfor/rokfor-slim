@@ -36,9 +36,10 @@ $app->group('/api', function () {
    *  - sort=[id|date|name|sort]:[asc|desc]
    *  - limit=int
    *  - offset=int
-   *  - data=[Fieldname|Fieldname|XX]   (default: empty)
-   *  - populate=true|false             (default: false)
-   *  - verbose=true|false              (default: false)
+   *  - filter=[int|...]:[lt|gt|eq|like] (default: like)
+   *  - data=[Fieldname|...]             (default: empty)
+   *  - populate=true|false              (default: false)
+   *  - verbose=true|false               (default: false)
    */
   $this->options('/contributions/{issue:[0-9-]*}/{chapter:[0-9-]*}', 
     function ($request, $response, $args) {}
@@ -53,8 +54,11 @@ $app->group('/api', function () {
       $args['chapter'] = explode('-', $args['chapter']);
     }      
     $compact = $request->getQueryParams()['verbose'] == "true" ? false : true;
+    
+    list($filterfields, $filterclause) = explode(':',$request->getQueryParams()['filter']);
+
     $c = $request->getQueryParams()['query']
-          ? $this->db->searchContributions($request->getQueryParams()['query'], $args['issue'], $args['chapter'], 'Close', $request->getQueryParams()['limit'], $request->getQueryParams()['offset'])
+          ? $this->db->searchContributions($request->getQueryParams()['query'], $args['issue'], $args['chapter'], 'Close', $request->getQueryParams()['limit'], $request->getQueryParams()['offset'], $filterfields, $filterclause, $request->getQueryParams()['sort'])
           : $this->db->getContributions($args['issue'], $args['chapter'], $request->getQueryParams()['sort'], 'Close', $request->getQueryParams()['limit'], $request->getQueryParams()['offset']);
     $_oldtemplate = false;
     if (is_object($c)) foreach ($c as $_c) {
@@ -73,9 +77,7 @@ $app->group('/api', function () {
         // Populate Field Ids on the first call
         if (count($_fids) == 0) {
           if ($request->getQueryParams()['populate'] == "true") {
-            foreach ($this->db->getTemplatefields()->filterByFortemplate($_c->getFortemplate()) as $_f) {
-              if ($_f) $_fids[] = $_f->getId();
-            }
+            $criteria = null;
           }
           else {
             foreach (explode('|', $request->getQueryParams()['data']) as $fieldname) {
@@ -85,10 +87,10 @@ $app->group('/api', function () {
                              ->findOne();
               if ($_f) $_fids[] = $_f->getId();
             }
+            $criteria = new \Propel\Runtime\ActiveQuery\Criteria();
+            $criteria->add('_fortemplatefield', $_fids, \Propel\Runtime\ActiveQuery\Criteria::IN);  
           }
         }
-        $criteria = new \Propel\Runtime\ActiveQuery\Criteria();
-        $criteria->add('_fortemplatefield', $_fids, \Propel\Runtime\ActiveQuery\Criteria::IN);  
         foreach ($_c->getDatas($criteria) as $field) {
           $_contribution['data'][$field->getTemplates()->getFieldname()] = $this->helpers->prepareApiData($field, $compact);
         }

@@ -684,6 +684,7 @@ class helpers
    * @author Urs Hofer
    */
   public function prepareApiData($field, $compact = true) {
+    if (!$field) return false;
     $t = $field->getTemplates();
     $_content = $field->getIsjson() ? json_decode($field->getContent()) : $field->getContent();
     $_fieldsettings = json_decode($t->getConfigSys());
@@ -702,15 +703,61 @@ class helpers
         ];
       }
     }
+    // Recursively resove foreign Data
+    $_nc = false;
+    if ($t->getFieldtype() == "TypologySelect" || $t->getFieldtype() == "TypologyKeyword") {
+      $_nc = [];
+      foreach ((is_array($_content) ? $_content : [$_content]) as $_value) {
+        if ($_value >= 0) {
+          switch ($_fieldsettings->history_command) {
+            // Just Loading Objects
+            case 'books':
+              $_nc[$_value] = $this->container->db->getBooks()->filterById($_value)->toArray();
+              break;
+            case 'issues':
+              $_nc[$_value] = $this->container->db->getIssues()->filterById($_value)->toArray();
+              break;
+            case 'chapters':
+              $_nc[$_value] = $this->container->db->getFormats()->filterById($_value)->toArray();
+              break;
+            case 'structural':
+              $_nc[$_value] = $this->container->db->getTemplatefields()->filterById($_value)->toArray();
+              break;
+            case 'fixed':
+              $_nc[$_value] = $_fieldsettings->fixedvalues[$_value];
+              break;
+            case 'self':
+              $_nc[$_value] = $_value;
+              break;
+              // Resolve Field Content
+            case 'other':
+              if ($_f = $this->container->db->getField($_value))
+                $_nc[$_value] = $this->prepareApiData($_f, $compact);
+              break;
+            // Resolve Complete
+            case 'contributional':
+              $_c = $this->container->db->getContribution($_value);
+              $_temp = [];
+              foreach ($_c->getDatas() as $_f) {
+                if ($_f->getId())
+                  $_temp[$_f->getTemplates()->getFieldname()] = $this->prepareApiData($_f, $compact);
+              }
+              $_nc[$_value] = $_temp;
+              break;
+          } 
+        }
+      }
+    }
+          
     if ($compact) {
-     return [
+     $r = [
        "Id"               => $field->getId(),
        "Fieldname"        => $t->getFieldname(),
        "Content"          => $_content
      ]; 
     }
     else {
-      return [
+      $r = [
         "template"  => [
           "Id"               => $t->getId(),
           "Fortemplate"      => $t->getFortemplate(),
@@ -727,6 +774,10 @@ class helpers
         ]
       ];
     }
+    if ($_nc) {
+      $r['Reference'] = $_nc;
+    }
+    return $r;
   }
   
   

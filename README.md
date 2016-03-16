@@ -177,17 +177,21 @@ GET /api/contributions/[:issueid]|[:issueid-:issueid...]/[:chapterid]|[:chapteri
 
 Options:
 
-- query=string                        (default: empty)
-- sort=[id|date|name|sort]:[asc|desc] (default: sort:asc)
-- limit=int                           (default: empty)
-- offset=int                          (default: empty)
-- data=[Fieldname|Fieldname|XX]       (default: empty)
-- populate=true|false                 (default: false)
-- verbose=true|false                  (default: false)
+- query=string                         (default: empty)
+- filter=[int|...]:[lt|gt|eq|like]     (default: all fields:like)
+- sort=[id|date|name|sort]:[asc|desc]  (default: sort:asc)
+- limit=int                            (default: empty)
+- offset=int                           (default: empty)
+- data=[Fieldname|Fieldname|XX]        (default: empty)
+- populate=true|false                  (default: false)
+- verbose=true|false                   (default: false)
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -   Query: search for a string within the contribution name or the text fields
+-   Filter: Applies the search string passed in query to certain fields only.
+    Furthermore, the comparison can be defined with equal, less than, greater than
+    or like (eq,lt,gt,like). 
 -   Sort: Sort the results by id, date, name or manual sort number either 
     ascending or descending.
 -   Limit and Offset: Create pages with a length of [limit] elements starting at
@@ -205,6 +209,10 @@ Examples:
 GET /api/contributions/1/14-5?query=New+York
 
     Searches for all contributions within issue 1 and chapters 14 and 5 for the String "New York".
+
+GET /api/contributions/1/14-5?query=New+York&filter=1|6:eq
+
+    Searches for all contributions within issue 1 and chapters 14 and 5 for the exact String "New York" within both fields with the template id 1 and 6.
 
 GET /api/contributions/12/19?limit=10&offset=20
 
