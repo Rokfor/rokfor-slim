@@ -712,16 +712,16 @@ class helpers
           switch ($_fieldsettings->history_command) {
             // Just Loading Objects
             case 'books':
-              $_nc[$_value] = $this->container->db->getBooks()->filterById($_value)->toArray();
+              $_nc[$_value] = $this->container->db->getBooks()->filterById($_value)->find()->toArray();
               break;
             case 'issues':
-              $_nc[$_value] = $this->container->db->getIssues()->filterById($_value)->toArray();
+              $_nc[$_value] = $this->container->db->getIssues()->filterById($_value)->find()->toArray();
               break;
             case 'chapters':
-              $_nc[$_value] = $this->container->db->getFormats()->filterById($_value)->toArray();
+              $_nc[$_value] = $this->container->db->getFormats()->filterById($_value)->find()->toArray();
               break;
             case 'structural':
-              $_nc[$_value] = $this->container->db->getTemplatefields()->filterById($_value)->toArray();
+              $_nc[$_value] = $this->container->db->getTemplatefields()->filterById($_value)->find()->toArray();
               break;
             case 'fixed':
               $_nc[$_value] = $_fieldsettings->fixedvalues[$_value];
