@@ -316,6 +316,7 @@
       }
     })
     */
+    /*
     var wysihtml5ParserRules = {
       tags: {
         h1:     {},
@@ -339,6 +340,7 @@
         }
       }
     };      
+    */
 
     $(".rtftextarea").each(function(i,n) {
         var e = $(this);
@@ -350,8 +352,7 @@
           toolbar: {
             "fa": true
           },
-          useLineBreaks: false,
-          parserRules:  wysihtml5ParserRules, // defined in file parser rules javascript           
+          useLineBreaks: false
         });
         e.on("keyup",function() {
           // Jsonize if RTF Editor is part of multi form
