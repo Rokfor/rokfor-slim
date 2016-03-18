@@ -39,7 +39,10 @@ module.exports = function(grunt) {
               //'bower_components/wysihtml/parser_rules/simple.js',
               'bower_components/json-editor/dist/jsoneditor.js',
               'bower_components/uploader/src/dmuploader.js',
-              'build/js/*.js'],
+              'bower_components/marked/lib/marked.js',
+              'bower_components/bootstrap-markdown/js/bootstrap-markdown.js',
+              'build/js/*.js'
+        ],
         dest: 'public/assets/js/rf.min.js'
       }
     },
@@ -89,7 +92,9 @@ module.exports = function(grunt) {
             'bower_components/AdminLTE/plugins/ionslider/ion.rangeSlider.css',
             'bower_components/AdminLTE/plugins/ionslider/ion.rangeSlider.skinNice.css',
             'bower_components/range2dslider/jquery.range2dslider.css',
-            'bower_components/uploader/src/uploader.css'
+            'bower_components/uploader/src/uploader.css',
+            //'bower_components/pen/src/pen.css',
+            'bower_components/bootstrap-markdown/css/bootstrap-markdown.min',
     		  ]
         }
       }

@@ -356,7 +356,7 @@
         });
         e.on("keyup",function() {
           // Jsonize if RTF Editor is part of multi form
-          if (e.hasClass('rfmultieditor')){
+          if (e.hasClass('rtfmultieditor')){
             var v = [];
             $.rokfor.calcMaxInput(e, e);
             $(this).parents('.form-horizontal').find('.rtftextarea').each(function(i,x) {
@@ -371,8 +371,38 @@
           }
         });
         $.rokfor.calcMaxInput(e, e);
-        
       });
+      
+    // Markdown Editor
+      
+    $(".mdtextarea").each(function(i,n) {
+      var e = $(this);      
+//      var editor = new Pen(e[0]);
+      e.markdown({
+        autofocus:false,
+        savable:false,
+        iconlibrary: 'fa',
+        fullscreen: false,
+        onChange: function(el){
+           console.log("Changed!")
+          // Jsonize if RTF Editor is part of multi form
+          if (e.hasClass('mdmultieditor')){
+            var v = [];
+            e.parents('.form-horizontal').find('.mdtextarea').each(function(i,x) {
+              v.push($(x).val());
+            });
+            $.rokfor.contribution.store(e.attr('id'), JSON.stringify(v));
+          }
+          // Store directly
+          else { 
+            $.rokfor.contribution.store(e.attr('id'), e.val());
+          }
+          $.rokfor.calcMaxInput(e);
+         }
+      })
+      $.rokfor.calcMaxInput(e);
+    });
+    
 
     // Tables
     

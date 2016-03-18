@@ -15,6 +15,7 @@ class helpers
     public function __construct(&$_container)
     {
         $this->container = $_container;
+        $this->Parsedown = new Parsedown();
     }
 
   /**
@@ -359,6 +360,12 @@ class helpers
               'propertyOrder' => 0,
               'format' => 'checkbox'
             ],
+            'markdowneditor' => [
+              'title'  => $this->container->translations['field_config'.'markdowneditor'],
+              'type' => 'boolean',
+              'propertyOrder' => 0,
+              'format' => 'checkbox'
+            ],            
             'codeeditor' => [
               'title'  => $this->container->translations['field_config'.'codeeditor'],
               'type' => 'boolean',
@@ -686,7 +693,10 @@ class helpers
   public function prepareApiData($field, $compact = true) {
     if (!$field) return false;
     $t = $field->getTemplates();
+    // Parse Json if it is a json field
     $_content = $field->getIsjson() ? json_decode($field->getContent()) : $field->getContent();
+
+    // Parse & Prepare Image Content
     $_fieldsettings = json_decode($t->getConfigSys());
     if ($t->getFieldtype() == "Bild") {
       $_protocol = '//';
@@ -703,7 +713,8 @@ class helpers
         ];
       }
     }
-    // Recursively resove foreign Data
+    
+    // Recursively resolve foreign Data
     $_nc = false;
     if ($t->getFieldtype() == "TypologySelect" || $t->getFieldtype() == "TypologyKeyword") {
       $_nc = [];
@@ -748,11 +759,36 @@ class helpers
         }
       }
     }
+    
+    // Prepare Text Editors
+    // echo $Parsedown->text('Hello _Parsedown_!'); # prints: <p>Hello <em>Parsedown</em>!</p>
+    $_parsed = false;
+    if ($t->getFieldtype() == "Text") {
+      if (is_array($_content)) {
+        $_parsed = [];        
+        foreach ($_content as $__c) {
+          if ($_fieldsettings->rtfeditor)
+            $_parsed[] = strip_tags($__c);
+          else if ($_fieldsettings->markdowneditor)
+            $_parsed[] = $this->Parsedown->text($__c);
+          else
+            $_parsed[] = nl2br($__c);       
+        }
+      }
+      else {
+        if ($_fieldsettings->rtfeditor)
+          $_parsed = strip_tags($_content);
+        else if ($_fieldsettings->markdowneditor)
+          $_parsed = $this->Parsedown->text($_content);
+        else
+          $_parsed = nl2br($_content);
+      }
+    }
           
     if ($compact) {
      $r = [
        "Id"               => $field->getId(),
-       "Fieldname"        => $t->getFieldname(),
+//       "Fieldname"        => $t->getFieldname(),
        "Content"          => $_content
      ]; 
     }
@@ -777,6 +813,9 @@ class helpers
     if ($_nc) {
       $r['Reference'] = $_nc;
     }
+    if ($_parsed) {
+      $r['Parsed'] = $_parsed;
+    }    
     return $r;
   }
   

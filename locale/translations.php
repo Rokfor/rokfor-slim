@@ -201,6 +201,7 @@ return [
         'field_configtextlength'         => "Textlänge",
         'field_configfullhistory'        => "Alle Beiträge im Verlauf berücksichtigen",
         'field_configrtfeditor'          => "RTF-Editor",
+        'field_configmarkdowneditor'     => "Markdown Editor",
         'field_configcodeeditor'         => "Codeeditor",
         'field_configeditorcolumns'      => "Einstellungen der Textfelder",
         'field_configeditorcolumnslines' => "Max. Zeilenzahl",

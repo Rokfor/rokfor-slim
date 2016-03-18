@@ -36,7 +36,7 @@ $app->group('/api', function () {
    *  - sort=[id|date|name|sort]:[asc|desc]
    *  - limit=int
    *  - offset=int
-   *  - filter=[int|...]:[lt|gt|eq|like] (default: like)
+   *  - filter=[int|...]:[lt|gt|eq|like] (default operator: like)
    *  - data=[Fieldname|...]             (default: empty)
    *  - populate=true|false              (default: false)
    *  - verbose=true|false               (default: false)
