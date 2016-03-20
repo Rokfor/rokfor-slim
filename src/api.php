@@ -61,6 +61,7 @@ $app->group('/api', function () {
           ? $this->db->searchContributions($request->getQueryParams()['query'], $args['issue'], $args['chapter'], 'Close', $request->getQueryParams()['limit'], $request->getQueryParams()['offset'], $filterfields, $filterclause, $request->getQueryParams()['sort'])
           : $this->db->getContributions($args['issue'], $args['chapter'], $request->getQueryParams()['sort'], 'Close', $request->getQueryParams()['limit'], $request->getQueryParams()['offset']);
     $_oldtemplate = false;
+
     if (is_object($c)) foreach ($c as $_c) {
       // Check for publish date.
       $_config = json_decode($_c->getConfigSys());

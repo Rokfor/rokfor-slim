@@ -1,8 +1,8 @@
 rokfor-slim
 ===========
 
-Rokfor rebuild based on the [Slim Framework](<http://slimframework.com/>) for
-PHP. Rokfor is a api first data centristic content management. It currently
+Rokfor build based on [Slim Framework](<http://slimframework.com/>) for PHP. 
+Rokfor is a api-first, data centristic content management. It currently
 features:
 
 -   Flexible structures called "Books", divided into parts, called "Chapters".
@@ -21,10 +21,9 @@ features:
 
 ![Dashboard](<https://github.com/Rokfor/rokfor-slim/blob/gh-pages/rokfor-screenshots/rf-dashboard.png>)
 
-Rokfor is a project with a longer history. The [first
-build](<https://github.com/Rokfor/rokfor-cms>) is mainly used to create printed
-matter. In order to make it more useful for the public, we decided to rewrite it
-completely applying a modern way of writing php applications:
+Rokfor has already a longer history. The [old build](<https://github.com/Rokfor/rokfor-cms>) 
+was mainly used to create printed matter. In order to make it more useful for the public, we 
+decided to rewrite it completely applying a modern way of writing php applications:
 
 -   Composer install system
 -   AdminLTE backend theme
@@ -35,12 +34,12 @@ Setup and Installation
 
 ### 1. Prerequisites
 -   MySQL Database: Server, username, password and database name
--   PHP \>= 5.4
+-   PHP \>= 5.5
 -   [Composer](<https://getcomposer.org>)
 
 ### 2. Install Dependencies
-Open a terminal, clone the repository and install the dependencies with
-composer:
+Clone the repository and install the dependencies with composer:
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 $ git clone https://github.com/Rokfor/rokfor-slim.git
 $ cd rokfor-slim
@@ -48,20 +47,39 @@ $ composer install
 $ composer update
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-### 3. Copy and Edit Configuration Files
-First, you need a copy of the database and settings configuration file. Move or
-copy the .local.php files to .php files:
+### 3. Configuration
+First, create copies of the database and settings configuration file. Rename or
+copy the *.local.php to *.php files:
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 $ cd config
 $ cp database.local.php database.php
 $ cp settings.local.php settings.php
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Then, you need to change the database settings in *database.php*. You need to
-know the User, Password, Database and Server for your MySQL Account.
-If you enable **versioning**, all changes within contributions are stored as
-versions. This can be useful if you need to track the editing history, but it
-will create a lot of data.
+The options in the **settings.php** file don't need to be changed as long as you keep
+the directory structure. Talking about **directories**: Make sure, that the webserver 
+has access to the _udb_ and _cache_ folder:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+public         _Webserver Document Root_
+| index.php    
+| udb          _Default Storage directory, chmod r/w for the webserver_
+| assets
+config         _Configuration Files_
+locale         _Localization Files, currently only german_
+cache          _Template Cache_
+src            _Rokfor PHP Runtime Sources_
+vendor         _Composer Dependencies_
+templates      _Jade Templates_
+build          _Css and Javascript Sources_
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Second, you need to change the database settings in **database.php**. To achieve that,
+you need to know the User, Password, Database and Server for your MySQL Account.
+If you enable **versioning** in the configuration file, all changes of contributions
+are tracked. This is useful in cases you want to keep the editing history. As a downside,
+it will create a lot of data.
 If you change the log **level** to \\Monolog\\Logger::DEBUG, all sql queries are
 logged. The path to the log file can be adjusted in the **log** setting.
 
@@ -84,29 +102,27 @@ return [
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ### 4. Populate Database
-Rokfor relies on [Propel](<http://propelorg.org>) and as database object mapper.
+Rokfor relies on [Propel](<http://propelorg.org>) as database object mapper.
 Propel is loaded via composer and installed like all other dependencies in the
-vendor subdirectory. The connection between rokfor and Propel is delivered with
-rokfor-php-db, a standalone adapter package.
-You need a running Propel CLI tool to populate the database. The first step is a
-correct configuration file:
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-$ pico vendor/rokfor/db/config/propel.yaml
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Edit the connection settings in the *propel.yaml* file similar to the
+vendor subdirectory. The connection between rokfor and Propel is established with
+[rokfor-php-db](<https://github.com/rokfor/rokfor-php-db>).
+You need to run the **Propel CLI** tool to populate the database. Propel needs to
+know how to access your database. This is done in the configuration file.
+Edit the connection settings in the **propel.yaml** file similar to the
 configuration file above. Change server, database, user and password and save
 the file:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ pico vendor/rokfor/db/config/propel.yaml
+
 dsn: mysql:host=SERVER;dbname=DBNAME;unix_socket=/tmp/mysql.sock;
 user: USERNAME
 password: PASSWORD
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Run the Propel CLI utility with the insert parameter. The command below assumes
-that you are still in the directory where the propel.yaml file resides:
+Now you are ready to run the **Propel CLI** utility with the **insert** parameter. 
+The command below assumes that you are still in the directory where you checked out
+rokfor-slim:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 $ ./vendor/bin/propel sql:insert \
@@ -115,8 +131,7 @@ $ ./vendor/bin/propel sql:insert \
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Now, the database should be populated with the correct strucuture and a default
-user is automatically added.
- 
+user is automatically added (Username: root, Password: 1234).
 
 Running Rokfor
 --------------
@@ -131,9 +146,11 @@ Now you should be able to browse to **http://localhost:8080/rf** and log in with
 the default user **root** and password **1234**.
 
 ### Behind Apache
-If you run Rokfor with Apache make sure, that the server's document root points
-to *public*. *mod\_rewrite* is also necessary to redirect all traffic over
-*index.html*.
+There are 3 important things to keep in mind when running Rokfor with Apache:
+1. Make sure that the webserver has read/write access to both **cache** und **udb** directory
+2. The server's document_root needs to point to the **public** directory. If you can not change this,
+rename the directory according to your server configuration and reconfigure the settings.php file.
+3. **mod\_rewrite** is also necessary to redirect all traffic over **index.html**.
 
 Building Rokfor
 ---------------
@@ -147,8 +164,12 @@ $ bower install
 $ grunt
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Read Only API
--------------
+The grunt task minifies the css files and creates the javascript bundles and copies
+all files into the public directory. Building is only needed if you want to develop
+and contribute something to Rokfor.
+
+Get some Data: Read Only API
+----------------------------
 
 ### Access Key
 In order to access data, you need to set a user and define a read only api key
@@ -237,9 +258,9 @@ Roadmap
 -------
 
 In the current state, Rokfor is able to store and organize data. On the roadmap
-there are additional functions which will be re-implemented:
->   \- Read / write api (jwt authentification).  
->   - Batch functions: Run an action over all contributions of a certain
->   chapter.  
->   - Field processors: Run an action when storing data.  
->   - Exporters: Convert data into other formats (i.e. PDF)
+there are additional functions which will be implemented:
+
+- Read / write api with jwt authentification.  
+- Batch functions: Run custom actions over all contributions of a certain chapter.
+- Field processors: Run an action when storing data.  
+- Exporters: Convert data into other formats (i.e. PDF)
