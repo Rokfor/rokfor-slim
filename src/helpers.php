@@ -693,7 +693,7 @@ class helpers
   public function prepareApiData($field, $compact = true, $_recursion_check = []) {
     /* Preliminary Checks */
     if (!$field) return false;
-    if (!$field_id = $_f->getId()) return false;
+    if (!$field_id = $field->getId()) return false;
 
     /* Recursion Check */
     if (in_array($field_id, $_recursion_check)) return false;
