@@ -708,17 +708,19 @@ class helpers
     $_fieldsettings = json_decode($t->getConfigSys());
     if ($t->getFieldtype() == "Bild") {
       $_protocol = '//';
-      foreach ($_content as &$_row) {
-        $_versions = [];
-        $_versions['thumbnail'] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['webthumbs'].$_row[1].$this->container->paths['thmbsuffix'];
-        $_versions['original'] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_row[1];
-        foreach ($_fieldsettings->imagesize as $key => $value) {
-          $_versions['resized'][] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_row[1].'-preview'.$key.'.jpg';
+      if (is_array($_content)) {
+        foreach ($_content as &$_row) {
+          $_versions = [];
+          $_versions['thumbnail'] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['webthumbs'].$_row[1].$this->container->paths['thmbsuffix'];
+          $_versions['original'] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_row[1];
+          foreach ($_fieldsettings->imagesize as $key => $value) {
+            $_versions['resized'][] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_row[1].'-preview'.$key.'.jpg';
+          }
+          $_row = [
+            "files" => $_versions,
+            "captions" => $_row[0]
+          ];
         }
-        $_row = [
-          "files" => $_versions,
-          "captions" => $_row[0]
-        ];
       }
     }
     
@@ -755,13 +757,14 @@ class helpers
               break;
             // Resolve Complete
             case 'contributional':
-              $_c = $this->container->db->getContribution($_value);
-              $_temp = [];
-              foreach ($_c->getDatas() as $_f) {
-                if ($_f->getId())
-                  $_temp[$_f->getTemplates()->getFieldname()] = $this->prepareApiData($_f, $compact, $_recursion_check);
+              if ($_c = $this->container->db->getContribution($_value)) {
+                $_temp = [];
+                foreach ($_c->getDatas() as $_f) {
+                  if ($_f->getId())
+                    $_temp[$_f->getTemplates()->getFieldname()] = $this->prepareApiData($_f, $compact, $_recursion_check);
+                }
+                $_nc[$_value] = $_temp;
               }
-              $_nc[$_value] = $_temp;
               break;
           } 
         }
