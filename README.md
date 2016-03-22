@@ -1,3 +1,9 @@
+> #### Please Note
+> 
+> This repository is still under heavy development. Although it's already quite usable,
+> the API might change a lot in the future.
+
+
 rokfor-slim
 ===========
 
