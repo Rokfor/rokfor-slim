@@ -690,8 +690,16 @@ class helpers
    * @return void
    * @author Urs Hofer
    */
-  public function prepareApiData($field, $compact = true) {
+  public function prepareApiData($field, $compact = true, $_recursion_check = []) {
+    /* Preliminary Checks */
     if (!$field) return false;
+    if (!$field_id = $_f->getId()) return false;
+
+    /* Recursion Check */
+    if (in_array($field_id, $_recursion_check)) return false;
+    $_recursion_check[] = $field_id;
+    
+    
     $t = $field->getTemplates();
     // Parse Json if it is a json field
     $_content = $field->getIsjson() ? json_decode($field->getContent()) : $field->getContent();
@@ -743,7 +751,7 @@ class helpers
               // Resolve Field Content
             case 'other':
               if ($_f = $this->container->db->getField($_value))
-                $_nc[$_value] = $this->prepareApiData($_f, $compact);
+                $_nc[$_value] = $this->prepareApiData($_f, $compact, $_recursion_check);
               break;
             // Resolve Complete
             case 'contributional':
@@ -751,7 +759,7 @@ class helpers
               $_temp = [];
               foreach ($_c->getDatas() as $_f) {
                 if ($_f->getId())
-                  $_temp[$_f->getTemplates()->getFieldname()] = $this->prepareApiData($_f, $compact);
+                  $_temp[$_f->getTemplates()->getFieldname()] = $this->prepareApiData($_f, $compact, $_recursion_check);
               }
               $_nc[$_value] = $_temp;
               break;
