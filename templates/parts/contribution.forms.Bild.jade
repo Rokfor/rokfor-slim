@@ -36,7 +36,7 @@
                 td=$sortcount++
                 td
                   a.rfimagetablepreview(href=$paths['web'].$row[1], target="_blank")
-                    img(data-file=$row[1], src=$paths['webthumbs'].$row[1].$paths['thmbsuffix'])
+                    img(data-file=$row[1], src=$paths['webthumbs'].$row[2]['thumbnail'])
                 if (count($config['caption_variants']) > 1)
                   :php
                     | $keyvariant = 0;

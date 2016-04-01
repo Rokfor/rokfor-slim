@@ -711,14 +711,14 @@ class helpers
       if (is_array($_content)) {
         foreach ($_content as &$_row) {
           $_versions = [];
-          $_versions['thumbnail'] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['webthumbs'].$_row[1].$this->container->paths['thmbsuffix'];
-          $_versions['original'] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_row[1];
-          foreach ($_fieldsettings->imagesize as $key => $value) {
-            $_versions['resized'][] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_row[1].'-preview'.$key.'.jpg';
+          $_versions['Thumbnail'] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['webthumbs'].$_row[2]->thumbnail;
+          $_versions['Original'] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_row[1];
+          foreach ($_row[2]->scaled as $_scaled) {
+            $_versions['Resized'][] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_scaled;
           }
           $_row = [
-            "files" => $_versions,
-            "captions" => $_row[0]
+            "Files" => $_versions,
+            "Captions" => $_row[0]
           ];
         }
       }
@@ -805,14 +805,14 @@ class helpers
     }
     else {
       $r = [
-        "template"  => [
+        "Template"  => [
           "Id"               => $t->getId(),
           "Fortemplate"      => $t->getFortemplate(),
           "Fieldname"        => $t->getFieldname(),
           "Fieldtype"        => $t->getFieldtype(),
           //"ConfigSys"        => $_fieldsettings
         ],
-        "field"     => [
+        "Field"     => [
           "Id"               => $field->getId(),
           "Forcontribution"  => $field->getForcontribution(),
           "Fortemplatefield" => $field->getFortemplatefield(),

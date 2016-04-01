@@ -93,7 +93,7 @@ $app->group('/api', function () {
           }
         }
         foreach ($_c->getDatas($criteria) as $field) {
-          $_contribution['data'][$field->getTemplates()->getFieldname()] = $this->helpers->prepareApiData($field, $compact);
+          $_contribution['Data'][$field->getTemplates()->getFieldname()] = $this->helpers->prepareApiData($field, $compact);
         }
       }
       $j[] = $_contribution;
@@ -127,8 +127,8 @@ $app->group('/api', function () {
         $d[$field->getTemplates()->getFieldname()] = $this->helpers->prepareApiData($field, $compact);
       }
       $response->getBody()->write(json_encode([
-        "contribution"              => $this->helpers->prepareApiContribution($c, $compact),
-        "data"                      => $d
+        "Contribution"              => $this->helpers->prepareApiContribution($c, $compact),
+        "Data"                      => $d
       ], JSON_CONSTANTS));
     }
     else if ($c === false) {

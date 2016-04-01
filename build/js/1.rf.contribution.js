@@ -56,22 +56,22 @@
           $.rokfor.csrf_name  = data.name;
           $.rokfor.csrf_value = data.value;
           if (data.success) {
-            var t = this.next().find('table').DataTable();
-            t.positions = false;
+//            var t = this.next().find('table').DataTable();
+            table.positions = false;
             var template = [];
             template.push(data.newindex);
             template.push('<a class="rfimagetablepreview" href=' + data.relative + ' target="_blank"><img data-file="' + data.original + '" src="' + data.thumb + '"></a>');
-            for (var i = 0; i < t.columns().nodes().length - 2; i++) {
+            for (var i = 0; i < table.columns().nodes().length - 2; i++) {
               template.push(data.caption);
             }
             if (data.growing) {
-              t.row.add(template).draw();
+              table.row.add(template).draw();
             }
             else {
-              if (t.row( 0 ) == undefined || t.row( 0 ).length == 0)
-                t.row.add(template).draw();
+              if (table.row( 0 ) == undefined || table.row( 0 ).length == 0)
+                table.row.add(template).draw();
               else
-                t.row( 0 ).data(template).draw();
+                table.row( 0 ).data(template).draw();
             }
           }
         },
@@ -154,11 +154,9 @@
         diff  = diff || false;    // Delta after Re-Sort
         // Re-Sort if diff has more than 0 elements
         tbl.positions = tbl.positions || false;
-        console.log(diff);
         if (!tbl.positions) {
           tbl.positions = [];
           tbl.rows().every( function(rowId) {
-            console.log(rowId);
             tbl.positions.push(rowId);
           })
         }
@@ -173,6 +171,7 @@
         var cols = $(tbl.row(0).node()).children('td').length;
 //        console.log(this.cols(0).data())
         tbl.cells().every( function ( OrigrowIdx, cellIdx) {
+          console.log("cell", OrigrowIdx, cellIdx );
           rowIdx = tbl.positions[OrigrowIdx];
           if (cellIdx > 0) {
             if (d[rowIdx] == undefined) d[rowIdx] = [];
