@@ -846,9 +846,11 @@ class helpers
         "Name"                    => $c->getName(),
         "Forissue"                => $c->getForissue(),
         "Forchapter"              => $c->getForchapter(),
+        "Fortemplate"             => $c->getFortemplate(),
         "Forbook"                 => $_book->getId(),
         "ForissueName"            => $c->getIssues()->getName(),
         "ForchapterName"          => $c->getFormats()->getName(),
+        "FortemplateName"         => $c->getTemplatenames()->getName(),
         "ForbookName"             => $_book->getName(),
       ];
     }
@@ -865,6 +867,7 @@ class helpers
         "Forbook"                 => $_book->getId(),
         "ForissueName"            => $c->getIssues()->getName(),
         "ForchapterName"          => $c->getFormats()->getName(),
+        "FortemplateName"         => $c->getTemplatenames()->getName(),
         "ForbookName"             => $_book->getName(),
       ];
     }
