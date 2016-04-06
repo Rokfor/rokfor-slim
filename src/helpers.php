@@ -839,10 +839,17 @@ class helpers
    */
   function prepareApiContribution($c, $compact = true)
   {
+    $_book = $this->container->db->getBook($c->getChapters()->getForbook());
     if ($compact) {
       return [
         "Id"                      => $c->getId(),
         "Name"                    => $c->getName(),
+        "Forissue"                => $c->getForissue(),
+        "Forchapter"              => $c->getForchapter(),
+        "Forbook"                 => $_book->getId(),
+        "ForissueName"            => $c->getIssues()->getName(),
+        "ForchapterName"          => $c->getChapters()->getName(),
+        "ForbookName"             => $_book->getName(),
       ];
     }
     else {
@@ -854,7 +861,11 @@ class helpers
         "Status"                  => $c->getStatus(),
         "Newdate"                 => $c->getNewdate(),
         "Moddate"                 => $c->getModdate(),
-        "Forchapter"              => $c->getForchapter()
+        "Forchapter"              => $c->getForchapter(),
+        "Forbook"                 => $_book->getId(),
+        "ForissueName"            => $c->getIssues()->getName(),
+        "ForchapterName"          => $c->getChapters()->getName(),
+        "ForbookName"             => $_book->getName(),
       ];
     }
   }
