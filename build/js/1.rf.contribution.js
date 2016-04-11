@@ -373,15 +373,11 @@
         }
     };
     
+    $.rokfor.clearAssets();
       
     $(".rtftextarea").each(function(i,n) {
         var e = $(this);
-/*        editor = new wysihtml5.Editor(e[0], {
-          toolbar: e.prev()[0],
-          parserRules:  wysihtml5ParserRules, // defined in file parser rules javascript
-        });*/
-        
-        var editor = new wysihtml5.Editor(e[0], {
+        e.data('editor', new wysihtml5.Editor(e[0], {
           toolbar: 'editor-toolbar_' + e.attr('id'),
           parserRules:  {
             tags: {
@@ -418,26 +414,27 @@
           showToolbarDialogsOnSelection: false,
           useLineBreaks: true,
           doubleLineBreakEscapesBlock: true,
-        });
-        
-        editor.on("interaction", function(x,y,z) {
+        }).on("interaction", function(x,y,z) {
 
           // Jsonize if RTF Editor is part of multi form
           if (e.hasClass('rtfmultieditor')){
             var v = [];
             $.rokfor.calcMaxInput(e, e);
-            $(this).parents('.form-horizontal').find('.rtftextarea').each(function(i,x) {
-              v.push($(x).html());
+            e.parents('.form-horizontal').find('.rtftextarea').each(function(i,x) {
+              var _e = $(x).data('editor');
+              v.push(_e.getValue());
             });
             $.rokfor.contribution.store(e.attr('data-fieldid'), JSON.stringify(v));
           }
           // Store directly
           else { 
-            $.rokfor.contribution.store(e.attr('id'), e.html());
+            var _e = e.data('editor');
+            $.rokfor.contribution.store(e.attr('id'), _e.getValue());
             $.rokfor.calcMaxInput(e, e);
           }
-        });
-        
+        }));
+      
+        $.rokfor.addAssets(e.data('editor'));
         $.rokfor.calcMaxInput(e, e);
       });
       

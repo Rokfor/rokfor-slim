@@ -177,6 +177,22 @@
       cb();
     });
   };
+  
+  // Clears some js assets loaded in the detail form
+  
+  $.rokfor.clearAssets = function() {
+    $.rokfor.rtfeditors = $.rokfor.rtfeditors || [];
+    $($.rokfor.rtfeditors).each(function(i,e){e.destroy();})
+    $.rokfor.rtfeditors = [];
+  }
+  
+
+  // Adds an asset to the rokfor object storage
+
+  $.rokfor.addAssets = function(obj) {
+    $.rokfor.rtfeditors.push(obj);
+  }
+  
 
   // Displays Form instead of List, scrolls to top
 
@@ -201,6 +217,7 @@
       .text('')
       .css('display','none');
     $('.content-wrapper#list').css('display','block');
+    $.rokfor.clearAssets();
   }
 
   // Delay Function after keystrokes
