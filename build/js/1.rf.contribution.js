@@ -340,20 +340,88 @@
       }
     };      
     */
+    var wysihtml5ParserRulesDefaults = {
+        "blockLevelEl": {
+            "keep_styles": {
+                "textAlign": /^((left)|(right)|(center)|(justify))$/i,
+                "float": 1
+            },
+            "add_style": {
+                "align": "align_text"
+            },
+            "check_attributes": {
+                "id": "any"
+            }
+        },
 
+        "makeDiv": {
+            "rename_tag": "div",
+            "one_of_type": {
+                "alignment_object": 1
+            },
+            "remove_action": "unwrap",
+            "keep_styles": {
+                "textAlign": 1,
+                "float": 1
+            },
+            "add_style": {
+                "align": "align_text"
+            },
+            "check_attributes": {
+                "id": "any"
+            }
+        }
+    };
+    
+      
     $(".rtftextarea").each(function(i,n) {
         var e = $(this);
 /*        editor = new wysihtml5.Editor(e[0], {
           toolbar: e.prev()[0],
           parserRules:  wysihtml5ParserRules, // defined in file parser rules javascript
         });*/
-        e.wysihtml5({
-          toolbar: {
-            "fa": true
+        
+        var editor = new wysihtml5.Editor(e[0], {
+          toolbar: 'editor-toolbar_' + e.attr('id'),
+          parserRules:  {
+            tags: {
+              strong: {},
+              b:      {},
+              i:      {},
+              em:     {},
+              br:     {},
+              p:      {},
+              div:    {},
+              ul:     {},
+              ol:     {},
+              li:     {},
+              blockquote: {
+                  "keep_styles": {
+                      "textAlign": 1,
+                      "float": 1
+                  },
+                  "add_style": {
+                      "align": "align_text"
+                  },
+                  "check_attributes": {
+                      "cite": "url",
+                      "id": "any"
+                  }
+              },
+              h1:     wysihtml5ParserRulesDefaults.blockLevelEl, 
+              h2:     wysihtml5ParserRulesDefaults.blockLevelEl, 
+              h3:     wysihtml5ParserRulesDefaults.blockLevelEl, 
+              h4:     wysihtml5ParserRulesDefaults.blockLevelEl, 
+              a:      {}
+            }
           },
-          useLineBreaks: false
+          showToolbarDialogsOnSelection: false,
+          useLineBreaks: true,
+          doubleLineBreakEscapesBlock: true,
         });
-        e.on("keyup",function() {
+        
+        editor.on("interaction", function(x,y,z) {
+
           // Jsonize if RTF Editor is part of multi form
           if (e.hasClass('rtfmultieditor')){
             var v = [];
@@ -361,7 +429,7 @@
             $(this).parents('.form-horizontal').find('.rtftextarea').each(function(i,x) {
               v.push($(x).html());
             });
-            $.rokfor.contribution.store($(this).attr('id'), JSON.stringify(v));
+            $.rokfor.contribution.store($(this).attr('data-fieldid'), JSON.stringify(v));
           }
           // Store directly
           else { 
@@ -369,6 +437,7 @@
             $.rokfor.calcMaxInput(e, e);
           }
         });
+        
         $.rokfor.calcMaxInput(e, e);
       });
       

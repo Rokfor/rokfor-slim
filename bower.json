@@ -46,8 +46,8 @@
     "datatables.net-rowreorder-bs": "^1.1.1",
     "bower": "*",
     "install": "^1.0.4",
-    "bootstrap3-wysihtml5-bower": "^0.3.3",
     "bootstrap-markdown": "^2.10.0",
-    "marked": "^0.3.5"
+    "marked": "^0.3.5",
+    "wysihtml": "https://github.com/Voog/wysihtml.git#master"
   }
 }

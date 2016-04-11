@@ -15,7 +15,8 @@ if (($config[rtfeditor] || $config[markdowneditor]) && !$config[arrayeditor])
            i.fa.fa-minus        
       .box-body
         if ($config[rtfeditor])
-          .rtftextarea.form-control(data-counter="#counter_".$field->getId(), data-maxlength=config.textlength, style="min-height:".(str_replace(',', '.', $config['maxlines']*1.5))."em;", rows=config.maxlines, id=field->getId())!=field->getContent()
+          include rtfeditor.toolbar.jade
+          .rtftextarea.form-control(data-counter="#counter_".$field->getId(), data-maxlength=config.textlength, style="min-height:".(str_replace(',', '.', $config['maxlines']*1.5))."em;", id=field->getId())!=field->getContent()
         if ($config[markdowneditor])
           textarea.mdtextarea.form-control(data-counter="#counter_".$field->getId(), data-maxlength=config.textlength, style="min-height:".(str_replace(',', '.', $config['maxlines']*1.5))."em;", rows=config.maxlines, id=field->getId())!=field->getContent()
 
@@ -40,7 +41,8 @@ else if config.arrayeditor
             .col-sm-10
               span.label.label-default.rfmultieditorcounter(id="counter_".$row."_".$field->getId())
               if config.rtfeditor
-                .rtftextarea.rtfmultieditor.form-control(data-counter="#counter_".$row."_".$field->getId(), data-maxlength=config.textlength, style="min-height:".(str_replace(',', '.', $column['lines']*1.5))."em;", rows=config.maxlines, id=field->getId())!=$rows[$row++]
+                include rtfeditor.toolbar.jade              
+                .rtftextarea.rtfmultieditor.form-control(data-counter="#counter_".$row."_".$field->getId(), data-maxlength=config.textlength, style="min-height:".(str_replace(',', '.', $column['lines']*1.5))."em;", id=$row."_".$field->getId(), data-fieldid=$field->getId())!=$rows[$row++]
               else
                 if config.markdowneditor
                   textarea.mdtextarea.mdmultieditor.form-control(data-counter="#counter_".$row."_".$field->getId(), data-maxlength=config.textlength, style="min-height:".(str_replace(',', '.', $column['lines']*1.5))."em;", rows=config.maxlines, id=field->getId())!=$rows[$row++]
