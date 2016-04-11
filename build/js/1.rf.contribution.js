@@ -408,7 +408,15 @@
               h2:     wysihtml5ParserRulesDefaults.blockLevelEl, 
               h3:     wysihtml5ParserRulesDefaults.blockLevelEl, 
               h4:     wysihtml5ParserRulesDefaults.blockLevelEl, 
-              a:      {}
+              a:      {
+                  "check_attributes": {
+                      "target": "any",
+                      "href": "href" // if you compiled master manually then change this from 'url' to 'href'
+                  },
+                  "set_attributes": {
+                      "rel": "nofollow"
+                  }
+              }
             }
           },
           showToolbarDialogsOnSelection: false,
