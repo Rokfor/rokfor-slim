@@ -429,7 +429,7 @@
             $(this).parents('.form-horizontal').find('.rtftextarea').each(function(i,x) {
               v.push($(x).html());
             });
-            $.rokfor.contribution.store($(this).attr('data-fieldid'), JSON.stringify(v));
+            $.rokfor.contribution.store(e.attr('data-fieldid'), JSON.stringify(v));
           }
           // Store directly
           else { 
