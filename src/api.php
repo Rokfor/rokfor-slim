@@ -69,8 +69,9 @@ $app->group('/api', function () {
         continue;
       }
 
-      $_contribution = $this->helpers->prepareApiContribution($_c, $compact); 
-      if ($request->getQueryParams()['data'] || $request->getQueryParams()['populate'] == "true") {
+      $_contribution          = $this->helpers->prepareApiContribution($_c, $compact, $request); 
+      $_contribution["Data"]  = $this->helpers->prepareApiContributionData($_c, $compact, $request);
+/*      if ($request->getQueryParams()['data'] || $request->getQueryParams()['populate'] == "true") {
         // Reset fids on template change
         if ($_c->getFortemplate() <> $_oldtemplate) {
           $_fids = [];
@@ -95,9 +96,9 @@ $app->group('/api', function () {
         foreach ($_c->getDatas($criteria) as $field) {
           $_contribution['Data'][$field->getTemplates()->getFieldname()] = $this->helpers->prepareApiData($field, $compact);
         }
-      }
+      }*/
       $j[] = $_contribution;
-      $_oldtemplate = $_c->getFortemplate();
+//      $_oldtemplate = $_c->getFortemplate();
     }
     else {
       $errcode = 200;
@@ -121,14 +122,9 @@ $app->group('/api', function () {
     $compact = $request->getQueryParams()['verbose'] ? false : true;
     $c = $this->db->getContribution($args['id']);
     if ($c && $c->getStatus()=="Close") {
-      $criteria = new \Propel\Runtime\ActiveQuery\Criteria(); 
-      $criteria->addAscendingOrderByColumn(__sort__); 
-      foreach ($c->getDatas($criteria) as $field) {
-        $d[$field->getTemplates()->getFieldname()] = $this->helpers->prepareApiData($field, $compact);
-      }
       $response->getBody()->write(json_encode([
-        "Contribution"              => $this->helpers->prepareApiContribution($c, $compact),
-        "Data"                      => $d
+        "Contribution"              => $this->helpers->prepareApiContribution($c, $compact, $request),
+        "Data"                      => $this->helpers->prepareApiContributionData($c, $compact, $request)
       ], JSON_CONSTANTS));
     }
     else if ($c === false) {

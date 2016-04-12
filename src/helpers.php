@@ -824,12 +824,54 @@ class helpers
     if ($_nc) {
       $r['Reference'] = $_nc;
     }
-    if ($_parsed) {
+    if ($_parsed !== false) {
       $r['Parsed'] = $_parsed;
     }    
     return $r;
   }
   
+  /**
+   * cycles thru all fields of a contribution and prepares the field data
+   *
+   * @param string $c 
+   * @param string $compact 
+   * @return void
+   * @author Urs Hofer
+   */
+  function prepareApiContributionData($c, $compact, $request) {
+    /* Checks */
+    if (!$c) return false;
+    if (!$c->getId()) return false;
+    
+    $d = [];
+    $_fids = [];
+    static $_oldtemplate = false;
+    
+    if ($request->getQueryParams()['data'] || $request->getQueryParams()['populate'] == "true") {
+      // Reset fids on template change
+      if ($c->getFortemplate() <> $_oldtemplate) {
+        $_fids = [];
+      }
+      // Populate Field Ids on the first call
+      if (count($_fids) == 0) {
+        if ($request->getQueryParams()['populate'] != "true") {
+          foreach (explode('|', $request->getQueryParams()['data']) as $fieldname) {
+            $_f = $this->container->db->getTemplatefields()
+                           ->filterByFieldname($fieldname)
+                           ->filterByFortemplate($c->getFortemplate())
+                           ->findOne();
+            if ($_f) $_fids[] = $_f->getId();
+          }
+          $criteria = new \Propel\Runtime\ActiveQuery\Criteria();
+          $criteria->add('_fortemplatefield', $_fids, \Propel\Runtime\ActiveQuery\Criteria::IN);  
+        }
+      }
+      foreach ($c->getDatas($criteria) as $field) {
+        $d[$field->getTemplates()->getFieldname()] = $this->prepareApiData($field, $compact);
+      }
+    }
+    return $d;    
+  }
   
   /**
    * prepares the return array for a contribution if accessed over the json api
@@ -837,9 +879,29 @@ class helpers
    * @return void
    * @author Urs Hofer
    */
-  function prepareApiContribution($c, $compact = true)
+  function prepareApiContribution($c, $compact = true, $request = false, $_recursion_check = [])
   {
+    /* Checks */
+    if (!$c) return false;
+    if (!$c->getId()) return false;
+    
+    /* Recursion Check */
+    if (in_array($c->getId(), $_recursion_check)) return false;
+    $_recursion_check[] = $c->getId();
+    
     $_book = $this->container->db->getBook($c->getFormats()->getForbook());
+    $_references = [];
+    // Referenced Contributions
+    if ($_nodes = json_decode($c->getConfigSys())) {
+      if ($_nodes->referenced) foreach ($_nodes->referenced as $thrufield => $refId) {
+        array_push($_references, [
+          "ByField"       => $thrufield, 
+          "Contribution"  => $this->prepareApiContribution($this->container->db->getContribution($refId), $compact, $request, $_recursion_check),
+          "Data"          => $this->prepareApiContributionData($this->container->db->getContribution($refId), $compact, $request)
+        ]);
+      }
+    }
+    
     if ($compact) {
       return [
         "Id"                      => $c->getId(),
@@ -852,6 +914,7 @@ class helpers
         "ForchapterName"          => $c->getFormats()->getName(),
         "FortemplateName"         => $c->getTemplatenames()->getName(),
         "ForbookName"             => $_book->getName(),
+        "ReferencedFrom"          => $_references,
       ];
     }
     else {
@@ -869,6 +932,7 @@ class helpers
         "ForchapterName"          => $c->getFormats()->getName(),
         "FortemplateName"         => $c->getTemplatenames()->getName(),
         "ForbookName"             => $_book->getName(),
+        "ReferencedFrom"          => $_references,        
       ];
     }
   }
