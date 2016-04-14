@@ -965,5 +965,19 @@ $app->group('/rf', function () {
     $r->getBody()->write(json_encode($json));
     return $r;
   });  
+  
+  
+  /* Exporters
+   * 
+   * Show List of registered exporters and trigger hooks on post
+   * 
+   * GET /rf/exporters
+   * POST /rf/exporters
+   *
+   */
+  $this->map(['GET', 'POST'], '/exporters', function ($request, $response, $args) {
+    $this->view->render($response, 'content-wrapper/exporters.jade', $args);      
+  });
+    
 
 })->add($identificator)->add($csrf)->add($authentification)->add($ajaxcheck);

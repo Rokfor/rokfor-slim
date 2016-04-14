@@ -116,7 +116,13 @@ return [
         'alert_chtemp_success'          => "Vorlage erfolgreich nach [x] geändert",
         'alert_chtemp_error'            => "Fehler beim ändern der Vorlage",
         'searchresults_title'           => "Suchresultate",
-        'settings_title'                => "Einstellungen",
+        
+        'settings_structure'            => "Struktur",
+        'settings_user'                 => "Benutzerverwaltung",
+        'settings_hooks'                => "Hooks",
+        
+        
+        
         'structure_title'               => "Ordnerstruktur",
         'structure_chapters'            => "Kapitel",
         'structure_issues'              => "Ausgaben",

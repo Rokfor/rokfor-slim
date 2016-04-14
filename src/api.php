@@ -123,8 +123,8 @@ $app->group('/api', function () {
     $c = $this->db->getContribution($args['id']);
     if ($c && $c->getStatus()=="Close") {
       $response->getBody()->write(json_encode([
-        "Contribution"              => $this->helpers->prepareApiContribution($c, $compact, $request),
-        "Data"                      => $this->helpers->prepareApiContributionData($c, $compact, $request)
+        "Contribution"              => $this->helpers->prepareApiContribution($c, $compact),
+        "Data"                      => $this->helpers->prepareApiContributionData($c, $compact)
       ], JSON_CONSTANTS));
     }
     else if ($c === false) {

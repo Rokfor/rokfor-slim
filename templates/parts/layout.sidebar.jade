@@ -1,64 +1,31 @@
 if ($__currentuser__['level'] > 1)
   aside.control-sidebar.control-sidebar-dark
-    ul.nav.nav-tabs.nav-justified.control-sidebar-tabs
-      li.active
-        a(href='#control-sidebar-export-tab', data-toggle='tab')
-          i.fa.fa-database
-      li
-        a(href='#control-sidebar-settings-tab', data-toggle='tab')
-          i.fa.fa-gears
-      li
-        a(href='#control-sidebar-batch-tab', data-toggle='tab')
-          i.fa.fa-tachometer
+    .margin
+      h3.control-sidebar-heading=$translations['settings_structure']
+      a.btn.btn-block.btn-sm.btn-primary.ajaxload(href='/rf/structure', target=".content-wrapper#list", data-toggle="control-sidebar")
+        i.fa.fa-files-o &nbsp;
+        span=$translations['structure_title']
+      a.btn.btn-block.btn-sm.btn-primary.ajaxload(href='/rf/templates', target=".content-wrapper#list", data-toggle="control-sidebar")
+        i.fa.fa-paper-plane-o &nbsp;
+        span Templates
+      if ($__currentuser__['level'] > 2)
+        <!-- Root Stuff -->
+        h3.control-sidebar-heading=$translations['settings_user']
 
-    .tab-content
+        a.btn.btn-block.btn-sm.btn-danger.ajaxload(href='/rf/users', target=".content-wrapper#list", data-toggle="control-sidebar")
+          i.fa.fa-users &nbsp;
+          span Users
 
-      #control-sidebar-export-tab.tab-pane.active
-        h3.control-sidebar-heading Export
-        a.btn.btn-block.btn-sm.btn-primary.disabled(href='javascript::;')
-          i.fa.fa-plug &nbsp;
-          span Export
-        p
-        table.table.table-condensed
-          tbody
-            tr
-              th Datum
-              th Datei
-              th Label
-            tr
-              td 1.
-              td File.pdf
-              td
-                span.badge.bg-red 55%
+        h3.control-sidebar-heading=$translations['settings_hooks']
 
-      #control-sidebar-settings-tab.tab-pane
-        h3.control-sidebar-heading=$translations['settings_title']
-        a.btn.btn-block.btn-sm.btn-primary.ajaxload(href='/rf/structure', target=".content-wrapper#list", data-toggle="control-sidebar")
-          i.fa.fa-files-o &nbsp;
-          span=$translations['structure_title']
-        a.btn.btn-block.btn-sm.btn-primary.ajaxload(href='/rf/templates', target=".content-wrapper#list", data-toggle="control-sidebar")
-          i.fa.fa-paper-plane-o &nbsp;
-          span Templates
-        if ($__currentuser__['level'] > 2)
-          a.btn.btn-block.btn-sm.btn-warning.disabled(href='javascript::;')
-            i.fa.fa-rocket &nbsp;
-            span Fieldprocessors
-          a.btn.btn-block.btn-sm.btn-warning.disabled(href='javascript::;')
-            i.fa.fa-plug &nbsp;
-            span Plugins
-          a.btn.btn-block.btn-sm.btn-danger.ajaxload(href='/rf/users', target=".content-wrapper#list", data-toggle="control-sidebar")
-            i.fa.fa-users &nbsp;
-            span Users
-                      
-      #control-sidebar-batch-tab.tab-pane
-        h3.control-sidebar-heading Batch Processors
-        a.btn.btn-block.btn-sm.btn-primary.disabled(href='javascript::;')
+        a.btn.btn-block.btn-sm.btn-warning.disabled(href='javascript::;')
           i.fa.fa-rocket &nbsp;
-          span Batch Processor
-        p.divider
-        a.btn.col-xs-6.btn-sm.btn-default(href='javascript::;') Action 2
-        a.btn.col-xs-6.btn-sm.btn-default(href='javascript::;') Action 3
-        a.btn.col-xs-6.btn-sm.btn-default(href='javascript::;') Action 4
-        a.btn.col-xs-6.btn-sm.btn-default(href='javascript::;') Action 5
-        a.btn.col-xs-6.btn-sm.btn-default(href='javascript::;') Action 6
+          span Field Hooks
+        a.btn.btn-block.btn-sm.btn-warning.disabled(href='javascript::;')
+          i.fa.fa-rocket &nbsp;
+          span Batch Hooks
+        a.btn.btn-block.btn-sm.btn-warning.disabled(href='javascript::;')
+          i.fa.fa-plug &nbsp;
+          span Exporter Hooks
+
   .control-sidebar-bg

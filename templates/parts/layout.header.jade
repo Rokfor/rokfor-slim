@@ -75,6 +75,9 @@ header.main-header
                 a.btn.btn-default.btn-flat.ajaxload(href='/rf/profile', target=".content-wrapper#list", data-close-dropdown="#userdrop")=$translations['role_profile']
               .pull-right
                 a.btn.btn-default.btn-flat(href='/rf/logout')=$translations['role_signout']
+        li
+          a.ajaxload(href='/rf/exporters', target=".content-wrapper#list")
+            i.fa.fa-database
         if ($__currentuser__['level'] > 1)
           li
             a(href='#', data-toggle='control-sidebar')

@@ -838,38 +838,46 @@ class helpers
    * @return void
    * @author Urs Hofer
    */
-  function prepareApiContributionData($c, $compact, $request) {
+  function prepareApiContributionData($c, $compact, $request = null) {
     /* Checks */
     if (!$c) return false;
     if (!$c->getId()) return false;
     
     $d = [];
     $_fids = [];
+    $criteria = null;
     static $_oldtemplate = false;
     
-    if ($request->getQueryParams()['data'] || $request->getQueryParams()['populate'] == "true") {
+    // Prepare Criteria if a selection of fields needs to be processed
+    
+    if ($request !== null && $request->getQueryParams()['data']) {
       // Reset fids on template change
       if ($c->getFortemplate() <> $_oldtemplate) {
         $_fids = [];
       }
       // Populate Field Ids on the first call
       if (count($_fids) == 0) {
-        if ($request->getQueryParams()['populate'] != "true") {
-          foreach (explode('|', $request->getQueryParams()['data']) as $fieldname) {
-            $_f = $this->container->db->getTemplatefields()
-                           ->filterByFieldname($fieldname)
-                           ->filterByFortemplate($c->getFortemplate())
-                           ->findOne();
-            if ($_f) $_fids[] = $_f->getId();
-          }
-          $criteria = new \Propel\Runtime\ActiveQuery\Criteria();
-          $criteria->add('_fortemplatefield', $_fids, \Propel\Runtime\ActiveQuery\Criteria::IN);  
+        foreach (explode('|', $request->getQueryParams()['data']) as $fieldname) {
+          $_f = $this->container->db->getTemplatefields()
+                         ->filterByFieldname($fieldname)
+                         ->filterByFortemplate($c->getFortemplate())
+                         ->findOne();
+          if ($_f) $_fids[] = $_f->getId();
         }
       }
+      $criteria = new \Propel\Runtime\ActiveQuery\Criteria();
+      $criteria->add('_fortemplatefield', $_fids, \Propel\Runtime\ActiveQuery\Criteria::IN);  
+    }
+
+    // Populate Data if called with populate true, if requests are omitted or a criteria is not null
+
+    if ($request === null || $criteria !== null || $request->getQueryParams()['populate'] == "true") {
       foreach ($c->getDatas($criteria) as $field) {
         $d[$field->getTemplates()->getFieldname()] = $this->prepareApiData($field, $compact);
       }
     }
+
+
     return $d;    
   }
   
@@ -879,7 +887,7 @@ class helpers
    * @return void
    * @author Urs Hofer
    */
-  function prepareApiContribution($c, $compact = true, $request = false, $_recursion_check = [])
+  function prepareApiContribution($c, $compact = true, $request = null, $_recursion_check = [])
   {
     /* Checks */
     if (!$c) return false;

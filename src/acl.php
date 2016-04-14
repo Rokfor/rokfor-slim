@@ -32,6 +32,7 @@ class Acl extends ZendAcl
         $_rf_routes['user'][] = ['/rf/contribution/{action}/{id:[0-9]*}',                                   'POST'];
         $_rf_routes['user'][] = ['/rf/field/{id:[0-9]*}',                                                   'POST'];
         $_rf_routes['user'][] = ['/rf/profile',                                                             ['GET','POST']];
+        $_rf_routes['user'][] = ['/rf/exporters',                                                           ['GET','POST']];
                                                                                                             
         // Administrators (Like Users but with added structure and template management)
         $_rf_routes['admin'][] = ['/rf/structure',                                                          ['GET','POST']];
@@ -55,7 +56,6 @@ class Acl extends ZendAcl
         // is handled per request to keep the api restful.
 
         $_api_routes = ['guest'=>[]];
-
         $_api_routes['guest'][] = ['/api/contributions/{issue:[0-9]*}/{chapter:[0-9]*}',                    'GET'];
         $_api_routes['guest'][] = ['/api/contribution/{id:[0-9]*}',                                         'GET'];
         
