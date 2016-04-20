@@ -157,7 +157,45 @@
         }
         return false;
       }
+      else if (bt.hasClass('settingschapter') || bt.hasClass('settingsissue') || bt.hasClass('settingsbook')) {
+        // Filtering Parents of Book Only
+        var schema = {};
 
+        if (bt.hasClass('settingschapter')) {
+          schema = $.rokfor.configschema_chapter;
+          var _book = schema.properties.parentnode.bookbyid[id];
+          schema.properties.parentnode.enum = schema.properties.parentnode.idbybook[_book];
+          schema.properties.parentnode.options.enum_titles = schema.properties.parentnode.labelsbybook[_book];
+        }
+        else if (bt.hasClass('settingsissue')) {
+          schema = $.rokfor.configschema_issue;
+        }
+        else if (bt.hasClass('settingsbook')) {
+          schema = $.rokfor.configschema_book;
+        }        
+        
+        var value = bt.attr("data-rights") ? JSON.parse(bt.attr("data-rights")) : {};
+        var m = $('#rfaction_jsonedit_chapter').modal({keyboard: true});
+        action = bt.attr("href");
+        m.modal.data = {
+          action: action,
+          id: id,
+          type: type,
+          caller: bt
+        }
+        m.modal.editor = new JSONEditor($('#jsoneditor_chapter')[0], {
+          schema: schema,
+          theme: 'rokfor',
+          disable_properties: true,
+          disable_edit_json: true,
+          disable_array_reorder: true,
+          form_name_root: "Field Configuration",
+          iconlib: "bootstrap3",
+        });
+        m.modal.editor.setValue(value);
+        return false;
+      }
+      
 
       var url = "/rf/structure/"+action+(type ? "/"+ type : '')+(id ? "/"+ id : '');
 
@@ -183,6 +221,26 @@
       }
       return false;
     });
+    
+    // Close Modal - store JSON
+    $('#rfaction_jsonedit_chapter').find('button.rfmodal_continue').on('click', function(e) {
+      e.stopPropagation();
+      var m  = $(this).parents('.modal');
+      var json = JSON.stringify(m.modal.editor.getValue());
+      var url = "/rf/structure/"+m.modal.data.action+(m.modal.data.type ? "/"+ m.modal.data.type : '')+(m.modal.data.id ? "/"+ m.modal.data.id : '');
+      $.rokfor.post(url, json, function(data){
+        m.modal.data.caller.attr("data-rights", json)
+        m.modal('hide');
+      });
+    })
+    // Destroy Editor on modal close
+    $('#rfaction_jsonedit_chapter').on('hidden.bs.modal', function () {
+      var m = $(this);
+      console.log("destroy", m.modal)
+      m.modal.editor.destroy();
+    });
+    
+    
     
     // Close Modal - store JSON
     $('#rfaction_rights').find('button.rfmodal_continue').on('click', function(e) {

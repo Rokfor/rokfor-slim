@@ -10,6 +10,15 @@
     console.log = function(msg) {};
   }
 
+  // Some JSON Editor Default Changes
+  JSONEditor.defaults.themes.rokfor = JSONEditor.defaults.themes.bootstrap3.extend({
+    getButton: function(text, icon, title) {
+      var el = this._super(text, icon, title);
+      el.className += 'btn btn-default btn-xs';
+      return el;
+    }
+  });
+
   // Some Modal Overrules if a select 2 is within a modal
   $.fn.modal.Constructor.prototype.enforceFocus = function() {};
 

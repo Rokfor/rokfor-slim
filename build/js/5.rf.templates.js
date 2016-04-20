@@ -55,7 +55,7 @@
       m.modal.data = data
       m.modal.editor = new JSONEditor($('#jsoneditor')[0], {
         schema: schema,
-        theme: 'bootstrap3',
+        theme: 'rokfor',
         disable_properties: true,
         disable_edit_json: true,
         disable_array_reorder: true,
