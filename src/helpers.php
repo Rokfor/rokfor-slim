@@ -177,8 +177,11 @@ class helpers
    */
   public function prepareStructureTemplate(&$args)
   {
-      $args['structure'] = $this->container->db->getStructure('/rf/contributions/');
-      $args['rights'] = $this->container->db->getRights();
+      $args['structure']       = $this->container->db->getStructure('/rf/contributions/');
+      $args['rights']          = $this->container->db->getRights();
+      $args['chapterschema']   = $this->prepareChapterSchema();
+      $args['issueschema']     = $this->prepareIssueSchema();
+      $args['issuebook']       = $args['issueschema']; // Right now, issue and book share the schema
       $args['breadcrumb'] = [
       [
         'class' => 'fa-gears',
@@ -191,6 +194,169 @@ class helpers
     ];
   }
 
+  /**
+   * returns the schema for the json chapter config editor.
+   *
+   * @author Urs Hofer
+   */
+  public function prepareChapterSchema()
+  {
+    // Store Chapters
+    $fromchapter = ['bookbyid' => [],'labelsbybook' => [],'idbybook' => []];
+    foreach ($this->container->db->getFormats() as $f) {
+      if (!$fromchapter['labelsbybook'][$f->getForbook()]) {
+        $fromchapter['labelsbybook'][$f->getForbook()] = [];
+        array_push($fromchapter['labelsbybook'][$f->getForbook()], $this->container->translations['field_type_*Ausgeschaltet*']);
+      }
+      if (!$fromchapter['idbybook'][$f->getForbook()]) {
+        $fromchapter['idbybook'][$f->getForbook()] = [];
+        array_push($fromchapter['idbybook'][$f->getForbook()], -1);
+      }
+      array_push($fromchapter['labelsbybook'][$f->getForbook()], $f->getName());
+      array_push($fromchapter['idbybook'][$f->getForbook()], $f->getId());
+      $fromchapter['bookbyid'][$f->getId()] = $f->getForbook();
+    }
+    
+    $schema = [
+    'title' => 'Field Configuration',
+    'type' => 'object',
+    'properties' => [
+        'editorcolumns' => [
+          'title'  => $this->container->translations['chapter_config'.'keyvaluepairs'],
+          'propertyOrder' => 3,
+          'type' => 'array',
+          'format' => 'table',
+          'items' => [
+            'type' => 'object',
+            'format' => 'grid',
+            'title' => 'Row',
+            'properties' => [
+              "key" => [
+                'type' => 'string',
+                'title'  => $this->container->translations['chapter_config'.'keyvaluepairs'.'key'],
+              ], 
+              "value" => [
+                'type' => 'string',
+                'title'  => $this->container->translations['chapter_config'.'keyvaluepairs'.'value'],
+              ]
+            ]
+          ]
+        ],
+        'locale' => [
+          'title'  => $this->container->translations['chapter_config'.'locale'],
+          'propertyOrder' => 2,
+          'type' => 'array',
+          'format' => 'table',
+          'items' => [
+            'type' => 'object',
+            'format' => 'grid',
+            'title' => 'Row',
+            'properties' => [
+              "language" => [
+                'type' => 'string',
+                'title'  => $this->container->translations['chapter_config'.'locale'.'language'],
+              ], 
+              "translation" => [
+                'type' => 'string',
+                'title'  => $this->container->translations['chapter_config'.'locale'.'translation'],
+              ]
+            ]
+          ]
+        ],        
+        'parentnode' => [
+          'title'  => $this->container->translations['chapter_config'.'parentnode'],
+          'format' => 'select',
+          'type'   => 'integer',
+          'propertyOrder' => 1,
+          'uniqueItems' => true,
+          'enum' => [],
+          'bookbyid' => $fromchapter['bookbyid'],
+          'idbybook' => $fromchapter['idbybook'],
+          'labelsbybook' => $fromchapter['labelsbybook'],
+
+          'options' => [
+            'enum_titles' => [],
+            'grid_columns' => 12,
+          ]                    
+        ],
+        'referenced' => [
+          'type' => 'object',
+          'options' => [
+            'hidden' => 'true'
+          ]
+        ]                 
+      ]
+    ];
+    
+    return json_encode($schema);
+  }
+
+  /**
+   * returns the schema for the json issue config editor.
+   *
+   * @author Urs Hofer
+   */
+  public function prepareIssueSchema()
+  {
+
+    $schema = [
+    'title' => 'Field Configuration',
+    'type' => 'object',
+    'properties' => [
+        'editorcolumns' => [
+          'title'  => $this->container->translations['chapter_config'.'keyvaluepairs'],
+          'propertyOrder' => 2,
+          'type' => 'array',
+          'format' => 'table',
+          'items' => [
+            'type' => 'object',
+            'format' => 'grid',
+            'title' => 'Row',
+            'properties' => [
+              "key" => [
+                'type' => 'string',
+                'title'  => $this->container->translations['chapter_config'.'keyvaluepairs'.'key'],
+              ], 
+              "value" => [
+                'type' => 'string',
+                'title'  => $this->container->translations['chapter_config'.'keyvaluepairs'.'value'],
+              ]
+            ]
+          ]
+        ],
+        'locale' => [
+          'title'  => $this->container->translations['chapter_config'.'locale'],
+          'propertyOrder' => 1,
+          'type' => 'array',
+          'format' => 'table',
+          'items' => [
+            'type' => 'object',
+            'format' => 'grid',
+            'title' => 'Row',
+            'properties' => [
+              "language" => [
+                'type' => 'string',
+                'title'  => $this->container->translations['chapter_config'.'locale'.'language'],
+              ], 
+              "translation" => [
+                'type' => 'string',
+                'title'  => $this->container->translations['chapter_config'.'locale'.'translation'],
+              ]
+            ]
+          ]
+        ],
+        'referenced' => [
+          'type' => 'object',
+          'options' => [
+            'hidden' => 'true'
+          ]
+        ]
+      ]
+    ];
+    
+    return json_encode($schema);
+  }
+  
   /**
    * returns the schema for the json field config editor.
    *
@@ -682,6 +848,42 @@ class helpers
       ]
     ];
   }
+  
+  /**
+   * prepares the data for chapters, books or issues
+   *
+   * @param string $object 
+   * @param string $followrefs 
+   * @param string $compact 
+   * @param string $request 
+   * @return void
+   * @author Urs Hofer
+   */
+  function prepareApiStructureInfo($object, $followrefs = false, $compact = false, $request = false) {
+    if (method_exists($object, "getConfigSys")) {
+      $_cfg = json_decode($object->getConfigSys());
+      $_refs = [];
+      if ($followrefs) {
+        foreach ($_cfg->referenced as $_fieldid => $_contribid) {
+          $_c = $this->container->db->getContribution($_contribid);
+          $_refs[] = array (
+            "Contribution"  => $this->prepareApiContribution($_c, $compact, $request),
+            "Data"          => $this->prepareApiContributionData($_c, $compact, $request)
+          );
+        }
+      }
+      return array (
+        "Id"              => $object->getId(),
+        "Name"            => method_exists($object, "getName") ? $object->getName() : $object->getFieldName(),
+        "ReferencedFrom"  => $_refs,
+        "Localization"    => $_cfg->locale,
+        "Options"         => method_exists($object, "getFieldType") ? $_cfg : $_cfg->editorcolumns,
+        "Type"            => method_exists($object, "getFieldType") ? $object->getFieldType() : null,
+        "Parent"          => $object->getParentNode()
+      );
+    }
+    else return false;
+  }
 
 
   /**
@@ -733,16 +935,16 @@ class helpers
           switch ($_fieldsettings->history_command) {
             // Just Loading Objects
             case 'books':
-              $_nc[$_value] = $this->container->db->getBooks()->filterById($_value)->find()->toArray();
+              $_nc[$_value] = $this->prepareApiStructureInfo($this->container->db->getBook($_value));
               break;
             case 'issues':
-              $_nc[$_value] = $this->container->db->getIssues()->filterById($_value)->find()->toArray();
+              $_nc[$_value] = $this->prepareApiStructureInfo($this->container->db->getIssue($_value));//$this->container->db->getIssues()->filterById($_value)->find()->toArray();
               break;
             case 'chapters':
-              $_nc[$_value] = $this->container->db->getFormats()->filterById($_value)->find()->toArray();
+              $_nc[$_value] = $this->prepareApiStructureInfo($this->container->db->getFormat($_value));//$this->container->db->getFormats()->filterById($_value)->find()->toArray();
               break;
             case 'structural':
-              $_nc[$_value] = $this->container->db->getTemplatefields()->filterById($_value)->find()->toArray();
+              $_nc[$_value] = $this->prepareApiStructureInfo($this->container->db->getTemplatefield($_value));
               break;
             case 'fixed':
               $_nc[$_value] = $_fieldsettings->fixedvalues[$_value];
@@ -823,6 +1025,7 @@ class helpers
     }
     if ($_nc) {
       $r['Reference'] = $_nc;
+      $r['ReferenceType'] = ucfirst($_fieldsettings->history_command);
     }
     if ($_parsed !== false) {
       $r['Parsed'] = $_parsed;

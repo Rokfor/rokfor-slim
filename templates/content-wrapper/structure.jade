@@ -1,3 +1,9 @@
+script.
+  $.rokfor.configschema_chapter = <?=$chapterschema;?>;
+  $.rokfor.configschema_issue   = <?=$issueschema;?>;  
+  $.rokfor.configschema_book    = <?=$issuebook;?>;  
+
+  
 section.content-header
   h1=end($breadcrumb)['name']
   ol.breadcrumb
@@ -46,6 +52,19 @@ section.content
       .modal-footer
         button.btn.btn-primary.pull-left(type="button", data-dismiss="modal")=$translations['rfmodal_close']
         button.btn.btn-default.rfmodal_continue(type="button")=$translations['rfmodal_continue']
+        
+.modal.fade#rfaction_jsonedit_chapter(tabindex="-1",role="dialog")
+  .modal-dialog(role="document")
+    .modal-content
+      .modal-header
+        button.close(type="button", data-dismiss="modal",  aria-label="Close")
+          span(aria-hidden="true") &times;
+        h4.modal-title=$translations['structure_settings_title']
+      .modal-body
+        .rfjsoneditor#jsoneditor_chapter
+      .modal-footer
+        button.btn.btn-primary.pull-left(type="button", data-dismiss="modal")=$translations['rfmodal_close']
+        button.btn.btn-default.rfmodal_continue(type="button")=$translations['rfmodal_continue']        
 
 
 include ../js/csrf.js.jade

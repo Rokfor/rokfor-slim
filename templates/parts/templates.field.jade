@@ -120,16 +120,13 @@
                         option(value=right.id)=right.name
       //- Name Editor
       .tab-pane.name(id="name_".$template->getId(), class=($type=='name'||!$type?'active':''))
-        table
-          tr
-            td.col-xs-10
-              input.form-control.onchange(type="text" id="name".$template->getId(), value=$template->getName())
-            td.col-xs-1
-              a.btn.btn-solid.btn-warning.templateaction=$translations['template_copy']
-            td.col-xs-1
-              a.btn.btn-solid.btn-danger.templateaction
-                i.fa.fa-danger &nbsp;
-                span=$translations['template_delete']
+        .input-group.col-xs-12
+          input.form-control.onchange(type="text" id="name".$template->getId(), value=$template->getName())
+          span.input-group-btn
+            a.btn.btn-solid.btn-warning.templateaction=$translations['template_copy']
+            a.btn.btn-solid.btn-danger.templateaction
+              i.fa.fa-danger &nbsp;
+              span=$translations['template_delete']
 //- Store Fields of this template in global var for editor popup
 script.
   $.rokfor.fieldspertemplate[<?=$template->getId()?>] = <?=json_encode($fields_in_template)?>;
