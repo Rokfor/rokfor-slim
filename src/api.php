@@ -44,7 +44,9 @@ $app->group('/api', function () {
   $this->options('/contributions/{issue:[0-9-]*}/{chapter:[0-9-]*}', 
     function ($request, $response, $args) {}
   )->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));
-  $this->get('/contributions/{issue:[0-9-]*}/{chapter:[0-9-]*}', function ($request, $response, $args) {
+  
+  $this->get('/contributions/{issue:[0-9-]*}/{chapter:[0-9-]*}', 
+    function ($request, $response, $args) {
     $j = [];
     $_fids = [];
     if (stristr($args['issue'],'-')) {
@@ -54,51 +56,46 @@ $app->group('/api', function () {
       $args['chapter'] = explode('-', $args['chapter']);
     }      
     $compact = $request->getQueryParams()['verbose'] == "true" ? false : true;
+
+    $_limit  = $request->getQueryParams()['limit'] ? intval($request->getQueryParams()['limit']) : null;
+    $_offset = $request->getQueryParams()['offset'] ? intval($request->getQueryParams()['offset']) : null;
     
     list($filterfields, $filterclause) = explode(':',$request->getQueryParams()['filter']);
-
+    $qt = microtime(true);
     $c = $request->getQueryParams()['query']
-          ? $this->db->searchContributions($request->getQueryParams()['query'], $args['issue'], $args['chapter'], 'Close', $request->getQueryParams()['limit'], $request->getQueryParams()['offset'], $filterfields, $filterclause, $request->getQueryParams()['sort'])
-          : $this->db->getContributions($args['issue'], $args['chapter'], $request->getQueryParams()['sort'], 'Close', $request->getQueryParams()['limit'], $request->getQueryParams()['offset']);
-    $_oldtemplate = false;
+          ? $this->db->searchContributions($request->getQueryParams()['query'], $args['issue'], $args['chapter'], 'Close', $_limit, $_offset, $filterfields, $filterclause, $request->getQueryParams()['sort'])
+          : $this->db->getContributions($args['issue'], $args['chapter'], $request->getQueryParams()['sort'], 'Close', $_limit,  $_offset);
 
-    if (is_object($c)) foreach ($c as $_c) {
-      // Check for publish date.
-      $_config = json_decode($_c->getConfigSys());
-      if (is_object($_config) && $_config->lockdate > time()) {
-        continue;
+    if (is_object($c)) {
+      
+      // Counting Max Objects without pages and limits
+      $_count = $request->getQueryParams()['query']
+          ? $this->db->searchContributions($request->getQueryParams()['query'], $args['issue'], $args['chapter'], 'Close', false, false, $filterfields, $filterclause, false, true)
+          : $this->db->getContributions($args['issue'], $args['chapter'], false, 'Close', false, false, true);
+
+      foreach ($c as $_c) {
+        // Check for publish date.
+        $_config = json_decode($_c->getConfigSys());
+        if (is_object($_config) && $_config->lockdate > time()) {
+          continue;
+        }
+
+        $_contribution["Contribution"]  = $this->helpers->prepareApiContribution($_c, $compact, $request); 
+        $_contribution["Data"]          = $this->helpers->prepareApiContributionData($_c, $compact, $request);
+        $j[] = $_contribution;
       }
-
-      $_contribution          = $this->helpers->prepareApiContribution($_c, $compact, $request); 
-      $_contribution["Data"]  = $this->helpers->prepareApiContributionData($_c, $compact, $request);
-/*      if ($request->getQueryParams()['data'] || $request->getQueryParams()['populate'] == "true") {
-        // Reset fids on template change
-        if ($_c->getFortemplate() <> $_oldtemplate) {
-          $_fids = [];
-        }
-        // Populate Field Ids on the first call
-        if (count($_fids) == 0) {
-          if ($request->getQueryParams()['populate'] == "true") {
-            $criteria = null;
-          }
-          else {
-            foreach (explode('|', $request->getQueryParams()['data']) as $fieldname) {
-              $_f = $this->db->getTemplatefields()
-                             ->filterByFieldname($fieldname)
-                             ->filterByFortemplate($_c->getFortemplate())
-                             ->findOne();
-              if ($_f) $_fids[] = $_f->getId();
-            }
-            $criteria = new \Propel\Runtime\ActiveQuery\Criteria();
-            $criteria->add('_fortemplatefield', $_fids, \Propel\Runtime\ActiveQuery\Criteria::IN);  
-          }
-        }
-        foreach ($_c->getDatas($criteria) as $field) {
-          $_contribution['Data'][$field->getTemplates()->getFieldname()] = $this->helpers->prepareApiData($field, $compact);
-        }
-      }*/
-      $j[] = $_contribution;
-//      $_oldtemplate = $_c->getFortemplate();
+      $response->getBody()->write(
+        json_encode(
+                    array("Documents" => $j, 
+                          "NumFound"  => $_count, 
+                          "Limit"     => count($c), 
+                          "Offset"    =>  $_offset,
+                          "QueryTime" => (microtime(true) - $qt),
+                          "Hash"      => md5(serialize($j))
+                    ), 
+                    JSON_CONSTANTS
+                   )
+      );
     }
     else {
       $errcode = 200;
@@ -106,8 +103,8 @@ $app->group('/api', function () {
       $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'Request contains no content'], JSON_CONSTANTS));
       return $newResponse;
     }
-    $response->getBody()->write(json_encode($j, JSON_CONSTANTS));
-  })->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));
+  }
+  )->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));
 
   /* Single Contribution
    * 
@@ -117,31 +114,129 @@ $app->group('/api', function () {
     function ($request, $response, $args) {}
   )->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));  
   
-  $this->get('/contribution/{id:[0-9]*}', function ($request, $response, $args) {
-    $j = [];
-    $compact = $request->getQueryParams()['verbose'] ? false : true;
-    $c = $this->db->getContribution($args['id']);
-    if ($c && $c->getStatus()=="Close") {
-      $response->getBody()->write(json_encode([
-        "Contribution"              => $this->helpers->prepareApiContribution($c, $compact),
-        "Data"                      => $this->helpers->prepareApiContributionData($c, $compact)
-      ], JSON_CONSTANTS));
+  $this->get('/contribution/{id:[0-9]*}', 
+    function ($request, $response, $args) {
+      $j = [];
+      $qt = microtime(true);
+      $compact = $request->getQueryParams()['verbose'] ? false : true;
+      $c = $this->db->getContribution($args['id']);
+      if ($c && $c->getStatus()=="Close") {
+        $response->getBody()->write(json_encode([
+          "Contribution"              => $this->helpers->prepareApiContribution($c, $compact),
+          "Data"                      => $this->helpers->prepareApiContributionData($c, $compact),
+          "QueryTime"                 => (microtime(true) - $qt),
+          "Hash"                      => md5(serialize($j))
+        ], JSON_CONSTANTS));
+      }
+      else if ($c === false) {
+        $errcode = 404;
+        $newResponse = $response->withStatus($errcode);
+        $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'No access to Element'], JSON_CONSTANTS));
+        return $newResponse;      
+      }
+      else {
+        $errcode = 404;
+        $newResponse = $response->withStatus($errcode);
+        $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'Element not found'], JSON_CONSTANTS));
+        return $newResponse;
+      }
     }
-    else if ($c === false) {
-      $errcode = 404;
-      $newResponse = $response->withStatus($errcode);
-      $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'No access to Element'], JSON_CONSTANTS));
-      return $newResponse;      
+  )->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));
+
+  /* Books
+   * 
+   *  - populate=true|false              (default: false)
+   *  - verbose=true|false               (default: false)
+   *  - data=[Fieldname|...]             (default: empty)
+   */
+  $this->options('/books[/{id:[0-9]*}]', 
+    function ($request, $response, $args) {}
+  )->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));  
+  
+  $this->get('/books[/{id:[0-9]*}]', 
+    function ($request, $response, $args) {  
+      $qt = microtime(true);
+      $b = $this->db->getStructure("", $args['id']);
+      $compact = $request->getQueryParams()['verbose'] == "true" ? false : true;
+      
+      if ($b) {
+        $j = [];
+        foreach ($b as $_book) {
+          $_chapters = [];
+          $_issues = [];
+          foreach ($_book["chapters"] as $_chapter) {
+             $_chapters[] = $this->helpers->prepareApiStructureInfo($_chapter["chapter"], true, $compact, $request);
+          }
+          foreach ($_book["issues"] as $_issue) {
+            $_issues[] = $this->helpers->prepareApiStructureInfo($_issue["issue"], true, $compact, $request);
+          }       
+          $j[] = array_merge($this->helpers->prepareApiStructureInfo($_book["book"], true, $compact, $request), ["Chapters" => $_chapters, "Issues" => $_issues]);
+        }
+        $response->getBody()->write(json_encode([
+          "Books"                     => $j,
+          "QueryTime"                 => (microtime(true) - $qt),
+          "Hash"                      => md5(serialize($j))
+        ], JSON_CONSTANTS));
+      }
+      else if ($b === false) {
+        $errcode = 404;
+        $newResponse = $response->withStatus($errcode);
+        $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'No access to Book'], JSON_CONSTANTS));
+        return $newResponse;      
+      }
+      else {
+        $errcode = 404;
+        $newResponse = $response->withStatus($errcode);
+        $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'Book not found'], JSON_CONSTANTS));
+        return $newResponse;
+      }
     }
-    else {
-      $errcode = 404;
-      $newResponse = $response->withStatus($errcode);
-      $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'Element not found'], JSON_CONSTANTS));
-      return $newResponse;
+  )->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));
+
+  /* Issues & Chapters
+   * 
+   *  - populate=true|false              (default: false)
+   *  - verbose=true|false               (default: false)
+   *  - data=[Fieldname|...]             (default: empty)
+   */
+  $this->options('/{action:issues|chapters}[/{id:[0-9]*}]', 
+    function ($request, $response, $args) {}
+  )->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));  
+  
+  $this->get('/{action:issues|chapters}[/{id:[0-9]*}]', 
+    function ($request, $response, $args) {  
+      
+      // Actions
+      $funcname = 'getStructureBy'.ucfirst($args['action']);
+      
+      $qt = microtime(true);
+      $i = $this->db->$funcname($args['id']);
+      $compact = $request->getQueryParams()['verbose'] == "true" ? false : true;
+      
+      if ($i) {
+        $j = [];
+        foreach ($i as $_issue) {
+          $j[] = $this->helpers->prepareApiStructureInfo($_issue, true, $compact, $request);
+        }
+        $response->getBody()->write(json_encode([
+          ucfirst($args['action'])    => $j,
+          "QueryTime"                 => (microtime(true) - $qt),
+          "Hash"                      => md5(serialize($j))
+        ], JSON_CONSTANTS));
+      }
+      else if ($i === false) {
+        $errcode = 404;
+        $newResponse = $response->withStatus($errcode);
+        $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'No access to '.ucfirst($args['action'])], JSON_CONSTANTS));
+        return $newResponse;      
+      }
+      else {
+        $errcode = 404;
+        $newResponse = $response->withStatus($errcode);
+        $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>ucfirst($args['action']).' not found'], JSON_CONSTANTS));
+        return $newResponse;
+      }
     }
-  })->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));
-
-
-
+  )->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));
   
 })->add($apiauth);

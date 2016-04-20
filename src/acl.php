@@ -36,7 +36,7 @@ class Acl extends ZendAcl
                                                                                                             
         // Administrators (Like Users but with added structure and template management)
         $_rf_routes['admin'][] = ['/rf/structure',                                                          ['GET','POST']];
-        $_rf_routes['admin'][] = ['/rf/structure/{action:rename|rights}/{type}/{id:[0-9]*}',                'POST'];
+        $_rf_routes['admin'][] = ['/rf/structure/{action:rename|rights|settings}/{type}/{id:[0-9]*}',       'POST'];
         $_rf_routes['admin'][] = ['/rf/structure/{action:add|sort}/{type}[/{id:[0-9]*}]',                   'POST'];
         $_rf_routes['admin'][] = ['/rf/structure/{action:duplicate|delete|open|close}/{type}/{id:[0-9]*}',  'GET'];
         $_rf_routes['admin'][] = ['/rf/templates',                                                          ['GET','POST']];
@@ -58,6 +58,8 @@ class Acl extends ZendAcl
         $_api_routes = ['guest'=>[]];
         $_api_routes['guest'][] = ['/api/contributions/{issue:[0-9]*}/{chapter:[0-9]*}',                    'GET'];
         $_api_routes['guest'][] = ['/api/contribution/{id:[0-9]*}',                                         'GET'];
+        $_api_routes['guest'][] = ['/api/books[/{id:[0-9]*}]',                                              'GET'];
+        $_api_routes['guest'][] = ['/api/{action:issues|chapters}[/{id:[0-9]*}]',                           'GET'];
         
         
         // Store Routes

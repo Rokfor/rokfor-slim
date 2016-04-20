@@ -200,7 +200,7 @@ $ curl -H "Authorization: Bearer [key]" http://localhost:8080/api/contributions/
 **Loading a collection of contributions with options:**
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-GET /api/contributions/[:issueid]|[:issueid-:issueid...]/[:chapterid]|[:chapterid-:chapterid...]?[options]
+GET /api/contributions/:issueid|:issueid-:issueid.../:chapterid|:chapterid-:chapterid...?[options]
 
 Options:
 
@@ -255,10 +255,59 @@ GET /api/contributions/1/1?populate=true&verbose=true
 
 
 **Loading a single contribution:**
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-GET /api/contribution/[:id]
+GET /api/contribution/:id?[options]
+
+Options:
+
+- verbose=true|false                   (default: false)
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Loads all available data from a single contribution.
+
+-   Verbose: Send complete Information about a dataset. In most cases, this 
+    is too much and just slowing down the connection.
+
+Examples:
+
+GET /api/contributions/12?verbose=true
+
+    Loads all available data from contribution with the id 12
+
+**Structural Queries**
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+GET /api/books|issues|chapters/[:id]?[options]
+
+Options:
+
+- data=[Fieldname|Fieldname|XX]        (default: empty)
+- populate=true|false                  (default: false)
+- verbose=true|false                   (default: false)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-   Data: Add additional field infos to the result set of a contributions.
+    For example, you need the title field of a contribution already in the
+    result set to create a multilingual menu. Or you need all images for a
+    slideshow over multiple contributions.
+-   Populate: Sends all data (true). Equals data=All|Available|Fields
+-   Verbose: Send complete Information about a dataset. In most cases, this 
+    is too much and just slowing down the connection.
+
+Examples:
+
+GET /api/books
+
+    Shows all books available for the current api key
+
+GET /api/chapters/3
+
+    Shows all information about chapter 3
+
+GET /api/issue/2?verbose=true&populate=true
+
+    Shows all information about issue 2. Additionally, raises the verbosity level and populates all data fields if a issue has backreferences to contributions.
 
 Roadmap
 -------
