@@ -681,6 +681,9 @@ $app->group('/rf', function () {
           }
           else {
             $parsed = date_parse_from_format($settings['dateformat'] ? $settings['dateformat'] : 'd/m/Y H:i', $request->getParsedBody()['data']);
+            // Set Zero Months and Days to 1
+            $parsed[month] = $parsed[month] ? $parsed[month] : 1;
+            $parsed[day]   = $parsed[day] ? $parsed[day] : 1;
             $value = mktime($parsed[hour], $parsed[minute], $parsed[second], $parsed[month], $parsed[day], $parsed[year]);
           }
           $json['success'] = $this->db->setField($args['id'], $value);
@@ -781,7 +784,7 @@ $app->group('/rf', function () {
    *
    */
 
-  $this->post('/structure/{action:rename|rights}/{type}/{id:[0-9]*}', function ($request, $response, $args) {
+  $this->post('/structure/{action:rename|rights|settings}/{type}/{id:[0-9]*}', function ($request, $response, $args) {
     $json = $this->view->offsetGet('csrf');
     // Actions
     $funcname = $args['action'].ucfirst($args['type']);
