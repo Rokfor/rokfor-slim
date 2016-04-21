@@ -221,7 +221,9 @@ $apiauth = function ($request, $response, $next) {
  */
 
 $redis = function ($request, $response, $next) {
-  if ($this->redis['redis']) {
+  
+  
+  if ($this->redis['redis'] && ($request->isPost() || $request->isGet())) {
     $qt = microtime(true);
     $client = new \Predis\Client(
       ['scheme' => 'tcp', 'host' => $this->redis['redis_ip'], 'port' => $this->redis['redis_port']],
