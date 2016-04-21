@@ -915,8 +915,10 @@ class helpers
           $_versions = [];
           $_versions['Thumbnail'] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['webthumbs'].$_row[2]->thumbnail;
           $_versions['Original'] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_row[1];
-          foreach ($_row[2]->scaled as $_scaled) {
-            $_versions['Resized'][] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_scaled;
+          if (is_array($_row[2]->scaled)) {
+            foreach ($_row[2]->scaled as $_scaled) {
+              $_versions['Resized'][] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_scaled;
+            }
           }
           $_row = [
             "Files" => $_versions,
@@ -935,16 +937,16 @@ class helpers
           switch ($_fieldsettings->history_command) {
             // Just Loading Objects
             case 'books':
-              $_nc[$_value] = $this->prepareApiStructureInfo($this->container->db->getBook($_value));
+              $_nc[$_value] = $this->prepareApiStructureInfo($this->container->db->getBook(intval($_value)));
               break;
             case 'issues':
-              $_nc[$_value] = $this->prepareApiStructureInfo($this->container->db->getIssue($_value));//$this->container->db->getIssues()->filterById($_value)->find()->toArray();
+              $_nc[$_value] = $this->prepareApiStructureInfo($this->container->db->getIssue(intval($_value)));
               break;
             case 'chapters':
-              $_nc[$_value] = $this->prepareApiStructureInfo($this->container->db->getFormat($_value));//$this->container->db->getFormats()->filterById($_value)->find()->toArray();
+              $_nc[$_value] = $this->prepareApiStructureInfo($this->container->db->getFormat(intval($_value)));
               break;
             case 'structural':
-              $_nc[$_value] = $this->prepareApiStructureInfo($this->container->db->getTemplatefield($_value));
+              $_nc[$_value] = $this->prepareApiStructureInfo($this->container->db->getTemplatefield(intval($_value)));
               break;
             case 'fixed':
               $_nc[$_value] = $_fieldsettings->fixedvalues[$_value];

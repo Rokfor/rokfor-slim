@@ -50,23 +50,22 @@ $container['db'] = function ($c) {
       $settings['dbname'],
       $settings['log'], 
       $settings['level'],
+      $c->paths,
       $settings['socket'],
       $settings['port'],
       $settings['versioning']
     );
-  $db->updatePaths(
-    $c->paths['sys'],
-    $c->paths['systhumbs'],
-    $c->paths['web'],
-    $c->paths['webthumbs'],
-    $c->paths['thmbsuffix'],
-    $c->paths['scaled'],
-    $c->paths['quality'],
-    $c->paths['process'],
-    $c->paths['store'],
-    $c->paths['icon']
-  );
   return $db;
+};
+
+$container['redis'] = function ($c) {
+  $settings = require __DIR__ . '/../config/database.php';
+  return [
+    'redis'      => $settings['redis'],
+    'redis_ip'   => $settings['redis_ip'],
+    'redis_port' => $settings['redis_port'],
+    'redis_prefix' => $settings['dbname'],
+  ];
 };
 
 // csrf middleware

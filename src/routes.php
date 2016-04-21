@@ -983,4 +983,4 @@ $app->group('/rf', function () {
   });
     
 
-})->add($identificator)->add($csrf)->add($authentification)->add($ajaxcheck);
+})->add($identificator)->add($csrf)->add($authentification)->add($ajaxcheck)->add($redis);

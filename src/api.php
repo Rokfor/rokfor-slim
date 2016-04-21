@@ -1,7 +1,6 @@
 <?php
 
 $app->group('/api', function () {
-
   /*
    * Pretty Print JSON
    */
@@ -239,4 +238,4 @@ $app->group('/api', function () {
     }
   )->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));
   
-})->add($apiauth);
+})->add($redis)->add($apiauth);

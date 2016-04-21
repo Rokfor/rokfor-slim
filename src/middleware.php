@@ -212,3 +212,54 @@ $apiauth = function ($request, $response, $next) {
   $r->getBody()->write(json_encode(["Error" => $msg]));
   return $r;
 };
+
+/**
+ * Check for a redis cache entry. If there is one, send it.
+ * Works only for GET Calls
+ * Redis Cache is cleared
+ * @author Urs Hofer
+ */
+
+$redis = function ($request, $response, $next) {
+  if ($this->redis['redis']) {
+    $qt = microtime(true);
+    $client = new \Predis\Client(
+      ['scheme' => 'tcp', 'host' => $this->redis['redis_ip'], 'port' => $this->redis['redis_port']],
+      ['prefix'  => $this->redis['redis_prefix'].':']
+    );
+    // Call Cache on Get
+    if ($request->isGet()) {
+      // Create Transaction Hash
+      $hash = md5($request->getUri()->getPath().$request->getUri()->getQuery().serialize($request->getHeader('Authorization')));
+      // Send Cache
+      if ($_cache = $client->get($hash)) {
+        $response->getBody()->write($_cache);
+        return $response->withAddedHeader('QueryTimeCache', (microtime(true) - $qt));
+      }
+      // Send Original
+      else {
+        $response = $next($request, $response);
+        $client->set($hash, $response->getBody());
+        return $response;
+      }
+    }
+    // Clear Cache on Post
+    if ($request->isPost()) {
+      $prefix = $client->getOptions()->__get('prefix')->getPrefix();
+      $keys = $client->keys("*");
+      $removed = 0;
+      foreach ($keys as $key) {
+        if (substr($key, 0, strlen($prefix)) == $prefix) {
+          $key = substr($key, strlen($prefix));
+          $client->del($key);
+        }
+      }
+      $response = $next($request, $response);
+      return $response;
+    }
+  }
+  else {
+    $response = $next($request, $response);
+    return $response;
+  }
+};
