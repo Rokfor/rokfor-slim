@@ -90,8 +90,9 @@ $ajaxcheck = function ($request, $response, $next) {
   $route = $request->getAttribute('route', null);
   if ($route) {
     $current = $route->getPattern();
-    if (!$request->isXhr() && !in_array($current, $settings)) 
-      throw new NotFoundException($request, $response);
+    if (!$request->isXhr() && !in_array($current, $settings)) {
+      return $response->withRedirect('/rf/login');
+    }
   }
   $response = $next($request, $response);
   return $response;
@@ -169,7 +170,7 @@ $identificator = function ($request, $response, $next) {
  */
 
 $apiauth = function ($request, $response, $next) {
-  
+
   // Option Requests
   
   if ($request->isOptions()) {
@@ -221,8 +222,6 @@ $apiauth = function ($request, $response, $next) {
  */
 
 $redis = function ($request, $response, $next) {
-  
-  
   if ($this->redis['redis'] && ($request->isPost() || $request->isGet())) {
     $qt = microtime(true);
     $client = new \Predis\Client(
@@ -236,7 +235,7 @@ $redis = function ($request, $response, $next) {
       // Send Cache
       if ($_cache = $client->get($hash)) {
         $response->getBody()->write($_cache);
-        return $response->withAddedHeader('QueryTimeCache', (microtime(true) - $qt));
+        return $response->withAddedHeader('X-Redis-Cache', 'true')->withAddedHeader('X-Redis-Time', (microtime(true) - $qt));
       }
       // Send Original
       else {
@@ -265,3 +264,34 @@ $redis = function ($request, $response, $next) {
     return $response;
   }
 };
+
+
+/**
+ * Cors Options: Passed to all
+ * 
+ * Rokfor does not restrict the api to a certain domain. Probably this can be changed in the future
+ * when the R/W api is ready
+ *
+ * @author Urs Hofer
+ */
+$app->add(function ($request, $response, $next) {
+  $corsOptions = [];
+  if ($request->isGet() || $request->isOptions()) {
+    $corsOptions = [
+      "origin"            => $this->settings['cors']['ro'],
+      "maxAge"            => 1728000,
+      "allowCredentials"  => true,
+      "allowMethods"      => array("GET", "OPTIONS")
+    ];
+  }
+  else {
+    $corsOptions = [
+      "origin"            => $this->settings['cors']['rw'],
+      "maxAge"            => 1728000,
+      "allowCredentials"  => true,
+      "allowMethods"      => array("POST")
+    ];
+  }
+  $cors = new \CorsSlim\CorsSlim($corsOptions);
+  return $cors->__invoke($request, $response, $next);
+});

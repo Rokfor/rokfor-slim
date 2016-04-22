@@ -7,24 +7,6 @@ $app->group('/api', function () {
   
     define('JSON_CONSTANTS', JSON_PRETTY_PRINT);
 
-  /**
-   * Cors Options
-   * 
-   * Rokfor does not restrict the api to a certain domain. Probably this can be changed in the future
-   * when the R/W api is ready
-   *
-   * @author Urs Hofer
-   */
-  $container = $this->getContainer();
-  $corsGetOptions = [
-    "origin" => $container->get('settings')['cors']['ro'],
-    "maxAge" => 1728000,
-    "allowCredentials" => true,
-    "allowMethods" => array("GET")
-  ];
-
-
-
   /*  Contributions Access
    * 
    *  Issue and chapter is either an integer or a combination of values seperated 
@@ -42,7 +24,7 @@ $app->group('/api', function () {
    */
   $this->options('/contributions/{issue:[0-9-]*}/{chapter:[0-9-]*}', 
     function ($request, $response, $args) {}
-  )->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));
+  );
   
   $this->get('/contributions/{issue:[0-9-]*}/{chapter:[0-9-]*}', 
     function ($request, $response, $args) {
@@ -103,7 +85,7 @@ $app->group('/api', function () {
       return $newResponse;
     }
   }
-  )->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));
+  );
 
   /* Single Contribution
    * 
@@ -111,7 +93,7 @@ $app->group('/api', function () {
    */
   $this->options('/contribution/{id:[0-9]*}', 
     function ($request, $response, $args) {}
-  )->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));  
+  );  
   
   $this->get('/contribution/{id:[0-9]*}', 
     function ($request, $response, $args) {
@@ -140,7 +122,7 @@ $app->group('/api', function () {
         return $newResponse;
       }
     }
-  )->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));
+  );
 
   /* Books
    * 
@@ -150,7 +132,7 @@ $app->group('/api', function () {
    */
   $this->options('/books[/{id:[0-9]*}]', 
     function ($request, $response, $args) {}
-  )->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));  
+  );  
   
   $this->get('/books[/{id:[0-9]*}]', 
     function ($request, $response, $args) {  
@@ -190,7 +172,7 @@ $app->group('/api', function () {
         return $newResponse;
       }
     }
-  )->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));
+  );
 
   /* Issues & Chapters
    * 
@@ -200,7 +182,7 @@ $app->group('/api', function () {
    */
   $this->options('/{action:issues|chapters}[/{id:[0-9]*}]', 
     function ($request, $response, $args) {}
-  )->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));  
+  );  
   
   $this->get('/{action:issues|chapters}[/{id:[0-9]*}]', 
     function ($request, $response, $args) {  
@@ -236,6 +218,6 @@ $app->group('/api', function () {
         return $newResponse;
       }
     }
-  )->add(\CorsSlim\CorsSlim::routeMiddleware($corsGetOptions));
+  );
   
 })->add($redis)->add($apiauth);
