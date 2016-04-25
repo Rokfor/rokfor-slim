@@ -82,6 +82,7 @@ $app->add(function ($request, $response, $next) {
 $ajaxcheck = function ($request, $response, $next) {
   $settings = [        
     '/rf/login',
+    '/rf/proxy',
     '/rf/logout',
     '/rf/dashboard',
     '/rf/',
@@ -217,7 +218,10 @@ $apiauth = function ($request, $response, $next) {
 /**
  * Check for a redis cache entry. If there is one, send it.
  * Works only for GET Calls
- * Redis Cache is cleared
+ * Redis Cache is cleared on POST Calls. This is cleary not optimal,
+ * since the cache is cleared on nearly most editing/backend calls.
+ * But due to the fact that Rokfor works as a Api-First CMS for Websites,
+ * Most website calls via API are cached after a editing process.
  * @author Urs Hofer
  */
 
@@ -228,8 +232,10 @@ $redis = function ($request, $response, $next) {
       ['scheme' => 'tcp', 'host' => $this->redis['redis_ip'], 'port' => $this->redis['redis_port']],
       ['prefix'  => $this->redis['redis_prefix'].':']
     );
-    // Call Cache on Get
-    if ($request->isGet()) {
+    $apicall = substr($request->getUri()->getPath(), 0, 4) === "/api";
+
+    // Call Cache on Get and Api Calls
+    if ($request->isGet() && $apicall) {
       // Create Transaction Hash
       $hash = md5($request->getUri()->getPath().$request->getUri()->getQuery().serialize($request->getHeader('Authorization')));
       // Send Cache
@@ -244,8 +250,9 @@ $redis = function ($request, $response, $next) {
         return $response;
       }
     }
-    // Clear Cache on Post
-    if ($request->isPost()) {
+
+    // Clear Cache on Post or Backend Calls
+    if ($request->isPost() || !$apicall) {
       $prefix = $client->getOptions()->__get('prefix')->getPrefix();
       $keys = $client->keys("*");
       $removed = 0;
