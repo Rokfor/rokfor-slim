@@ -10,4 +10,5 @@ public/udb/thumbs/*
 !public/udb/thumbs/thumb.jpg
 config/database.php
 config/settings.php
+config/redis.php
 logs/propel.log
