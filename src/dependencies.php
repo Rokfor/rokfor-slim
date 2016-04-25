@@ -59,12 +59,13 @@ $container['db'] = function ($c) {
 };
 
 $container['redis'] = function ($c) {
-  $settings = require __DIR__ . '/../config/database.php';
+  $settings = require __DIR__ . '/../config/redis.php';
+  $dbsettings = require __DIR__ . '/../config/database.php';
   return [
-    'redis'      => $settings['redis'],
-    'redis_ip'   => $settings['redis_ip'],
-    'redis_port' => $settings['redis_port'],
-    'redis_prefix' => $settings['dbname'],
+    'redis'        => $settings['redis'],
+    'redis_ip'     => $settings['redis_ip'],
+    'redis_port'   => $settings['redis_port'],
+    'redis_prefix' => $dbsettings['dbname'],
   ];
 };
 
