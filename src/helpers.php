@@ -164,7 +164,9 @@ class helpers
         'dd_formats' => $_ddf,
         'base_path' => '/rf/contributions/'.$_c->getIssues()->getForbook().'/'.$_c->getForissue().'/'.$_c->getForchapter(),
         'moddate' => $difftime,
-        'username' => $_c->getuserSysRef() ? $_c->getuserSysRef()->getUsername() : false
+        'username' => $_c->getuserSysRef() ? $_c->getuserSysRef()->getUsername() : false,
+        'private' =>  $_c->getTemplatenames()->getPublic() == 1 ? false : true,
+        'db' => &$this->container->db
       ]
     );
   }
@@ -908,16 +910,23 @@ class helpers
 
     // Parse & Prepare Image Content
     $_fieldsettings = json_decode($t->getConfigSys());
+    
     if ($t->getFieldtype() == "Bild") {
       $_protocol = '//';
       if (is_array($_content)) {
         foreach ($_content as &$_row) {
           $_versions = [];
-          $_versions['Thumbnail'] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['webthumbs'].$_row[2]->thumbnail;
-          $_versions['Original'] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_row[1];
+          $_versions['Thumbnail'] = $this->container->paths['s3'] === true
+                                    ? $_row[2]->thumbnail
+                                    : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['webthumbs'].$_row[2]->thumbnail;
+          $_versions['Original'] = $this->container->paths['s3'] === true
+                                   ? $_row[1]
+                                   : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_row[1];
           if (is_array($_row[2]->scaled)) {
             foreach ($_row[2]->scaled as $_scaled) {
-              $_versions['Resized'][] = $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_scaled;
+              $_versions['Resized'][] = $this->container->paths['s3'] === true
+                                        ? $_scaled
+                                        : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_scaled;
             }
           }
           $_row = [

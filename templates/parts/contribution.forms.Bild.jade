@@ -29,14 +29,18 @@
             th
         tbody
           :php
-            | $rows = json_decode($field->getContent(), true); $sortcount = 1;
+            | $rows = json_decode($field->getContent(), true); $sortcount = 1; if ($private === true) {$db->sign_request($rows);}
           if (is_array($rows))
             each row in $rows
               tr
                 td=$sortcount++
                 td
-                  a.rfimagetablepreview(href=$paths['web'].$row[1], target="_blank")
-                    img(data-file=$row[1], src=$paths['webthumbs'].$row[2]['thumbnail'])
+                  if ($paths['s3'] === false)
+                    a.rfimagetablepreview(href=$paths['web'].$row[1], target="_blank")
+                      img(data-file=$row[1], src=$paths['webthumbs'].$row[2]['thumbnail'])
+                  else
+                    a.rfimagetablepreview(href=$row[1], target="_blank")
+                      img(data-file=$row[1], src=$row[2]['thumbnail'])
                 if (count($config['caption_variants']) > 1)
                   :php
                     | $keyvariant = 0;
