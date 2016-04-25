@@ -8,10 +8,16 @@ return [
         
         'projectname'       => "ROKFOR",                           // Shown in the sidebar
         'timezone'          => "Europe/Zurich",                    // Ref. http://php.net/manual/de/timezones.php
-        'locale'            => 'de_DE.utf8',                            // Currently only de_DE
+        'locale'            => 'de_DE.utf8',                       // Currently only de_DE
 
         /*
          * Upload Handling
+         * 
+         * Currently Rokfor supports storage locally in a public availble folder
+         * or in the Amazon S3 cloud.
+         * If you decide to store files in the cloud, the sys and systhumbs folders must
+         * exist on the server as well. They are used to store temporary files but well be empty.
+         * 
          */
         
         'paths'   => [
@@ -38,6 +44,11 @@ return [
                                   'image/svg+xml'
                                 ],
           'icon'            => 'thumb.jpg'                        // Placeholder thumbnail for stored-only files
+          's3'              => false,                             // Amazon S3 Connection
+          's3_aws_key'      => "",                                // Amazon S3 Key
+          's3_aws_secret'   => "",                                // Amazon S3 Secret Key
+          's3_aws_region'   => "",                                // Amazon S3 Region
+          's3_aws_bucket'   => ""                                 // Amazon S3 Bucket Name
         ],
 
         /*
@@ -70,6 +81,7 @@ return [
           'strings'       => require                            // Path to translation file
                              __DIR__ .  '/../locale/translations.php'
         ],
+        
         'displayErrorDetails' => false,                           // Display Error Settings: set to false in production
         
 
