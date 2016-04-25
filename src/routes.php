@@ -982,5 +982,20 @@ $app->group('/rf', function () {
     $this->view->render($response, 'content-wrapper/exporters.jade', $args);      
   });
     
+  /* Proxy for private binary resources
+   * 
+   * 
+   * GET /rf/proxy
+   *
+   */
+  $this->get('/proxy', function ($request, $response, $args) {
+    $url = base64_decode(array_keys($request->getQueryParams())[0]);
+    $result = $this->db->proxy($url);
+    $body = $result->get('Body');
+    $body->rewind();
+    $r = $response->withHeader('Content-Type', $result['ContentType'])->withHeader('Content-Length', $result['ContentLength']);
+    $r->getBody()->write($body->read($result['ContentLength']));    
+    return $r;
+  });    
 
 })->add($redis)->add($identificator)->add($csrf)->add($authentification)->add($ajaxcheck);
