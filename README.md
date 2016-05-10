@@ -204,23 +204,24 @@ GET /api/contributions/:issueid|:issueid-:issueid.../:chapterid|:chapterid-:chap
 
 Options:
 
-- query=string                         (default: empty)
-- filter=[int|...]:[lt|gt|eq|like]     (default: all fields:like)
-- sort=[id|date|name|sort]:[asc|desc]  (default: sort:asc)
-- limit=int                            (default: empty)
-- offset=int                           (default: empty)
-- data=[Fieldname|Fieldname|XX]        (default: empty)
-- populate=true|false                  (default: false)
-- verbose=true|false                   (default: false)
+- query=string                                    (default: empty)
+- filter=[templateid|...]:[lt[e]|gt[e]|eq|like]   (default: allfields:like)
+- sort=[id|date|name|sort|templateid]:[asc|desc]  (default: sort:asc)
+- limit=int                                       (default: empty)
+- offset=int                                      (default: empty)
+- data=[Fieldname|Fieldname|XX]                   (default: empty)
+- populate=true|false                             (default: false)
+- verbose=true|false                              (default: false)
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -   Query: search for a string within the contribution name or the text fields
 -   Filter: Applies the search string passed in query to certain fields only.
     Furthermore, the comparison can be defined with equal, less than, greater than
-    or like (eq,lt,gt,like). 
--   Sort: Sort the results by id, date, name or manual sort number either 
-    ascending or descending.
+    or like (eq,lt,lte,gt,gte,like). Less and greater than does automatically cast
+    a string to a number.
+-   Sort: Sort the results by id, date, name or manual sort number (sort) either 
+    ascending or descending. It is also possible to sort by a custom id of a template field.
 -   Limit and Offset: Create pages with a length of [limit] elements starting at
     [offset].
 -   Data: Add additional field infos to the result set of a contributions.
