@@ -40,18 +40,24 @@ $app->group('/api', function () {
 
     $_limit  = $request->getQueryParams()['limit'] ? intval($request->getQueryParams()['limit']) : null;
     $_offset = $request->getQueryParams()['offset'] ? intval($request->getQueryParams()['offset']) : null;
+    $_query  = $request->getQueryParams()['query'] ? $request->getQueryParams()['query'] : false;
+
+    // Parse Query Strings...
+    if ($_query == "date:now") {
+      $_query = time();
+    }
     
     list($filterfields, $filterclause) = explode(':',$request->getQueryParams()['filter']);
     $qt = microtime(true);
-    $c = $request->getQueryParams()['query']
-          ? $this->db->searchContributions($request->getQueryParams()['query'], $args['issue'], $args['chapter'], 'Close', $_limit, $_offset, $filterfields, $filterclause, $request->getQueryParams()['sort'])
+    $c = $_query
+          ? $this->db->searchContributions($_query, $args['issue'], $args['chapter'], 'Close', $_limit, $_offset, $filterfields, $filterclause, $request->getQueryParams()['sort'])
           : $this->db->getContributions($args['issue'], $args['chapter'], $request->getQueryParams()['sort'], 'Close', $_limit,  $_offset);
 
     if (is_object($c)) {
       
       // Counting Max Objects without pages and limits
-      $_count = $request->getQueryParams()['query']
-          ? $this->db->searchContributions($request->getQueryParams()['query'], $args['issue'], $args['chapter'], 'Close', false, false, $filterfields, $filterclause, false, true)
+      $_count = $_query
+          ? $this->db->searchContributions($_query, $args['issue'], $args['chapter'], 'Close', false, false, $filterfields, $filterclause, false, true)
           : $this->db->getContributions($args['issue'], $args['chapter'], false, 'Close', false, false, true);
 
       foreach ($c as $_c) {
