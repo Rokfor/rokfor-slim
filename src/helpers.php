@@ -984,6 +984,40 @@ class helpers
       }
     }
     
+    $parse_tags = function($template, $contribid) {
+      if (preg_match_all("/{{(.*?)}}/", $template, $m)) {
+        foreach ($m[1] as $i => $varname) {
+          list($fieldname,$id) = explode(":", $varname);
+          $_imagedata = $this->container->db->getData()
+            ->filterByForcontribution($contribid) 
+            ->useTemplatesQuery()
+              ->filterByFieldname($fieldname)
+            ->endUse()
+            ->findOne()
+            ->getContent();
+          if ($_row = @json_decode($_imagedata)[$id-1]) {
+            if (is_array($_row[2]->scaled)) {
+              $_imgstring = '<figure>';
+              foreach ($_row[2]->scaled as $_key=>$_scaled) {
+                $_imgstring .= '<img class="scaled_'.$_key.'" src="';
+                $_imgstring .= ($this->container->paths['s3'] === true
+                                 ? $_scaled
+                                 : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_scaled);
+                $_imgstring .= '">';
+              }
+              
+              foreach ((array)$_row[0] as $_key=>$caption) {
+                $_imgstring .= '<figcaption class="caption_'.$_key.'">'.$caption.'</figcaption>';
+              }
+              $_imgstring .= '</figure>';              
+              $template = str_replace($m[0][$i], $_imgstring, $template);
+            }
+          }
+        }
+      }
+      return $template;
+    };
+    
     // Prepare Text Editors
     // echo $Parsedown->text('Hello _Parsedown_!'); # prints: <p>Hello <em>Parsedown</em>!</p>
     $_parsed = false;
@@ -992,7 +1026,7 @@ class helpers
         $_parsed = [];        
         foreach ($_content as $__c) {
           if ($_fieldsettings->rtfeditor)
-            $_parsed[] = strip_tags($__c);
+            $_parsed[] = $parse_tags($__c, $field->getForcontribution());
           else if ($_fieldsettings->markdowneditor)
             $_parsed[] = $this->Parsedown->text($__c);
           else
@@ -1001,7 +1035,7 @@ class helpers
       }
       else {
         if ($_fieldsettings->rtfeditor)
-          $_parsed = strip_tags($_content);
+          $_parsed = $parse_tags($_content, $field->getForcontribution());
         else if ($_fieldsettings->markdowneditor)
           $_parsed = $this->Parsedown->text($_content);
         else
