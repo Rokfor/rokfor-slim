@@ -985,6 +985,7 @@ class helpers
     }
     
     $parse_tags = function($template, $contribid) {
+      $_protocol = '//';
       if (preg_match_all("/{{(.*?)}}/", $template, $m)) {
         foreach ($m[1] as $i => $varname) {
           list($fieldname,$id) = explode(":", $varname);
