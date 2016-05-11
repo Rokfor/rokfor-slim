@@ -1136,6 +1136,7 @@ class helpers
         "ForchapterName"          => $c->getFormats()->getName(),
         "FortemplateName"         => $c->getTemplatenames()->getName(),
         "ForbookName"             => $_book->getName(),
+        "Sort"                    => $c->getSort(),
         "ReferencedFrom"          => $_references,
       ];
     }
@@ -1154,6 +1155,7 @@ class helpers
         "ForchapterName"          => $c->getFormats()->getName(),
         "FortemplateName"         => $c->getTemplatenames()->getName(),
         "ForbookName"             => $_book->getName(),
+        "Sort"                    => $c->getSort(),        
         "ReferencedFrom"          => $_references,        
       ];
     }
