@@ -204,19 +204,22 @@ GET /api/contributions/:issueid|:issueid-:issueid.../:chapterid|:chapterid-:chap
 
 Options:
 
-- query=string                                    (default: empty)
-- filter=[templateid|...]:[lt[e]|gt[e]|eq|like]   (default: allfields:like)
-- sort=[id|date|name|sort|templateid]:[asc|desc]  (default: sort:asc)
-- limit=int                                       (default: empty)
-- offset=int                                      (default: empty)
-- data=[Fieldname|Fieldname|XX]                   (default: empty)
-- populate=true|false                             (default: false)
-- verbose=true|false                              (default: false)
+- query=string                                                (default: empty)
+- filter=[id|date|sort|templateid[s]]:[lt[e]|gt[e]|eq|like]   (default: [omitted]:like)
+- sort=[id|date|name|sort|templateid[s]]:[asc|desc]           (default: sort:asc)
+- limit=int                                                   (default: empty)
+- offset=int                                                  (default: empty)
+- data=[Fieldname|Fieldname|XX]                               (default: empty)
+- populate=true|false                                         (default: false)
+- verbose=true|false                                          (default: false)
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -   Query: search for a string within the contribution name or the text fields
--   Filter: Applies the search string passed in query to certain fields only.
+-   Filter: Applies the search string passed in query to certain fields, to the creation
+    date, the contribution id or sort number.
+    By default (if fields are omitted) the search query is applied to the name of the 
+    contribution and its content fields (full text search).
     Furthermore, the comparison can be defined with equal, less than, greater than
     or like (eq,lt,lte,gt,gte,like). Less and greater than does automatically cast
     a string to a number.
@@ -241,6 +244,14 @@ GET /api/contributions/1/14-5?query=New+York
 GET /api/contributions/1/14-5?query=New+York&filter=1|6:eq
 
     Searches for all contributions within issue 1 and chapters 14 and 5 for the exact String "New York" within both fields with the template id 1 and 6.
+
+GET /api/contributions/1/14-5?query=12&filter=sort:gtlimit=1
+
+    Searches for all contributions within issue 1 and chapters 14 and 5 with a sort value > 12 and a limitation to 1 item. This represents the next contribution in a manually sorted list, since the list is has a default sort order by 'sort, asc'.
+
+GET /api/contributions/1/14-5?query=12&filter=sort:lt&sort=sort:desc&limit=1
+
+    Searches for all contributions within issue 1 and chapters 14 and 5 with a sort value < 12 and a limitation to 1 item, order descending. This represents the previous contribution in a manually sorted list.
 
 GET /api/contributions/12/19?limit=10&offset=20
 
