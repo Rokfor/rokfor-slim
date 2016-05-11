@@ -1008,7 +1008,7 @@ class helpers
               }
               
               foreach ((array)$_row[0] as $_key=>$caption) {
-                $_imgstring .= '<figcaption data-ng-if="rf_lang == '.$_key.'" class="caption_'.$_key.'">'.$caption.'</figcaption>';
+                $_imgstring .= '<figcaption rf-caption class="caption_'.$_key.'">'.$caption.'</figcaption>';
               }
               $_imgstring .= '</figure>';              
               $template = str_replace($m[0][$i], $_imgstring, $template);
