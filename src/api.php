@@ -51,14 +51,14 @@ $app->group('/api', function () {
     
     list($filterfields, $filterclause) = explode(':',$request->getQueryParams()['filter']);
     $qt = microtime(true);
-    $c = $_query
+    $c = $_query !== false
           ? $this->db->searchContributions($_query, $args['issue'], $args['chapter'], 'Close', $_limit, $_offset, $filterfields, $filterclause, $request->getQueryParams()['sort'], false, $_template)
           : $this->db->getContributions($args['issue'], $args['chapter'], $request->getQueryParams()['sort'], 'Close', $_limit,  $_offset, false, $_template);
 
     if (is_object($c)) {
       
       // Counting Max Objects without pages and limits
-      $_count = $_query
+      $_count = $_query !== false
           ? $this->db->searchContributions($_query, $args['issue'], $args['chapter'], 'Close', false, false, $filterfields, $filterclause, false, true, $_template)
           : $this->db->getContributions($args['issue'], $args['chapter'], false, 'Close', false, false, true, $_template);
 
