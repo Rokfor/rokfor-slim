@@ -41,7 +41,7 @@ $app->group('/api', function () {
 
     $_limit  = $request->getQueryParams()['limit'] ? intval($request->getQueryParams()['limit']) : null;
     $_offset = $request->getQueryParams()['offset'] ? intval($request->getQueryParams()['offset']) : null;
-    $_query  = $request->getQueryParams()['query'] ? $request->getQueryParams()['query'] : false;
+    $_query  = isset($request->getQueryParams()['query']) ? $request->getQueryParams()['query'] : false;
     $_template = $request->getQueryParams()['template'] ? (int)$request->getQueryParams()['template'] : false;
 
     // Parse Query Strings...
