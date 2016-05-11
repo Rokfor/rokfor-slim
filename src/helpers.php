@@ -998,7 +998,7 @@ class helpers
             ->getContent();
           if ($_row = @json_decode($_imagedata)[$id-1]) {
             if (is_array($_row[2]->scaled)) {
-              $_imgstring = '<figure>';
+              $_imgstring = '<figure class="rf-parsed">';
               foreach ($_row[2]->scaled as $_key=>$_scaled) {
                 $_imgstring .= '<img class="scaled_'.$_key.'" src="';
                 $_imgstring .= ($this->container->paths['s3'] === true
