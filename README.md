@@ -212,6 +212,7 @@ Options:
 - data=[Fieldname|Fieldname|XX]                               (default: empty)
 - populate=true|false                                         (default: false)
 - verbose=true|false                                          (default: false)
+- template=id                                                 (default: empty)
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -234,6 +235,7 @@ Options:
 -   Populate: Sends all data (true). Equals data=All|Available|Fields
 -   Verbose: Send complete Information about a dataset. In most cases, this 
     is too much and just slowing down the connection.
+-   Template: limit to a certain template id
 
 Examples:
 
@@ -265,6 +267,9 @@ GET /api/contributions/1/1?populate=true&verbose=true
 
     Returns all contributions of chapter 1 and issue 1. Adds all fields to each contribution and additionally prints a lot of information to each field and contribution.
 
+GET /api/contributions/1/1?template=12
+
+    Returns all contributions of chapter 1 and issue 1 based on the template 12
 
 **Loading a single contribution:**
 
