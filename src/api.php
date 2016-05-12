@@ -5,7 +5,8 @@ $app->group('/api', function () {
    * Pretty Print JSON
    */
   
-    //define('JSON_CONSTANTS', JSON_PRETTY_PRINT);
+//    define('JSON_CONSTANTS', JSON_PRETTY_PRINT);
+    define('JSON_CONSTANTS', 0);
 
   /*  Contributions Access
    * 
