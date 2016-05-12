@@ -5,7 +5,7 @@ $app->group('/api', function () {
    * Pretty Print JSON
    */
   
-    define('JSON_CONSTANTS', JSON_PRETTY_PRINT);
+    //define('JSON_CONSTANTS', JSON_PRETTY_PRINT);
 
   /*  Contributions Access
    * 
@@ -37,12 +37,12 @@ $app->group('/api', function () {
     if (stristr($args['chapter'],'-')) {
       $args['chapter'] = explode('-', $args['chapter']);
     }      
-    $compact = $request->getQueryParams()['verbose'] == "true" ? false : true;
 
-    $_limit  = $request->getQueryParams()['limit'] ? intval($request->getQueryParams()['limit']) : null;
-    $_offset = $request->getQueryParams()['offset'] ? intval($request->getQueryParams()['offset']) : null;
-    $_query  = isset($request->getQueryParams()['query']) ? $request->getQueryParams()['query'] : false;
-    $_template = $request->getQueryParams()['template'] ? (int)$request->getQueryParams()['template'] : false;
+    $compact = $request->getQueryParams()['verbose'] == "true" ? false : true;
+    $_limit    = isset($request->getQueryParams()['limit']) ? intval($request->getQueryParams()['limit']) : null;
+    $_offset   = isset($request->getQueryParams()['offset']) ? intval($request->getQueryParams()['offset']) : null;
+    $_query    = isset($request->getQueryParams()['query']) ? $request->getQueryParams()['query'] : false;
+    $_template = isset($request->getQueryParams()['template']) ? (int)$request->getQueryParams()['template'] : false;
 
     // Parse Query Strings...
     if ($_query == "date:now") {
