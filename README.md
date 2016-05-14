@@ -206,7 +206,7 @@ Options:
 
 - query=string                                                (default: empty)
 - filter=[id|date|sort|templateid[s]]:[lt[e]|gt[e]|eq|like]   (default: [omitted]:like)
-- sort=[id|date|name|sort|templateid[s]]:[asc|desc]           (default: sort:asc)
+- sort=[[id|date|name|sort]|chapter|issue|templateid[s]]:[asc|desc]           (default: sort:asc)
 - limit=int                                                   (default: empty)
 - offset=int                                                  (default: empty)
 - data=[Fieldname|Fieldname|XX]                               (default: empty)
@@ -226,6 +226,10 @@ Options:
     a string to a number.
 -   Sort: Sort the results by id, date, name or manual sort number (sort) either 
     ascending or descending. It is also possible to sort by a custom id of a template field.
+    Contributions can also be sorted by chapter or issue.
+    Please note: You need to choose between id, date, name and sort. You can add one
+    custom sort field and the chapter and issue flag. i.E:
+    sort=date|chapter|issue|23 would sort by date, chapter, issue and the custom field 23.
 -   Limit and Offset: Create pages with a length of [limit] elements starting at
     [offset].
 -   Data: Add additional field infos to the result set of a contributions.
