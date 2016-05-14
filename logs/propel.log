@@ -1,1 +1,0 @@
-[2016-05-15 00:06:55] defaultLogger.ERROR: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'IssueSortColumn.__sort__' in 'field list' [] []
