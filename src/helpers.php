@@ -929,9 +929,18 @@ class helpers
                                         : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_scaled;
             }
           }
+          // Parse Captions
+          $_caps_parsed = [];
+          if (is_array($_row[0])) {
+            foreach ($_row[0] as $_cap) $_caps_parsed[] = nl2br($_cap);
+          }
+          else $_caps_parsed = nl2br($_row[0]);
+          
+          
           $_row = [
-            "Files" => $_versions,
-            "Captions" => $_row[0]
+            "Files"    => $_versions,
+            "Captions" => $_row[0],
+            "Parsed"   => $_caps_parsed
           ];
         }
       }
