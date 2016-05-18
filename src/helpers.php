@@ -1007,7 +1007,7 @@ class helpers
             ->getContent();
           if ($_row = @json_decode($_imagedata)[$id-1]) {
             if (is_array($_row[2]->scaled)) {
-              $_imgstring = '<figure class="rf-parsed">';
+              $_imgstring = '<figure class="rf-parsed"><div class="rf-container">';
               foreach ($_row[2]->scaled as $_key=>$_scaled) {
                 $_imgstring .= '<img class="scaled_'.$_key.'" src="';
                 $_imgstring .= ($this->container->paths['s3'] === true
@@ -1019,7 +1019,7 @@ class helpers
               foreach ((array)$_row[0] as $_key=>$caption) {
                 $_imgstring .= '<figcaption rf-caption class="caption_'.$_key.'">'.$caption.'</figcaption>';
               }
-              $_imgstring .= '</figure>';              
+              $_imgstring .= '</div></figure>';              
               $template = str_replace($m[0][$i], $_imgstring, $template);
             }
           }
