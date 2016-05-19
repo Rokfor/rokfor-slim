@@ -13,7 +13,9 @@
         enableReverseGeocode: true,
         enableAutocomplete: true,
         inputBinding: {
-          locationNameInput: picker.parents('div.form-group').prev().find('input')
+          locationNameInput: picker.parents('div.form-group').prev().find('input.location'),
+          latitudeInput: picker.parents('div.form-group').prev().find('input.lat'),
+          longitudeInput: picker.parents('div.form-group').prev().find('input.long')
         },
         oninitialized: function() {
           picker.locationpicker('autosize');

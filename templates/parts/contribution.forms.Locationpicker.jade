@@ -14,8 +14,13 @@
         | $_data = json_decode($field->getContent(), true);
       .form-group
         label.col-sm-2.control-label=$translations['picker_address']
-        .col-sm-10
-          input.form-control
+        .col-sm-6
+          input.form-control.location
+        .col-sm-2
+          input.form-control.lat
+        .col-sm-2
+          input.form-control.long
+
       .form-group
         label.col-sm-2.control-label=$translations['picker_map']
         .col-sm-10
