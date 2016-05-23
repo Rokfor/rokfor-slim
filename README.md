@@ -217,6 +217,7 @@ Options:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -   Query: search for a string within the contribution name or the text fields
+    Special queries: date:now is transformed into the current time stamp
 -   Filter: Applies the search string passed in query to certain fields, to the creation
     date, the contribution id or sort number.
     By default (if fields are omitted) the search query is applied to the name of the 

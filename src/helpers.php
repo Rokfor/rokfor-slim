@@ -998,30 +998,43 @@ class helpers
       if (preg_match_all("/{{(.*?)}}/", $template, $m)) {
         foreach ($m[1] as $i => $varname) {
           list($fieldname,$id) = explode(":", $varname);
-          $_imagedata = $this->container->db->getData()
-            ->filterByForcontribution($contribid) 
-            ->useTemplatesQuery()
-              ->filterByFieldname($fieldname)
-            ->endUse()
-            ->findOne()
-            ->getContent();
-          if ($_row = @json_decode($_imagedata)[$id-1]) {
-            if (is_array($_row[2]->scaled)) {
-              $_imgstring = '<figure class="rf-parsed"><div class="rf-container">';
-              foreach ($_row[2]->scaled as $_key=>$_scaled) {
-                $_imgstring .= '<img class="scaled_'.$_key.'" src="';
-                $_imgstring .= ($this->container->paths['s3'] === true
-                                 ? $_scaled
-                                 : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_scaled);
-                $_imgstring .= '">';
-              }
-              
-              foreach ((array)$_row[0] as $_key=>$caption) {
-                $_imgstring .= '<figcaption rf-caption class="caption_'.$_key.'">'.$caption.'</figcaption>';
-              }
-              $_imgstring .= '</div></figure>';              
+          
+          switch ($fieldname) {
+            case '__vimeo__':
+              $_imgstring = '<iframe class="rf-embedded rf-vimeo" src="https://player.vimeo.com/video/'.$id.'?title=0&byline=0&portrait=0" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>';
               $template = str_replace($m[0][$i], $_imgstring, $template);
-            }
+              break;
+            case '__youtube__':
+              $_imgstring = '<iframe class="rf-embedded rf-youtube" src="https://www.youtube.com/embed/'.$id.'" frameborder="0" allowfullscreen></iframe>';
+              $template = str_replace($m[0][$i], $_imgstring, $template);
+              break;            
+            default:
+              $_imagedata = $this->container->db->getData()
+                ->filterByForcontribution($contribid) 
+                ->useTemplatesQuery()
+                  ->filterByFieldname($fieldname)
+                ->endUse()
+                ->findOne()
+                ->getContent();
+              if ($_row = @json_decode($_imagedata)[$id-1]) {
+                if (is_array($_row[2]->scaled)) {
+                  $_imgstring = '<figure class="rf-parsed"><div class="rf-container">';
+                  foreach ($_row[2]->scaled as $_key=>$_scaled) {
+                    $_imgstring .= '<img class="scaled_'.$_key.'" src="';
+                    $_imgstring .= ($this->container->paths['s3'] === true
+                                     ? $_scaled
+                                     : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_scaled);
+                    $_imgstring .= '">';
+                  }
+              
+                  foreach ((array)$_row[0] as $_key=>$caption) {
+                    $_imgstring .= '<figcaption rf-caption class="caption_'.$_key.'">'.$caption.'</figcaption>';
+                  }
+                  $_imgstring .= '</div></figure>';              
+                  $template = str_replace($m[0][$i], $_imgstring, $template);
+                }
+              }
+              break;
           }
         }
       }
