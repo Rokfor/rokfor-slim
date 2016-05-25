@@ -48,7 +48,7 @@ $app->group('/api', function () {
     
     // Translate $_status to Rokfor Standards
     $_status   = 'Close';
-    switch (strtolower($request->getQueryParams()['template'])) {
+    switch (strtolower($request->getQueryParams()['status'])) {
       case 'draft':
         $_status = 'Draft';
         break;
