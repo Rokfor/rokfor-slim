@@ -29,6 +29,8 @@ section.content(data-path=base_path)
                 li
                   a.text-blue(href="/rf/contributions/Open")=$translations["status_open"]
                 li
+                  a.text-orange(href="/rf/contributions/Draft")=$translations["status_draft"]
+                li
                   a.text-red(href="/rf/contributions/Deleted")=$translations["status_deleted"]
                 li.divider
                 li
@@ -70,13 +72,16 @@ section.content(data-path=base_path)
                       td=contribution->getName()
                       td
                         a.btn.btn-xs(
-                          data-status=json_encode(["Open"=>$translations["status_open"],"Close"=>$translations["status_close"],"Deleted"=>$translations["status_deleted"]]),
+                          data-status=json_encode(["Open"=>$translations["status_open"],"Draft"=>$translations["status_draft"],"Close"=>$translations["status_close"],"Deleted"=>$translations["status_deleted"]]),
                           class=(
                             $contribution->getStatus()=='Open'?
                               "btn-primary":
-                              ($contribution->getStatus()=='Deleted' ? 
-                                'btn-danger':
-                                'btn-success')
+                              ($contribution->getStatus()=='Draft' ? 
+                                'btn-warning':
+                                ($contribution->getStatus()=='Deleted' ? 
+                                  'btn-danger':
+                                  'btn-success')
+                                )
                             ),
                           href="/rf/contributions/".$contribution->getStatus()
                           )=$translations[strtolower("status_".$contribution->getStatus())]

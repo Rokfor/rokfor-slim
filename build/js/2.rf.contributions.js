@@ -123,9 +123,13 @@
             bt_class = 'btn-primary';
             action = 'Open';
           break;
-          case 'Open':
+          case 'Draft':
             bt_class = 'btn-success';
             action = 'Close';
+          break;          
+          case 'Open':
+            bt_class = 'btn-warning';
+            action = 'Draft';
           break;
         }
         if (bt_class) {
@@ -133,7 +137,7 @@
             $.rokfor.contributions.bulkaction($(this).parents('section.content').attr('data-path') , {action: action, id: [id]});
             $(this)
               .attr('href', '/rf/contributions/'+ action)
-              .removeClass('btn-success btn-primary')
+              .removeClass('btn-success btn-primary btn-warning')
               .addClass(bt_class)
               .text(translations[action]);
           }
@@ -171,6 +175,9 @@
           break;
           case 'Close':
             bt_class = 'btn-success';
+          break;
+          case 'Draft':
+            bt_class = 'btn-warning';
           break;
           case 'Open':
             bt_class = 'btn-primary';

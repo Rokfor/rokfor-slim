@@ -23,6 +23,7 @@ $app->group('/api', function () {
    *  - populate=true|false              (default: false)
    *  - verbose=true|false               (default: false)
    *  - template=id                      (default: false)
+   *  - status=draft|published|both      (default: published)
    */
   $this->options('/contributions/{issue:[0-9-]*}/{chapter:[0-9-]*}', 
     function ($request, $response, $args) {}
@@ -44,6 +45,20 @@ $app->group('/api', function () {
     $_offset   = isset($request->getQueryParams()['offset']) ? intval($request->getQueryParams()['offset']) : null;
     $_query    = isset($request->getQueryParams()['query']) ? $request->getQueryParams()['query'] : false;
     $_template = isset($request->getQueryParams()['template']) ? (int)$request->getQueryParams()['template'] : false;
+    
+    // Translate $_status to Rokfor Standards
+    $_status   = 'Close';
+    switch (strtolower($request->getQueryParams()['template'])) {
+      case 'draft':
+        $_status = 'Draft';
+        break;
+      case 'both':
+        $_status = ['Draft', 'Close'];
+        break;
+      default:
+        $_status = 'Close';
+        break;
+    }
 
     // Parse Query Strings...
     if ($_query == "date:now") {
@@ -53,15 +68,15 @@ $app->group('/api', function () {
     list($filterfields, $filterclause) = explode(':',$request->getQueryParams()['filter']);
     $qt = microtime(true);
     $c = $_query !== false
-          ? $this->db->searchContributions($_query, $args['issue'], $args['chapter'], 'Close', $_limit, $_offset, $filterfields, $filterclause, $request->getQueryParams()['sort'], false, $_template)
-          : $this->db->getContributions($args['issue'], $args['chapter'], $request->getQueryParams()['sort'], 'Close', $_limit,  $_offset, false, $_template);
+          ? $this->db->searchContributions($_query, $args['issue'], $args['chapter'], $_status, $_limit, $_offset, $filterfields, $filterclause, $request->getQueryParams()['sort'], false, $_template)
+          : $this->db->getContributions($args['issue'], $args['chapter'], $request->getQueryParams()['sort'], $_status, $_limit,  $_offset, false, $_template);
 
     if (is_object($c)) {
       
       // Counting Max Objects without pages and limits
       $_count = $_query !== false
-          ? $this->db->searchContributions($_query, $args['issue'], $args['chapter'], 'Close', false, false, $filterfields, $filterclause, false, true, $_template)
-          : $this->db->getContributions($args['issue'], $args['chapter'], false, 'Close', false, false, true, $_template);
+          ? $this->db->searchContributions($_query, $args['issue'], $args['chapter'], $_status, false, false, $filterfields, $filterclause, false, true, $_template)
+          : $this->db->getContributions($args['issue'], $args['chapter'], false, $_status, false, false, true, $_template);
 
       foreach ($c as $_c) {
         // Check for publish date.
@@ -110,7 +125,7 @@ $app->group('/api', function () {
       $qt = microtime(true);
       $compact = $request->getQueryParams()['verbose'] ? false : true;
       $c = $this->db->getContribution($args['id']);
-      if ($c && $c->getStatus()=="Close") {
+      if ($c && ($c->getStatus()=="Close" || $c->getStatus()=="Draft")) {
         $response->getBody()->write(json_encode([
           "Contribution"              => $this->helpers->prepareApiContribution($c, $compact),
           "Data"                      => $this->helpers->prepareApiContributionData($c, $compact),

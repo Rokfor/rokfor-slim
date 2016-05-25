@@ -423,6 +423,7 @@ $app->group('/rf', function () {
       switch ($data['action']) {
         case 'Deleted':
         case 'Open':
+        case 'Draft':
         case 'Close':
           $this->db->ChangeStateContributions($data['id'], $data['action']);
         break;
@@ -502,6 +503,7 @@ $app->group('/rf', function () {
     switch ($data['action']) {
       case 'Deleted':
       case 'Open':
+      case 'Draft':
       case 'Close':
         $this->db->ChangeStateContributions($data['id'], $data['action']);
       break;

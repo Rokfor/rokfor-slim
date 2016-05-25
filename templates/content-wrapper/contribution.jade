@@ -16,9 +16,12 @@ section.content-header
         class=(
           $contribution->getStatus()=='Open'?
             "label-primary":
-            ($contribution->getStatus()=='Deleted' ? 
-              'label-danger':
-              'label-success')
+            ($contribution->getStatus()=='Draft' ? 
+              'label-warning':
+              ($contribution->getStatus()=='Deleted' ? 
+                'label-danger':
+                'label-success')
+            )
           )
         )=$translations[strtolower("status_".$contribution->getStatus())]
     small
