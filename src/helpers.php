@@ -114,7 +114,7 @@ class helpers
   }
 
 
-  public function timeFormatHelper($timestamp, $format) {
+  static function timeFormatHelper($timestamp, $format) {
     if (!$format) {
       $format = 'd/m/Y H:i';
     }

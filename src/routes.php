@@ -548,7 +548,8 @@ $app->group('/rf', function () {
    */
 
   $this->get('/contribution/{id:[0-9]*}', function ($request, $response, $args) {
-    $this->helpers->prepareContributionTemplate($this->db->getContribution($args['id']), $args);
+    $contribution = $this->db->getContribution($args['id']);
+    $this->helpers->prepareContributionTemplate($contribution, $args);
     // Store in Laste Open Log File
     $this->db->addLog('get_contribution', $args['id'] , $request->getAttribute('ip_address'));
     $this->view->render($response, 'content-wrapper/contribution.jade', $args);
@@ -574,6 +575,12 @@ $app->group('/rf', function () {
         $_c
           ->setConfigSys(json_encode($config))
           ->save();
+        
+        /*
+        $_r = $this->get('redis')['client']->get('*');
+        print_r($_r);
+        */
+
         $r = $response->withHeader('Content-type', 'application/json');
         $r->getBody()->write(json_encode($this->view->offsetGet('csrf')));
         return $r;
