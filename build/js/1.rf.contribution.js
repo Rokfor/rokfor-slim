@@ -30,6 +30,7 @@
 
     $('.rfuploader').each(function(i,n) {
       var uploader = $(this);
+      var supress_submission = false;
       uploader.dmUploader({
         url: '',
         dataType: 'json',
@@ -66,6 +67,7 @@
             for (var i = 0; i < table.columns().nodes().length - 2; i++) {
               template.push(data.caption);
             }
+            supress_submission = true;
             if (data.growing) {
               table.row.add(template).draw();
             }
@@ -83,18 +85,31 @@
           console.log("Upload Error", id, 'error', message);
         }
       });
+      
+
+      
+      var serialize = function(){};
+      
       var table = uploader.next('.box-footer').find('table').DataTable({
         "paging": false,
         "lengthChange": false,
         "searching": false,
-        "ordering": false,
+        "ordering": true,
         "rowReorder": {
           selector: 'td:first-child',
-          update: false
+          update: true
         },
         "info": false,
+        "drawCallback": function( settings ) {
+          if (supress_submission === true) {
+            supress_submission = false;
+          }
+          else {
+            serialize(true);
+          }
+        },
         "autoWidth": false,
-        "dom": 'rt',
+        "dom": 'rtp',
         "columnDefs": [ 
                         {
                           "targets": 0,
@@ -121,7 +136,7 @@
                           "targets": '_all',
                           "defaultContent": '',
                           "render": function(data) {
-                            return ('<textarea class="rowedit">' + data + '</textarea>');
+                            return ('<textarea name="caption[][]" class="rowedit">' + data + '</textarea>');
                           }
                         }
                       ]    
@@ -130,8 +145,6 @@
             e.stopPropagation();
             var row = table.row($(this).parents('tr'));
             row.remove().draw();
-            table.positions = false;
-            serialize(table, false, true);
             return false;
         })
         .on('click', 'a.rfimagetablepreview', function(e){
@@ -139,18 +152,68 @@
         })        
         .on('mousedown', 'a.rfimagetablepreview', function(e){
           e.stopPropagation();
-        })                
-        .on('row-reorder', function(a,diff,c) {
-          serialize(table,diff, true);
         })
-/*        .on('order', function(a,b,c) {
-          serialize(table);
-        })*/
         .on('keyup', 'textarea', function(e){
+          $(this).next().html($(this).val());
           e.stopPropagation();
-          serialize(table);
+          serialize(false)
           return false;
         });
+
+        var serialize = function(force) {
+          force = force || false;   // Force: Store without timeout
+          // Output the data for the visible rows to the browser's console
+//          var api = tbl.api();
+//          console.log( table.rows().data() );
+//          var data = table.$('img, textarea').serialize();
+//          console.log(data)
+
+          var cols = table.columns().nodes().length;
+          var d = [];
+          var row_pointer;
+          var oldrow;
+          
+          table.cells().every( function ( rowIdx, cellIdx) {
+            if (rowIdx !== oldrow) {
+              row_pointer = row_pointer + 1 || 0;
+            }
+            d[row_pointer] = d[row_pointer] || [];
+            if (cellIdx > 0) {
+              if (cellIdx==1) {
+                d[row_pointer][1] = $(this.node()).find('img').attr('data-file') || false;
+//                console.log($(this.node()).find('img').attr('data-file'));
+              }
+              else {
+                // Storing captions: either in d[0] as string or array if multiple legends are selected
+                if (cellIdx < cols - 1) {
+                  var v = $(this.node()).find('textarea').val() || false;
+                  // If rows have more than 4 cols there must be
+                  // multiple captions
+                  if (cols>4) {
+                    d[row_pointer][0] = d[row_pointer][0] || [];
+                    d[row_pointer][0][cellIdx-2] = v;
+                  }
+                  else {
+                    d[row_pointer][0] = v;
+                  }
+                }        
+              }
+            }
+            oldrow = rowIdx;
+          });
+          
+          $.rokfor.contribution.store( 
+            uploader.attr('id'), 
+            JSON.stringify({
+              action: "modify",
+              data: d
+            }),
+            false,
+            force ? 1 : 2000
+          );
+        }
+      
+        /*
       var serialize = function(tbl, diff, force) {
         force = force || false;   // Force: Store without timeout
         diff  = diff || false;    // Delta after Re-Sort
@@ -173,10 +236,11 @@
         var cols = $(tbl.row(0).node()).children('td').length;
 //        console.log(this.cols(0).data())
         tbl.cells().every( function ( OrigrowIdx, cellIdx) {
-          console.log("cell", OrigrowIdx, cellIdx );
+          console.log("cell", OrigrowIdx, cellIdx, $(this.node()).find('img').attr('data-file'), $(this.node()).find('textarea').val());
           rowIdx = tbl.positions[OrigrowIdx];
+          d[rowIdx] = d[rowIdx] || [];
+
           if (cellIdx > 0) {
-            if (d[rowIdx] == undefined) d[rowIdx] = [];
             if (cellIdx==1) {
               var v = $(this.node()).find('img').attr('data-file');
               d[rowIdx][1] = (v ? v : false);
@@ -209,6 +273,7 @@
           force ? 1 : 2000
         );
       }
+        */
     });
 
     // Slider
