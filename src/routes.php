@@ -575,11 +575,6 @@ $app->group('/rf', function () {
         $_c
           ->setConfigSys(json_encode($config))
           ->save();
-        
-        /*
-        $_r = $this->get('redis')['client']->get('*');
-        print_r($_r);
-        */
 
         $r = $response->withHeader('Content-type', 'application/json');
         $r->getBody()->write(json_encode($this->view->offsetGet('csrf')));

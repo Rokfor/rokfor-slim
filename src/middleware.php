@@ -228,7 +228,7 @@ $apiauth = function ($request, $response, $next) {
 $redis = function ($request, $response, $next) {
   if ($this->redis['redis'] && ($request->isPost() || $request->isGet())) {
     $qt = microtime(true);
-    $this->redis['client'] = new \Predis\Client(
+    $redis = new \Predis\Client(
       ['scheme' => 'tcp', 'host' => $this->redis['redis_ip'], 'port' => $this->redis['redis_port']],
       ['prefix'  => $this->redis['redis_prefix'].':']
     );
@@ -239,27 +239,27 @@ $redis = function ($request, $response, $next) {
       // Create Transaction Hash
       $hash = md5($request->getUri()->getPath().$request->getUri()->getQuery().serialize($request->getHeader('Authorization')));
       // Send Cache
-      if ($_cache = $this->redis['client']->get($hash)) {
+      if ($_cache = $redis->get($hash)) {
         $response->getBody()->write($_cache);
         return $response->withAddedHeader('X-Redis-Cache', 'true')->withAddedHeader('X-Redis-Time', (microtime(true) - $qt));
       }
       // Send Original
       else {
         $response = $next($request, $response);
-        $this->redis['client']->set($hash, $response->getBody());
+        $redis->set($hash, $response->getBody());
         return $response;
       }
     }
 
     // Clear Cache on Post or Backend Calls
     if ($request->isPost() || !$apicall) {
-      $prefix = $this->redis['client']->getOptions()->__get('prefix')->getPrefix();
-      $keys = $this->redis['client']->keys("*");
+      $prefix = $redis->getOptions()->__get('prefix')->getPrefix();
+      $keys = $redis->keys("*");
       $removed = 0;
       foreach ($keys as $key) {
         if (substr($key, 0, strlen($prefix)) == $prefix) {
           $key = substr($key, strlen($prefix));
-          $this->redis['client']->del($key);
+          $redis->del($key);
         }
       }
       $response = $next($request, $response);
