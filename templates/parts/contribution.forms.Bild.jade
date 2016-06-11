@@ -35,7 +35,7 @@
               tr
                 td=$sortcount++
                 td
-                  if ($paths['s3'] === false)
+                  if ($paths['s3'] === false && $private === false)
                     a.rfimagetablepreview(href=$paths['web'].$row[1], target="_blank")
                       img(data-file=$row[1], src=$paths['webthumbs'].$row[2]['thumbnail'])
                   else

@@ -86,7 +86,7 @@
               .form-group
                 label.col-sm-2.control-label(for="public".$template->getId())=$translations['template_label_public']
                 .col-sm-10
-                  if ($template->getPublic()=="true")
+                  if ($template->getPublic())
                     input(name="Public", type="checkbox" id="public".$template->getId(), checked="true")
                   else
                     input(name="Public", type="checkbox" id="public".$template->getId())

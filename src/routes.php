@@ -994,12 +994,15 @@ $app->group('/rf', function () {
    */
   $this->get('/proxy', function ($request, $response, $args) {
     $url = base64_decode(array_keys($request->getQueryParams())[0]);
-    $result = $this->db->proxy($url);
-    $body = $result->get('Body');
-    $body->rewind();
-    $r = $response->withHeader('Content-Type', $result['ContentType'])->withHeader('Content-Length', $result['ContentLength']);
-    $r->getBody()->write($body->read($result['ContentLength']));    
-    return $r;
+    if ($url) {
+      $this->get('logger')->info("DECODING: ".$url);
+      return $this->db->proxy($url, $response);
+    }
+    else {
+      $r = $response->withHeader('Content-type', 'application/json');
+      $r->getBody()->write(json_encode(['error' => "404", 'message' => "File not found"]));
+      return $r;
+    }
   });    
 
 })->add($redis)->add($identificator)->add($csrf)->add($authentification)->add($ajaxcheck);

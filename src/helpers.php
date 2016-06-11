@@ -905,6 +905,8 @@ class helpers
     
     
     $t = $field->getTemplates();
+    $private = $t->getTemplatenames()->getPublic() == 1 ? false : true;
+    
     // Parse Json if it is a json field
     $_content = $field->getIsjson() ? json_decode($field->getContent()) : $field->getContent();
 
@@ -914,19 +916,32 @@ class helpers
     if ($t->getFieldtype() == "Bild") {
       $_protocol = '//';
       if (is_array($_content)) {
+        
+        if ($private === true) {
+          $this->container->db->sign_request($_content, '/api/proxy/'.$field->getForcontribution().'/');
+        }
+        print_r($_content);
+        
         foreach ($_content as &$_row) {
           $_versions = [];
-          $_versions['Thumbnail'] = $this->container->paths['s3'] === true
-                                    ? $_row[2]->thumbnail
-                                    : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['webthumbs'].$_row[2]->thumbnail;
-          $_versions['Original'] = $this->container->paths['s3'] === true
-                                   ? $_row[1]
-                                   : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_row[1];
+          $_versions['Thumbnail'] = $private === true
+                                    ? $_protocol.$_SERVER['HTTP_HOST'].$_row[2]->thumbnail
+                                    : ($this->container->paths['s3'] === true
+                                      ? $_row[2]->thumbnail
+                                      : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['webthumbs'].$_row[2]->thumbnail
+                                    );
+          $_versions['Original'] = $private === true
+                                   ? $_protocol.$_SERVER['HTTP_HOST'].$_row[1]
+                                   : ($this->container->paths['s3'] === true
+                                      ? $_row[1]
+                                      : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_row[1]);
           if (is_array($_row[2]->scaled)) {
             foreach ($_row[2]->scaled as $_scaled) {
-              $_versions['Resized'][] = $this->container->paths['s3'] === true
-                                        ? $_scaled
-                                        : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_scaled;
+              $_versions['Resized'][] = $private === true
+                                        ? $_protocol.$_SERVER['HTTP_HOST'].$_scaled
+                                        : ($this->container->paths['s3'] === true
+                                            ? $_scaled
+                                            : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_scaled);
             }
           }
           // Parse Captions

@@ -244,4 +244,47 @@ $app->group('/api', function () {
     }
   );
   
+  
+  /* Binary Proxy
+   * 
+   * 
+   */
+  $this->options('/proxy/{id:[0-9]*}/{file}', 
+    function ($request, $response, $args) {}
+  );  
+  
+  $this->get('/proxy/{id:[0-9]*}/{file}', 
+    function ($request, $response, $args) {  
+      $c = $this->db->getContribution($args['id']);
+      if ($c && ($c->getStatus()=="Close" || $c->getStatus()=="Draft")) {
+        $url = base64_decode($args['file']);
+        if ($url) {
+          $this->get('logger')->info("DECODING: ".$url);
+          return $this->db->proxy($url, $response);
+        }
+        else {
+          $r = $response->withHeader('Content-type', 'application/json');
+          $r->getBody()->write(json_encode(['error' => "404", 'message' => "File not found"]));
+          return $r;
+        }
+      }
+      else if ($c === false) {
+        $errcode = 404;
+        $newResponse = $response->withStatus($errcode);
+        $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'No access to Element'], JSON_CONSTANTS));
+        return $newResponse;      
+      }
+      else {
+        $errcode = 404;
+        $newResponse = $response->withStatus($errcode);
+        $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'Element not found'], JSON_CONSTANTS));
+        return $newResponse;
+      }      
+      
+      
+      
+    }
+  );  
+  
+  
 })->add($redis)->add($apiauth);
