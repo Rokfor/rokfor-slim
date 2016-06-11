@@ -920,8 +920,6 @@ class helpers
         if ($private === true) {
           $this->container->db->sign_request($_content, '/api/proxy/'.$field->getForcontribution().'/');
         }
-        print_r($_content);
-        
         foreach ($_content as &$_row) {
           $_versions = [];
           $_versions['Thumbnail'] = $private === true
