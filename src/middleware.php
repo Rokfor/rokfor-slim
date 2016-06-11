@@ -266,11 +266,12 @@ $redis = function ($request, $response, $next) {
       $response = $next($request, $response);
       return $response;
     }
+    
   }
-  else {
-    $response = $next($request, $response);
-    return $response;
-  }
+
+  // Continue not cached.
+  $response = $next($request, $response);
+  return $response;
 };
 
 
