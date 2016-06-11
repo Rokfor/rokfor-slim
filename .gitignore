@@ -8,6 +8,9 @@ composer.lock
 public/udb/*
 public/udb/thumbs/*
 !public/udb/thumbs/thumb.jpg
+_private/udb/*
+_private/udb/thumbs/*
+!_private/udb/thumbs/thumb.jpg
 config/database.php
 config/settings.php
 config/redis.php
