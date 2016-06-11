@@ -233,9 +233,10 @@ $redis = function ($request, $response, $next) {
       ['prefix'  => $this->redis['redis_prefix'].':']
     );
     $apicall = substr($request->getUri()->getPath(), 0, 4) === "/api";
+    $proxycall = substr($request->getUri()->getPath(), 0, 10) === "/api/proxy";
 
-    // Call Cache on Get and Api Calls
-    if ($request->isGet() && $apicall) {
+    // Call Cache on Get and Api Calls, But not on private file proxy calls
+    if ($request->isGet() && $apicall && !$proxycall) {
       // Create Transaction Hash
       $hash = md5($request->getUri()->getPath().$request->getUri()->getQuery().serialize($request->getHeader('Authorization')));
       // Send Cache
