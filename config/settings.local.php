@@ -21,8 +21,8 @@ return [
          */
         
         'paths'   => [
-          'sys'             => __DIR__. '/../public/udb/',         // Upload directory - absolute
-          'systhumbs'       => __DIR__. '/../public/udb/thumbs/',  // Thumbnail directory - absolute
+          'sys'             => __DIR__. '/../public',              // Absolute Prefix to Upload Directory (normally: apache document root)
+          'privatesys'      => __DIR__. '/../_private',            // Absolute Prefix to Private Upload Directory
           'web'             => '/udb/',                            // Upload directory - relative to document root
           'webthumbs'       => '/udb/thumbs/',                     // Thumbnail directory - relative to document root
           'thmbsuffix'      => '-thmb.jpg',                        // Extension for thumbnails
