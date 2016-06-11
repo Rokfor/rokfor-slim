@@ -16,4 +16,3 @@ config/settings.php
 config/redis.php
 logs/propel.log
 logs/app.log
-version.txt

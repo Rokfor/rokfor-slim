@@ -42,8 +42,7 @@ $app->group('/rf', function () {
     $args['user']  = $this->db->getUser();
 
     $composer = json_decode(file_get_contents(__DIR__ . '/../composer.json'));
-
-
+    $args['commit']  = file_get_contents(__DIR__ . '/../version.txt');
     $args['version'] = $composer->version;
     $args['copy'] = '&copy; <a href="'.$composer->homepage.'" target="_blank">'.$composer->authors[0]->name. "</a> ".date('Y').". All rights reserved.";
     // Header
