@@ -33,6 +33,7 @@ $app->group('/api', function () {
     function ($request, $response, $args) {
     $j = [];
     $_fids = [];
+    $_cache_expiration = false;
     if (stristr($args['issue'],'-')) {
       $args['issue'] = explode('-', $args['issue']);
     }
@@ -82,6 +83,9 @@ $app->group('/api', function () {
         // Check for publish date.
         $_config = json_decode($_c->getConfigSys());
         if (is_object($_config) && $_config->lockdate > time()) {
+          if ($_config->lockdate < $_cache_expiration || $_cache_expiration === false) {
+            $_cache_expiration = $_config->lockdate;
+          }
           continue;
         }
 
@@ -89,6 +93,7 @@ $app->group('/api', function () {
         $_contribution["Data"]          = $this->helpers->prepareApiContributionData($_c, $compact, $request);
         $j[] = $_contribution;
       }
+      $this->get('redis')['client']->set('expiration', $_cache_expiration);
       $response->getBody()->write(
         json_encode(
                     array("Documents" => $j, 

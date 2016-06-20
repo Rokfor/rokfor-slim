@@ -1,0 +1,14 @@
+include parts/login.header.jade
+.container
+  .card.card-container
+    img.profile-img-card#profile-img(src="/assets/img/logo-small-w-border-01.svg")
+    p.profile-name-card
+    form.form-signin(action='/rf/forgot', method='post')
+      p.login-box-msg=$message
+      input(type="hidden", name=csrf['nameKey'], value=csrf['name'])
+      input(type="hidden", name=csrf['valueKey'], value=csrf['value'])
+      .form-group
+        input.form-control#inputEmail(type='email', name='email', placeholder='E-Mail')
+      .row
+        .col-xs-12
+          button.btn.btn-primary(type='submit') Send

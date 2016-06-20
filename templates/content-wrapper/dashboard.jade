@@ -32,3 +32,5 @@ section.content
                 span.info-box-text.text-muted=$box[__config__][chapter]
 
 include ../js/csrf.js.jade
+if ($remember)
+  include ../js/remember.js.jade

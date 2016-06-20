@@ -17,7 +17,27 @@ class helpers
         $this->container = $_container;
         $this->Parsedown = new Parsedown();
     }
-
+    
+    /**
+     * adds copyright notices and version info to args array for template rendering
+     *
+     * @param string $args 
+     * @return void
+     * @author Urs Hofer
+     */
+    public function GetVersionInfo(&$args) {
+      $composer = json_decode(file_get_contents(__DIR__ . '/../composer.json'));
+      $args['commit']  = file_get_contents(__DIR__ . '/../version.txt');
+      $args['version'] = $composer->version;
+      $args['copy'] = '&copy; <a href="'.
+        $composer->homepage.
+        '" target="_blank">'.
+        $composer->authors[0]->name.
+        "</a> ".
+        date('Y').
+        ". All rights reserved.";
+    }
+    
   /**
    * return the previous and next contribution id of a specified contribution
    * within a certain chapter and issue.
@@ -1231,6 +1251,9 @@ class helpers
     }
   }
 }
+
+
+
 
 $container = $app->getContainer();
 

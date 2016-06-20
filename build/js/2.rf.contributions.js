@@ -232,13 +232,15 @@
 
     // Modal Continue Action
 
-    $('#rfmodalnew').find('button.btn-default').on('click', function(e) {
-      e.stopPropagation();
-      var name = $(this).closest('.modal-content').find('input').val();
-      var template = $(this).closest('.modal-content').find('select').val();
+    var newContrib = function() {
+      var button = $('#rfmodalnew').find('button.btn-default');
+      var name = button.closest('.modal-content').find('input').val();
+      var template = button.closest('.modal-content').find('select').val();
+      console.log(button, name, template);
       if (template && name) {
-        $('#rfmodalnew').modal('hide').on('hidden.bs.modal', function () {
-          $.rokfor.contributions.bulkaction($(this).prev().attr('data-path') , {
+        $('#rfmodalnew').modal('hide');
+//        $('#rfmodalnew').modal('hide').on('hidden.bs.modal', function () {
+          $.rokfor.contributions.bulkaction($('#rfmodalnew').prev().attr('data-path') , {
             action: 'new', 
             name: name,
             template: template
@@ -249,16 +251,22 @@
               $('.content-wrapper#detail').html(d);
             });
           });
-        });
+//        });
       }
       else {
         $('#rfmodal').modal({keyboard: true});
       }
+    }
+
+    $('#rfmodalnew').find('button.btn-default').on('click', function(e) {
+      e.stopPropagation();
+      newContrib();
       return false;      
     })
     $('#rfmodalnew').find('form').on('submit', function(e) {
       e.stopPropagation();
-      $('#rfmodalnew').find('button.btn-default').trigger('click');
+      newContrib();
+//      $('#rfmodalnew').find('button.btn-default').trigger('click');
       return false;
     });
 

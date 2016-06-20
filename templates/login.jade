@@ -1,21 +1,33 @@
-doctype html
-html
-  include parts/layout.meta.jade
-  body.hold-transition.login-page
-    .login-box
-      .login-logo
-        img(src="/assets/img/logo.svg")
-      .login-box-body
-        p.login-box-msg=$message
-        form(action='/rf/login', method='post')
-          input(type="hidden", name=csrf['nameKey'], value=csrf['name'])
-          input(type="hidden", name=csrf['valueKey'], value=csrf['value'])
-          .form-group.has-feedback
-            input.form-control(type='username', name='username', placeholder='Username')
-            span.glyphicon.glyphicon-envelope.form-control-feedback
-          .form-group.has-feedback
-            input.form-control(type='password', name='password', placeholder='Password')
-            span.glyphicon.glyphicon-lock.form-control-feedback
-          .row
-            .col-xs-4
-              button.btn.btn-primary.btn-block.btn-flat(type='submit') Sign In
+include parts/login.header.jade
+.container
+  .card.card-container
+    img.profile-img-card#profile-img(src="/assets/img/logo-small-w-border-01.svg")
+    p.profile-name-card
+    form.form-signin(action='/rf/login', method='post')
+      span.reauth-email#reauth-email
+      h4.login-box-msg=$message
+      input(type="hidden", name=csrf['nameKey'], value=csrf['name'])
+      input(type="hidden", name=csrf['valueKey'], value=csrf['value'])
+      .form-group
+        input.form-control#inputEmail(type='username', name='username', placeholder='Username')
+      .form-group.has-feedback
+        input.form-control#inputPassword(type='password', name='password', placeholder='Password')
+      .form-group
+        .checkbox#remember
+          label
+            input(type="checkbox" value="remember-me", name='remember-me')
+            span Remember me
+      .row
+        .col-xs-12
+          button.btn.btn-primary(type='submit') Sign In
+      .row
+        .col-xs-6
+          a.forgot-password(href="/rf/forgot") Forgot the password?
+        .col-xs-6
+          a.not-user(href="#")
+
+  script.
+    $( document ).ready(function() {
+      $.rokfor.loadProfile();
+    });
+  

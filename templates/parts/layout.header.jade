@@ -57,6 +57,13 @@ header.main-header
                             span=$favourite[__config__][issue].($favourite[__config__][issue]<>$favourite[__config__][chapter]?" > ":'')
                           if ($favourite[__config__][issue]<>$favourite[__config__][chapter])
                             span=$favourite[__config__][chapter]
+        li
+          a.ajaxload(href='/rf/exporters', target=".content-wrapper#list")
+            i.fa.fa-external-link-square
+        if ($__currentuser__['level'] > 1)
+          li
+            a(href='#', data-toggle='control-sidebar')
+              i.fa.fa-gears
         li.dropdown.user.user-menu#userdrop
           a.dropdown-toggle(href='#', data-toggle='dropdown')
             img.user-image(src="//www.gravatar.com/avatar/".md5($user['email']))
@@ -75,10 +82,4 @@ header.main-header
                 a.btn.btn-default.btn-flat.ajaxload(href='/rf/profile', target=".content-wrapper#list", data-close-dropdown="#userdrop")=$translations['role_profile']
               .pull-right
                 a.btn.btn-default.btn-flat(href='/rf/logout')=$translations['role_signout']
-        li
-          a.ajaxload(href='/rf/exporters', target=".content-wrapper#list")
-            i.fa.fa-external-link-square
-        if ($__currentuser__['level'] > 1)
-          li
-            a(href='#', data-toggle='control-sidebar')
-              i.fa.fa-gears
+              

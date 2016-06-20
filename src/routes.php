@@ -1,6 +1,10 @@
 <?php
 
-
+if ($container->get('settings')['multiple_spaces'] === true)  {
+  $app->get('/', function ($request, $response, $args) {
+    return $response->withRedirect('/rf/login');
+  });
+} 
 
 /* Browser Call: 
  * 
@@ -26,6 +30,12 @@ $app->group('/rf', function () {
    */  
 
   $this->get('/dashboard', function ($request, $response, $args) {
+    
+    // Getting Remember State    
+    $messages = $this->flash->getMessages();
+    $this->get('logger')->error(print_r($messages,true));
+    $args['remember'] = $messages['Remember_Me'][0] === 'remember-me';
+    
     // Project Name
     $args['project'] = $this->get('settings')['projectname'];
     // Tree
@@ -40,11 +50,8 @@ $app->group('/rf', function () {
     });
     // User drop down stuff
     $args['user']  = $this->db->getUser();
+    $this->helpers->GetVersionInfo($args);
 
-    $composer = json_decode(file_get_contents(__DIR__ . '/../composer.json'));
-    $args['commit']  = file_get_contents(__DIR__ . '/../version.txt');
-    $args['version'] = $composer->version;
-    $args['copy'] = '&copy; <a href="'.$composer->homepage.'" target="_blank">'.$composer->authors[0]->name. "</a> ".date('Y').". All rights reserved.";
     // Header
     $args['favourites'] = $this->db->getFavouriteLog('get_contributions', function($data){
       return $this->valid_paths[$data] ? $this->valid_paths[$data] : false;
@@ -380,12 +387,14 @@ $app->group('/rf', function () {
 
   $this->map(['GET', 'POST'], '/login', function ($request, $response, $args) {
     $args["message"] = $this->translations['loginIntro'];
+    $this->helpers->GetVersionInfo($args);
+
     if ($request->isPost()) {
             $username = $request->getParsedBody()['username'];
             $password = $request->getParsedBody()['password'];
             $result = $this->authenticator->authenticate($username, $password);
             if ($result->isValid()) {
-              $this->flash->addMessage('Initial_Login', 'Valid');
+              $this->flash->addMessage('Remember_Me', $request->getParsedBody()['remember-me']);
               return $response->withRedirect('/rf/dashboard');
             } 
             else {
@@ -406,6 +415,29 @@ $app->group('/rf', function () {
       $args["message"] = $this->translations['logout'];      
       $this->view->render($response, 'login.jade', $args);
   });
+  
+  /* Browser Call: 
+   * 
+   * Render Logout Page
+   *
+   */
+  
+  $this->map(['get','post'], '/forgot', function ($request, $response, $args) {
+    $email = $request->getParsedBody()['email'];
+    if ($email) {
+      $q = $this->db->getUserByEmail($email);
+      if ($q === false) {
+        $args["message"] = $this->translations['send_reminder_fail'];              
+      }
+      else {
+        $args["message"] = $this->translations['send_reminder_success'];      
+      }
+    }
+    else {
+      $args["message"] = $this->translations['send_reminder'];      
+    }
+    $this->view->render($response, 'forgot.jade', $args);
+  });  
 
   /* Ajax Call: 
    * 

@@ -21,6 +21,7 @@ class Acl extends ZendAcl
         // Basic Permission for everybody: Login form
         $_rf_routes['guest'][] = ['/rf',                                                                    'GET'];
         $_rf_routes['guest'][] = ['/rf/login',                                                              ['GET','POST']];
+        $_rf_routes['guest'][] = ['/rf/forgot',                                                             ['GET','POST']];
                                                                                                             
         // Regular Users
         $_rf_routes['user'][] = ['/rf/logout',                                                              'GET'];

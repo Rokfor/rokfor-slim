@@ -43,30 +43,60 @@ $container['logger'] = function ($c) {
 // rokfor database & update paths
 $container['db'] = function ($c) {
   $settings = require __DIR__ . '/../config/database.php';
-  $db = new Rokfor\DB(
-      $settings['host'],
-      $settings['user'],
-      $settings['pass'],
-      $settings['dbname'],
-      $settings['log'], 
-      $settings['level'],
-      $c->paths,
-      $settings['socket'],
-      $settings['port'],
-      $settings['versioning']
-    );
+  
+  // Overrule DbName if multi Environment Setting is true
+  
+  if ($c->get('settings')['multiple_spaces'] === true) {
+    $parsedUrl = parse_url($_SERVER['HTTP_HOST']);
+    $host = explode('.', $parsedUrl['host']);
+    $settings['dbname'] = preg_replace("/[^A-Za-z0-9-_]/", '', $host[0]);
+  }
+  
+  
+  try {
+    $db = new Rokfor\DB(
+        $settings['host'],
+        $settings['user'],
+        $settings['pass'],
+        $settings['dbname'],
+        $settings['log'], 
+        $settings['level'],
+        $c->paths,
+        $settings['socket'],
+        $settings['port'],
+        $settings['versioning']
+      );
+  } catch (\PDOException $e) {
+    die($e);
+  }
   return $db;
 };
 
 $container['redis'] = function ($c) {
   $settings = require __DIR__ . '/../config/redis.php';
   $dbsettings = require __DIR__ . '/../config/database.php';
-  return [
-    'redis'        => $settings['redis'],
-    'redis_ip'     => $settings['redis_ip'],
-    'redis_port'   => $settings['redis_port'],
-    'redis_prefix' => $dbsettings['dbname'],
-  ];
+  
+  if ($c->get('settings')['multiple_spaces'] === true) {
+    $parsedUrl = parse_url($_SERVER['HTTP_HOST']);
+    $host = explode('.', $parsedUrl['host']);
+    $dbsettings['dbname'] = preg_replace("/[^A-Za-z0-9-_]/", '', $host[0]);
+  }
+  
+  
+  if ($settings['redis']) {
+    return [
+      'redis'   => $settings['redis'],
+      'client'  => new \Predis\Client(
+                    ['scheme' => 'tcp', 'host' => $settings['redis_ip'], 'port' => $settings['redis_port']],
+                    ['prefix'  => $dbsettings['dbname'].':']
+                   )
+    ];
+  }
+  else {
+    return [
+      'redis'   => $settings['redis']
+    ];
+  }
 };
 
 // csrf middleware
@@ -107,4 +137,14 @@ $container->register(new \JeremyKendall\Slim\Auth\ServiceProvider\SlimAuthProvid
 // Register provider
 $container['flash'] = function () {
     return new \Slim\Flash\Messages();
+};
+
+
+//Override the default Not Found Handler
+$container['notFoundHandler'] = function ($c) {
+    return function ($request, $response) use ($c) {
+      $args = [];
+      $c['view']->render($c['response']->withStatus(404), 'error.jade', $args);
+      return $c['response'];
+    };
 };

@@ -26,7 +26,7 @@ return [
           'web'             => '/udb/',                            // Upload directory - relative to document root
           'webthumbs'       => '/udb/thumbs/',                     // Thumbnail directory - relative to document root
           'thmbsuffix'      => '-thmb.jpg',                        // Extension for thumbnails
-          'scaled'          => '-preview[*].jpg',                  // Extensions for scaled versions
+          'scaled'          => '-preview[*].[ext]',                // Extensions for scaled versions - * keeps the version, ext the suffix
           'quality'         =>  75,                                // Jpeg Quality
           'process'         => [                 
                                   'image/jpeg',                    // Mime Types which should be considered as
@@ -94,6 +94,10 @@ return [
 
         // Needs to be true, otherwise auth does not work
         'determineRouteBeforeAppMiddleware'   => true,
+
+        // Multi Spaces Environment
+        'multiple_spaces'                     => false,
+        'unknow_space_redirect'               => 'https://example.com/',
 
         // Implemented Field Types
         'fieldtypes' => [
