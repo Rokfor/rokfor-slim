@@ -33,7 +33,6 @@ $app->group('/rf', function () {
     
     // Getting Remember State    
     $messages = $this->flash->getMessages();
-    $this->get('logger')->error(print_r($messages,true));
     $args['remember'] = $messages['Remember_Me'][0] === 'remember-me';
     
     // Project Name
@@ -691,7 +690,6 @@ $app->group('/rf', function () {
 
     $json = $this->view->offsetGet('csrf');
     $json['success']  = false;
-    $this->get('logger')->info("WORK ON FIELD: ".$args['id']);
     $field = $this->db->getField($args['id']);
     if ($field) {
       $type     = $field->getTemplates()->getFieldtype();
@@ -1026,7 +1024,6 @@ $app->group('/rf', function () {
   $this->get('/proxy', function ($request, $response, $args) {
     $url = base64_decode(array_keys($request->getQueryParams())[0]);
     if ($url) {
-      $this->get('logger')->info("DECODING: ".$url);
       return $this->db->proxy($url, $response);
     }
     else {
