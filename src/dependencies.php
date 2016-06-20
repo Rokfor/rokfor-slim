@@ -47,8 +47,7 @@ $container['db'] = function ($c) {
   // Overrule DbName if multi Environment Setting is true
   
   if ($c->get('settings')['multiple_spaces'] === true) {
-    $parsedUrl = parse_url($_SERVER['HTTP_HOST']);
-    $host = explode('.', $parsedUrl['host']);
+    $host = explode('.', $_SERVER['HTTP_HOST']);
     $settings['dbname'] = preg_replace("/[^A-Za-z0-9-_]/", '', $host[0]);
   }
   
@@ -77,8 +76,7 @@ $container['redis'] = function ($c) {
   $dbsettings = require __DIR__ . '/../config/database.php';
   
   if ($c->get('settings')['multiple_spaces'] === true) {
-    $parsedUrl = parse_url($_SERVER['HTTP_HOST']);
-    $host = explode('.', $parsedUrl['host']);
+    $host = explode('.', $_SERVER['HTTP_HOST']);
     $dbsettings['dbname'] = preg_replace("/[^A-Za-z0-9-_]/", '', $host[0]);
   }
   
