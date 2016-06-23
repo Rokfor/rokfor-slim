@@ -954,11 +954,11 @@ class helpers
                                       ? $_row[1]
                                       : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_row[1]);
 
-          $_mime = $private === true
+          $_mime = ($private === true
                    ? $this->container->db->_remove_proxy_single_file($_protocol.$_SERVER['HTTP_HOST'].$_row[1])
                    : ($this->container->paths['s3'] === true
                       ? pathinfo($_row[1], PATHINFO_BASENAME) 
-                      : $_row[1]);
+                      : $_row[1]));
 
 
           $_versions['Mime']     = mime_content_type($_mime);
