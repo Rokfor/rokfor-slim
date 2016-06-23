@@ -953,9 +953,10 @@ class helpers
                                    : ($this->container->paths['s3'] === true
                                       ? $_row[1]
                                       : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_row[1]);
-          $_versions['Mime']     = mime_content_type($this->container->paths['s3'] === true
-                                                     ? pathinfo($_row[1], PATHINFO_BASENAME)
-                                                     : $_row[1]);
+
+          $_versions['Mime']     = mime_content_type(
+                                    $this->container->db->_remove_proxy_single_file($_row[1])
+                                   );
 
           if (is_array($_row[2]->scaled)) {
             foreach ($_row[2]->scaled as $_scaled) {
