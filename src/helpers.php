@@ -769,7 +769,7 @@ class helpers
             'restrict_to_template' => [
               'title'  => $this->container->translations['field_config'.'restrict_to_template'],
               'type' => 'boolean',
-              'propertyOrder' => 7,
+              'propertyOrder' => 9,
               'format' => 'checkbox'
             ],            
             //contributional, structural
@@ -790,7 +790,7 @@ class helpers
               'title'  => $this->container->translations['field_config'.'fromfield'],
               'format' => 'select',
               'type'   => 'integer',
-              'propertyOrder' => 9,
+              'propertyOrder' => 10,
               'uniqueItems' => true,
               'enum' => $fromfield['id'],
               'options' => [
