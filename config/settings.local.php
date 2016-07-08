@@ -43,12 +43,15 @@ return [
                                   'application/pdf',
                                   'image/svg+xml'
                                 ],
-          'icon'            => 'thumb.jpg'                        // Placeholder thumbnail for stored-only files
+          'icon'            => 'thumb.jpg',                       // Placeholder thumbnail for stored-only files
           's3'              => false,                             // Amazon S3 Connection
           's3_aws_key'      => "",                                // Amazon S3 Key
           's3_aws_secret'   => "",                                // Amazon S3 Secret Key
-          's3_aws_region'   => "",                                // Amazon S3 Region
-          's3_aws_bucket'   => ""                                 // Amazon S3 Bucket Name
+          's3_aws_region'   => "",                                // Amazon S3 Region - necessary for AWS
+          's3_aws_bucket'   => "",                                // Amazon S3 Bucket Name
+          's3_aws_endpoint' => false                              // Not neccesary for Amazon AWS
+            
+            
         ],
 
         /*
