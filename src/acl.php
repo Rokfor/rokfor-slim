@@ -64,6 +64,7 @@ class Acl extends ZendAcl
         $_api_routes['guest'][] = ['/api/books[/{id:[0-9]*}]',                                              'GET'];
         $_api_routes['guest'][] = ['/api/proxy/{id:[0-9]*}/{file}',                                         'GET'];
         $_api_routes['guest'][] = ['/api/{action:issues|chapters}[/{id:[0-9]*}]',                           'GET'];
+        $_api_routes['guest'][] = ['/api/login',                                                            'POST'];
         
         
         // Store Routes
