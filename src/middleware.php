@@ -195,34 +195,62 @@ $apiauth = function ($request, $response, $next) {
   
     $response = $response->withHeader('Content-type', 'application/json');
     $apikey = false;
-  
-    // Get Requests: R-O Keys
+    $msg = "No key supplied";
+    $route = $request->getAttribute('route', null);
 
-    if ($request->isGet()) {
-      if ($request->getQueryParams()['access_token']) {
-        $apikey = $request->getQueryParams()['access_token'];
-      }
-      else {
-        $bearer = $request->getHeader('Authorization');
-        if ($bearer[0]) {
-          preg_match('/^Bearer (.*)/', $bearer[0], $bearer);
-          $apikey = $bearer[1];
-        }
+    // Read API KEY
+    if ($request->getQueryParams()['access_token']) {
+      $apikey = $request->getQueryParams()['access_token'];
+    }
+    else {
+      $bearer = $request->getHeader('Authorization');
+      if ($bearer[0]) {
+        preg_match('/^Bearer (.*)/', $bearer[0], $bearer);
+        $apikey = $bearer[1];
       }
     }
-    if ($apikey) {
-      $u = $this->db->getUsers()
-            ->filterByRoapikey($apikey)
-            ->limit(1)
-            ->findOne();
-      if ($u) {
-        $this->db->setUser($u->getId());
+  
+    // Actions if a key is supplied
+    
+    if ($apikey !== false) {
+
+      // Get Requests: R-O Keys required
+
+      if ($request->isGet()) {
+        $u = $this->db->getUsers()
+              ->filterByRoapikey($apikey)
+              ->limit(1)
+              ->findOne();
+        if ($u) {
+          $this->db->setUser($u->getId());
+          $this->db->addLog('get_api', 'GET' , $request->getAttribute('ip_address'));
+          $response = $next($request, $response);
+          return $response;  
+        }
+        else $msg = "Wrong key supplied";
+      }
+
+      // Post Requests: JWT Token Required
+    
+      if ($request->isPost()) {
+        if ($route->getPattern() == "/api/login") {
+          $response = $next($request, $response);
+          return $response;            
+        }
+      }    
+
+    }
+    
+    // Post Login Route
+    // Only called on POST with Pattern /api/login
+    
+    else {
+      if ($request->isPost() && $route->getPattern() == "/api/login") {
         $response = $next($request, $response);
         return $response;  
-      }
-      else $msg = "Wrong key supplied";
+      }          
     }
-    else $msg = "No key supplied";
+        
     $r = $response->withHeader('Content-type', 'application/json')->withStatus(500);
     $r->getBody()->write(json_encode(["Error" => $msg]));
     return $r;
