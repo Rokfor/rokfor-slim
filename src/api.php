@@ -1,5 +1,8 @@
 <?php
 
+use Lcobucci\JWT\Builder;
+use Lcobucci\JWT\Signer\Hmac\Sha256;
+
 $app->group('/api', function () {
   /*
    * Pretty Print JSON
@@ -93,7 +96,9 @@ $app->group('/api', function () {
         $_contribution["Data"]          = $this->helpers->prepareApiContributionData($_c, $compact, $request);
         $j[] = $_contribution;
       }
-      $this->get('redis')['client']->set('expiration', $_cache_expiration);
+      if ($this->get('redis')) {
+        $this->get('redis')['client']->set('expiration', $_cache_expiration);
+      }
       $response->getBody()->write(
         json_encode(
                     array("Documents" => $j, 
@@ -285,11 +290,49 @@ $app->group('/api', function () {
         $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'Element not found'], JSON_CONSTANTS));
         return $newResponse;
       }      
-      
-      
-      
     }
-  );  
+  );      
+    
+  /* Login
+   * Required for R/W Access. Login with username and R/W Key
+   * Returns a JWT Token for further usage 
+   *
+   */
+  
+  $this->post('/login', 
+    function ($request, $response, $args) {
+      
+      $u = $this->db->getUsers()
+            ->filterByRwapikey($request->getParsedBody()['apikey'])
+            ->filterByUsername($request->getParsedBody()['username'])
+            ->limit(1)
+            ->findOne();        
+      if ($u) {
+        $this->db->setUser($u->getId());
+        $this->db->addLog('post_api', 'POST' , $request->getAttribute('ip_address'));
+        $signer = new Sha256();
+        $token = (new Builder())->setIssuer($_SERVER['HTTP_HOST'])    // Configures the issuer (iss claim)
+                                ->setAudience($_SERVER['HTTP_HOST'])  // Configures the audience (aud claim)
+                                ->setId(uniqid('rf', true), true)     // Configures the id (jti claim), replicating as a header item
+                                ->setIssuedAt(time())                 // Configures the time that the token was issue (iat claim)
+                                ->setNotBefore(time() + 60)           // Configures the time that the token can be used (nbf claim)
+                                ->setExpiration(time() + 1800)        // Configures the expiration time of the token (nbf claim)
+                                ->set('uid', $u->getId())             // Configures a new claim, called "uid"
+                                ->sign($signer, $request->getParsedBody()['apikey']) // creates a signature using "testing" as key
+                                ->getToken();                         // Retrieves the generated token
+        $r = $response->withHeader('Content-type', 'application/json');
+        $r->getBody()->write(json_encode((string)$token));
+        return $r;
+      }        
+      else {
+        $r = $response->withHeader('Content-type', 'application/json')->withStatus(500);
+        $r->getBody()->write(json_encode(["Error" => "Wrong key supplied"]));
+        return $r;
+      }
+    }
+  );
+    
+
   
   
 })->add($redis)->add($apiauth);
