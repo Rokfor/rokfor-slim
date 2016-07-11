@@ -96,7 +96,7 @@ $app->group('/api', function () {
         $_contribution["Data"]          = $this->helpers->prepareApiContributionData($_c, $compact, $request);
         $j[] = $_contribution;
       }
-      if ($this->get('redis')) {
+      if ($this->get('redis')['client']) {
         $this->get('redis')['client']->set('expiration', $_cache_expiration);
       }
       $response->getBody()->write(
