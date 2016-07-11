@@ -42,7 +42,8 @@
         "akrabat/rka-ip-address-middleware": "^0.4.0",
         "palanik/corsslim": "dev-slim3",
         "erusev/parsedown": "^1.6",
-        "predis/predis": "^1.0"
+        "predis/predis": "^1.0",
+        "lcobucci/jwt": "^3.1"
     },
     "require-dev": {
         "phpunit/phpunit": "*"
