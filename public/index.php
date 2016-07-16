@@ -6,6 +6,7 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
  * something which should probably be served as a static file
  */
 if (PHP_SAPI == 'cli-server') {
+    ini_set('display_errors', 1);
     $_p = explode("?",__DIR__ . $_SERVER['REQUEST_URI']);
     $file = reset($_p);
     if (is_file($file)) {
