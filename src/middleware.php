@@ -1,6 +1,9 @@
 <?php
 
 use Slim\Exception\NotFoundException;
+use Lcobucci\JWT\Parser;
+use Lcobucci\JWT\Signer\Hmac\Sha256;
+
 
 /**
  * Trailing Slash Middleware
@@ -198,8 +201,8 @@ $apiauth = function ($request, $response, $next) {
     $msg = "No key supplied";
     $route = $request->getAttribute('route', null);
 
-    // Read API KEY
-    if ($request->getQueryParams()['access_token']) {
+    // Read API KEY - GET (R/O Requests) allow Key as QueryParam as well
+    if ($request->getQueryParams()['access_token'] && $request->isGet()) {
       $apikey = $request->getQueryParams()['access_token'];
     }
     else {
@@ -233,10 +236,16 @@ $apiauth = function ($request, $response, $next) {
       // Post Requests: JWT Token Required
     
       if ($request->isPost()) {
-        if ($route->getPattern() == "/api/login") {
+        $signer = new Sha256();
+        $token  = (new Parser())->parse((string) $apikey); // Parses from a string
+        $u      = $this->db->getUsers()->findPk((int)$token->getClaim('uid'));
+        if ($u && $token->verify($signer, $u->GetRwapikey())) {
+          $this->db->setUser($u->getId());
+          $this->db->addLog('post_api', 'POST' , $request->getAttribute('ip_address'));
           $response = $next($request, $response);
-          return $response;            
+          return $response;  
         }
+        else $msg = "Wrong key supplied";
       }    
 
     }
@@ -335,7 +344,7 @@ $redis = function ($request, $response, $next) {
  */
 $app->add(function ($request, $response, $next) {
   $corsOptions = [];
-  if ($request->isGet() || $request->isOptions()) {
+  if ($request->isGet()) {
     $corsOptions = [
       "origin"            => $this->settings['cors']['ro'],
       "maxAge"            => 1728000,
@@ -343,7 +352,15 @@ $app->add(function ($request, $response, $next) {
       "allowMethods"      => array("GET", "OPTIONS")
     ];
   }
-  else {
+  if ($request->isOptions()) {
+    $corsOptions = [
+      "origin"            => array_merge((array)$this->settings['cors']['rw'], (array)$this->settings['cors']['ro']),
+      "maxAge"            => 1728000,
+      "allowCredentials"  => true,
+      "allowMethods"      => array("GET", "OPTIONS", "POST")
+    ];
+  }
+  if ($request->isPost()) {
     $corsOptions = [
       "origin"            => $this->settings['cors']['rw'],
       "maxAge"            => 1728000,

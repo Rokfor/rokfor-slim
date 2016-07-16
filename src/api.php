@@ -318,7 +318,7 @@ $app->group('/api', function () {
                                 ->setNotBefore(time() + 60)           // Configures the time that the token can be used (nbf claim)
                                 ->setExpiration(time() + 1800)        // Configures the expiration time of the token (nbf claim)
                                 ->set('uid', $u->getId())             // Configures a new claim, called "uid"
-                                ->sign($signer, $request->getParsedBody()['apikey']) // creates a signature using "testing" as key
+                                ->sign($signer,  $u->getRwapikey()) // creates a signature using "testing" as key
                                 ->getToken();                         // Retrieves the generated token
         $r = $response->withHeader('Content-type', 'application/json');
         $r->getBody()->write(json_encode((string)$token));
@@ -332,6 +332,23 @@ $app->group('/api', function () {
     }
   );
     
+  /* Contribution
+   * Storing Data in a contribution with id :id
+   * If id is omitted, a new contribution will be added
+   * 
+   * {meta:{string:name, int:templateid}, data:{field:value, field:value...}, status: "published|open|draft"}
+   * 
+   * 
+   *
+   */
+  
+  $this->post('/contribution[/{id:[0-9]*}]', 
+    function ($request, $response, $args) {
+      $r = $response->withHeader('Content-type', 'application/json');
+      $r->getBody()->write(json_encode('ok'));
+      return $r;
+    }
+  );    
 
   
   
