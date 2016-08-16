@@ -266,7 +266,7 @@ $apiauth = function ($request, $response, $next) {
   }
   catch (Exception $e) {
     $r = $response->withHeader('Content-type', 'application/json')->withStatus(500);
-    $r->getBody()->write(json_encode(["Error" => "application error"]));
+    $r->getBody()->write(json_encode(["Error" => $e->getMessage()]));
     return $r;
    };
 };
