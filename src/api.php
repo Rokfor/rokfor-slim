@@ -341,7 +341,66 @@ $app->group('/api', function () {
   $this->put('/contribution', 
     function ($request, $response, $args) {
       $r = $response->withHeader('Content-type', 'application/json');
-      $r->getBody()->write(json_encode('ok'));
+
+      // Payload:
+      
+      if ($data = json_decode($request->getBody())) {
+        $_error = false;
+        if (!is_int($data->Template))
+          $_error = 'Template Id missing or not an integer value.';
+        if (!is_int($data->Chapter))
+          $_error = 'Chapter Id missing or not an integer value.';
+        if (!is_int($data->Issue))
+          $_error = 'Issue Id missing or not an integer value.';
+        if (!is_string($data->Name))
+          $_error = 'Contribution Name missing or not a string.';
+
+        if ($_error === false) {
+          $i = $this->db->getIssue($data->Issue);
+          $f = $this->db->getFormat($data->Chapter);
+          $c = false;
+          $_error = false;
+          if (!$_error && !$i) {
+            $_error = "Issue does not exist.";
+          }
+          if (!$_error && !$f) {
+            $_error = "Chapter does not exist.";
+          }          
+          if (!$_error && $i->getForbook() !== $f->getForbook()) {
+            $_error = "Issue and chapter are not from the same book.";
+          }          
+
+          if (!$_error) {
+            $template_ok = false;
+            foreach ($this->db->getTemplates($f) as $allowedTemplate) {
+              if ($allowedTemplate["id"] === $data->Template) {
+                $template_ok = true;
+              }
+            }
+            if ($template_ok === false) {
+              $_error = "Template id not valid or not allowed within this chapter or issue.";
+            }
+          }
+          if ($_error === false) {
+            $c = $this->db->NewContribution($i, $f, $data->Template, $data->Name);
+
+            // Store 
+            if ($c !== false && gettype($c) == "object") {
+              $r->getBody()->write(json_encode(["Id" => $c->getId()]));
+            }
+            else {
+              $_error = "Error creating contribution.";
+            }
+          }
+        }
+      }
+      else {
+        $_error = "Body is not a valid json string.";
+      }
+      if ($_error) {
+        $r = $response->withHeader('Content-type', 'application/json')->withStatus(500);
+        $r->getBody()->write(json_encode(["Error" => $_error]));
+      }
       return $r;
     }
   );   
