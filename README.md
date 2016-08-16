@@ -213,6 +213,7 @@ Options:
 - populate=true|false                                         (default: false)
 - verbose=true|false                                          (default: false)
 - template=id                                                 (default: empty)
+- status=draft|published|both                                 (default: published)
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -241,6 +242,8 @@ Options:
 -   Verbose: Send complete Information about a dataset. In most cases, this 
     is too much and just slowing down the connection.
 -   Template: limit to a certain template id
+-   Status: Including draft contributions, published contributions or both. Open
+    Contributions are never shown.
 
 Examples:
 

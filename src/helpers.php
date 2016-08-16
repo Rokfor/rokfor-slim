@@ -887,11 +887,13 @@ class helpers
       $_refs = [];
       if ($followrefs) {
         foreach ($_cfg->referenced as $_fieldid => $_contribid) {
-          $_c = $this->container->db->getContribution($_contribid);
-          $_refs[] = array (
-            "Contribution"  => $this->prepareApiContribution($_c, $compact, $request),
-            "Data"          => $this->prepareApiContributionData($_c, $compact, $request)
-          );
+          $_c = $this->container->db->getContribution($_contribid, true);
+          if ($_c) {
+            $_refs[] = array (
+              "Contribution"  => $this->prepareApiContribution($_c, $compact, $request),
+              "Data"          => $this->prepareApiContributionData($_c, $compact, $request)
+            );
+          }
         }
       }
       return array (
