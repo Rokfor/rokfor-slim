@@ -333,8 +333,21 @@ $app->group('/api', function () {
   );
     
   /* Contribution
+   * Adding a contribution
+   * 
+   *
+   */
+  
+  $this->put('/contribution/{id:[0-9]*}', 
+    function ($request, $response, $args) {
+      $r = $response->withHeader('Content-type', 'application/json');
+      $r->getBody()->write(json_encode('ok'));
+      return $r;
+    }
+  );   
+  
+  /* Contribution
    * Storing Data in a contribution with id :id
-   * If id is omitted, a new contribution will be added
    * 
    * {meta:{string:name, int:templateid}, data:{field:value, field:value...}, status: "published|open|draft"}
    * 
@@ -348,7 +361,7 @@ $app->group('/api', function () {
       $r->getBody()->write(json_encode('ok'));
       return $r;
     }
-  );    
+  );      
 
   
   
