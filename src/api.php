@@ -332,13 +332,13 @@ $app->group('/api', function () {
     }
   );
     
-  /* Contribution
+  /* Put Contribution
    * Adding a contribution
    * 
    *
    */
   
-  $this->put('/contribution/{id:[0-9]*}', 
+  $this->put('/contribution', 
     function ($request, $response, $args) {
       $r = $response->withHeader('Content-type', 'application/json');
       $r->getBody()->write(json_encode('ok'));
@@ -346,7 +346,7 @@ $app->group('/api', function () {
     }
   );   
   
-  /* Contribution
+  /* Post Contribution
    * Storing Data in a contribution with id :id
    * 
    * {meta:{string:name, int:templateid}, data:{field:value, field:value...}, status: "published|open|draft"}
