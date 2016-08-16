@@ -67,7 +67,8 @@ class Acl extends ZendAcl
         
         /* Post Api Routes */
         $_api_routes['guest'][] = ['/api/login',                                                            'POST'];
-        $_api_routes['guest'][] = ['/api/contribution[/{id:[0-9]*}]',                                       'POST'];
+        $_api_routes['guest'][] = ['/api/contribution',                                                     'PUT'];
+        $_api_routes['guest'][] = ['/api/contribution/{id:[0-9]*}',                                         'POST'];
         
         // Store Routes
         foreach ([$_api_routes, $_rf_routes] as $_routes) {

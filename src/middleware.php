@@ -235,7 +235,7 @@ $apiauth = function ($request, $response, $next) {
 
       // Post Requests: JWT Token Required
     
-      if ($request->isPost()) {
+      if ($request->isPost() || $request->isPut()) {
         $signer = new Sha256();
         $token  = (new Parser())->parse((string) $apikey); // Parses from a string
         $u      = $this->db->getUsers()->findPk((int)$token->getClaim('uid'));

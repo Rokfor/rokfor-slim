@@ -342,7 +342,7 @@ $app->group('/api', function () {
    *
    */
   
-  $this->post('/contribution[/{id:[0-9]*}]', 
+  $this->post('/contribution/{id:[0-9]*}', 
     function ($request, $response, $args) {
       $r = $response->withHeader('Content-type', 'application/json');
       $r->getBody()->write(json_encode('ok'));
