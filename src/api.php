@@ -487,7 +487,7 @@ $app->group('/api', function () {
 
           // Data Level Modification - Loop trough fields and store data
 
-          $r->getBody()->write(json_encode(json_encode(["Id" => $c->getId()])));        
+          $r->getBody()->write(json_encode(["Id" => $c->getId()]));
         }
         else {
           $_error = 'Contribution Id not known or User has no access to modify it.';
