@@ -3,7 +3,7 @@
 use Slim\Exception\NotFoundException;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
-
+use Lcobucci\JWT\ValidationData;
 
 /**
  * Trailing Slash Middleware
@@ -239,7 +239,12 @@ $apiauth = function ($request, $response, $next) {
         $signer = new Sha256();
         $token  = (new Parser())->parse((string) $apikey); // Parses from a string
         $u      = $this->db->getUsers()->findPk((int)$token->getClaim('uid'));
-        if ($u && $token->verify($signer, $u->GetRwapikey())) {
+
+        $data   = new ValidationData(); // It will use the current time to validate (iat, nbf and exp)
+        $data->setIssuer($_SERVER['HTTP_HOST']);
+        $data->setAudience($_SERVER['HTTP_HOST']);
+
+        if ($u && $token->verify($signer, $u->GetRwapikey()) && $token->validate($data)) {
           $this->db->setUser($u->getId());
           $this->db->addLog('post_api', 'POST' , $request->getAttribute('ip_address'));
           $response = $next($request, $response);
