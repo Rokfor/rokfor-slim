@@ -453,10 +453,9 @@ $app->group('/api', function () {
   );   
   
   /* Post Contribution
-   * Storing Data in a contribution with id :id
+   * Storing Data in a contribution with id :id and changing the contribution itself. All parameters are optional
    * 
-   * {meta:{string:name, int:templateid}, data:{field:value, field:value...}, status: "published|open|draft"}
-   * 
+   * {"Template": Int, "Name": String, "Chapter": Int, "Issue": Int, "Status": "Draft|Published|Open|Deleted", "Data":{field:value, field:value...}}
    * 
    *
    */
@@ -464,7 +463,46 @@ $app->group('/api', function () {
   $this->post('/contribution/{id:[0-9]*}', 
     function ($request, $response, $args) {
       $r = $response->withHeader('Content-type', 'application/json');
-      $r->getBody()->write(json_encode('ok'));
+      $_error = false;
+
+      // Check for Valid Payload
+      
+      if ($data = json_decode($request->getBody())) {
+
+        // Check if the contribution exists and the user has access to it
+
+        if ($c = $this->db->getContribution($args['id'])) {
+
+          // Contribution Level Modification
+
+          // 1 Change State
+
+          // 2 Change Template
+
+          // 3 Change Issue
+
+          // 4 Change Chapter
+
+          // 5 Rename
+
+          // Data Level Modification - Loop trough fields and store data
+
+          $r->getBody()->write(json_encode(json_encode(["Id" => $c->getId()])));        
+        }
+        else {
+          $_error = 'Contribution Id not known or User has no access to modify it.';
+        }
+      }
+      else {
+        $_error = "Body is not a valid json string.";
+      }
+
+      // Return error message
+
+      if ($_error) {
+        $r = $response->withHeader('Content-type', 'application/json')->withStatus(500);
+        $r->getBody()->write(json_encode(["Error" => $_error]));
+      }
       return $r;
     }
   );      
