@@ -335,17 +335,34 @@ $app->group('/api', function () {
   /* Put Contribution
    * Adding a contribution
    * 
+   * The body of the put request must be a json string defining at least the following parameters:
+   * 
+   * {"Template": Int, "Name": String, "Chapter": Int, "Issue": Int}
+   *
+   * Optional, the Status of the newly created contribution can be passed as well:
+   * 
+   * {"Template": Int, "Name": String, "Chapter": Int, "Issue": Int, "Status": "Draft|Published|Open|Deleted"}
    *
    */
   
   $this->put('/contribution', 
     function ($request, $response, $args) {
+      
+      // Creating a Response
+      
       $r = $response->withHeader('Content-type', 'application/json');
 
-      // Payload:
+      // Payload: Encoding JSON Body
       
       if ($data = json_decode($request->getBody())) {
-        $_error = false;
+        $_error = false;  // Error Message
+        $c = false;       // Contribution Return value
+        $i = false;       // Issue Object
+        $f = false;       // Chapter Object
+        $_status = "Open";
+
+        // Check Payload Structure
+        
         if (!is_int($data->Template))
           $_error = 'Template Id missing or not an integer value.';
         if (!is_int($data->Chapter))
@@ -354,23 +371,50 @@ $app->group('/api', function () {
           $_error = 'Issue Id missing or not an integer value.';
         if (!is_string($data->Name))
           $_error = 'Contribution Name missing or not a string.';
+        if (is_string($data->Status)) {
+          if ($data->Status == "Draft" || $data->Status == "Deleted") $_status = $data->Status;
+          if ($data->Status == "Published") $_status = "Close";
+        }
+
+        // Continue if ok
 
         if ($_error === false) {
-          $i = $this->db->getIssue($data->Issue);
-          $f = $this->db->getFormat($data->Chapter);
-          $c = false;
-          $_error = false;
-          if (!$_error && !$i) {
-            $_error = "Issue does not exist.";
+
+          // Check Issue Access for the current User (determined in the JWT Token)
+          
+          $i = $this->db->getStructureByIssues($data->Issue);
+          if (is_array($i)) {
+            $i = $i[0];
           }
-          if (!$_error && !$f) {
-            $_error = "Chapter does not exist.";
-          }          
-          if (!$_error && $i->getForbook() !== $f->getForbook()) {
-            $_error = "Issue and chapter are not from the same book.";
+          
+          // Check Chapter Access for the current User (determined in the JWT Token)
+                    
+          $f = $this->db->getStructureByChapters($data->Chapter);
+          if (is_array($f)) {
+            $f = $f[0];
           }          
 
-          if (!$_error) {
+          // Check for valid Issue
+
+          if (!$i) {
+            $_error = "Issue does not exist or user has no access.";
+          }
+          
+          // Check for valid Chapter
+          
+          else if (!$f) {
+            $_error = "Chapter does not exist or user has no access.";
+          }          
+          
+          // Check for valid Book Association
+          
+          else if ($i->getForbook() !== $f->getForbook()) {
+            $_error = "Issue and chapter are not in the same book.";
+          }          
+
+          // Check for Template permission within the given Chapter
+
+          else {
             $template_ok = false;
             foreach ($this->db->getTemplates($f) as $allowedTemplate) {
               if ($allowedTemplate["id"] === $data->Template) {
@@ -381,8 +425,11 @@ $app->group('/api', function () {
               $_error = "Template id not valid or not allowed within this chapter or issue.";
             }
           }
+          
+          // Continue if no error is raised
+          
           if ($_error === false) {
-            $c = $this->db->NewContribution($i, $f, $data->Template, $data->Name);
+            $c = $this->db->NewContribution($i, $f, $data->Template, $data->Name, $_status);
 
             // Store 
             if ($c !== false && gettype($c) == "object") {
