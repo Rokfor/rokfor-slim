@@ -476,6 +476,12 @@ $app->group('/api', function () {
           // Contribution Level Modification
 
           // 1 Change State
+          
+          if (is_string($data->Status)) {
+            $_status = $c->getStatus();
+            if ($data->Status == "Draft" || $data->Status == "Deleted") $_status = $data->Status;
+            if ($data->Status == "Published") $_status = "Close";
+          }
 
           // 2 Change Template
 

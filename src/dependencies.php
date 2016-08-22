@@ -102,7 +102,6 @@ $container['csrf'] = function ($c) {
     return new \Slim\Csrf\Guard;  
 };  
 
-
 // auth middleware
 $container['authAdapter'] = function ($c) {
   // Example callback to validate a sha512 hashed password  
@@ -141,8 +140,7 @@ $container['flash'] = function () {
 //Override the default Not Found Handler
 $container['notFoundHandler'] = function ($c) {
     return function ($request, $response) use ($c) {
-      $args = [];
-      $c['view']->render($c['response']->withStatus(404), 'error.jade', $args);
+      $c['view']->render($c['response']->withStatus(404), 'error.jade', []);
       return $c['response'];
     };
 };

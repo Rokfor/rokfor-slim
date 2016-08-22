@@ -6,6 +6,47 @@ use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\ValidationData;
 
 /**
+ * Database Check Middleware
+ * 
+ * Checks if a database does exist and is initialized.
+ *
+ * @author Urs Hofer
+ */
+
+
+$app->add(function ($request, $response, $next) {
+  // Check for Existing Database
+  try {
+    $_p = $this->db->PDO();
+  } catch (Exception $e) {
+    return $this->settings['multiple_spaces'] === true 
+      ? $response->withRedirect($this->settings['unknow_space_redirect'])
+      : $this->view->render($response->withStatus(404), 'error.jade', [
+          "message" => $e->getMessage(),
+          "help"    => "Check the database parameters in the <i>database.php</i> configuration file."
+        ]);
+  }
+
+  // Check for Correct Database Setup
+  try {
+    $stmt = $_p->prepare("SELECT * FROM users");
+    $stmt->execute(); 
+  } catch (Exception $e) {
+
+    $_messages = [];
+    if ($this->db->insertSql($_messages)) {
+      return $next($request, $response);      
+    }
+    
+    return $this->view->render($response->withStatus(404), 'error.jade', [
+      "message" => join('<br>', $_messages),
+      "help"    => "Your database exists but cannot be initialized. Run <i>$ propel sql:insert</i> manually from the command line."
+    ]);
+  }
+  return $next($request, $response);
+});
+
+/**
  * Trailing Slash Middleware
  * 
  * Stores translations and paths in template accessible values
@@ -114,9 +155,12 @@ $ajaxcheck = function ($request, $response, $next) {
 try {
   $authentification = $container->get('slimAuthRedirectMiddleware');  
 } catch (Exception $e) {
-  $authentification = function ($request, $response, $next) {
-    return $response->withRedirect($this->settings['unknow_space_redirect']);
-  };
+/*  $authentification = function ($request, $response, $next) {
+    if ($this->settings['multiple_spaces'] === true) 
+      return $response->withRedirect($this->settings['unknow_space_redirect']);
+    else
+      throw new NotFoundException($request, $response);
+  };*/
 }
 
 

@@ -9,6 +9,10 @@ html
             .box-header.with-border
               h4 Rokfor Application Error
             .box-body
-              p Page not Found
+              p=($message ? $message : "Page not Found")
+              if $help
+                pre
+                  i.fa.fa-question-circle &nbsp;
+                  span!=$help
             .box-footer
               p <?=date('c')?>

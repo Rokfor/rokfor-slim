@@ -18,12 +18,12 @@ class Acl extends ZendAcl
 
         $_rf_routes = ['guest'=>[],'user'=>[],'admin'=>[],'root'=>[]];
 
-        // Basic Permission for everybody: Login form
+        // Everybody: Login form
         $_rf_routes['guest'][] = ['/rf',                                                                    'GET'];
         $_rf_routes['guest'][] = ['/rf/login',                                                              ['GET','POST']];
         $_rf_routes['guest'][] = ['/rf/forgot',                                                             ['GET','POST']];
                                                                                                             
-        // Regular Users
+        // Regular Users: Backend functions, File Proxy, Profile and Exporters
         $_rf_routes['user'][] = ['/rf/logout',                                                              'GET'];
         $_rf_routes['user'][] = ['/rf/dashboard',                                                           'GET'];
         $_rf_routes['user'][] = ['/rf/menu',                                                                'GET'];
@@ -37,7 +37,7 @@ class Acl extends ZendAcl
         $_rf_routes['user'][] = ['/rf/proxy',                                                               'GET'];
 
                                                                                                             
-        // Administrators (Like Users but with added structure and template management)
+        // Administrators: Structure and template management
         $_rf_routes['admin'][] = ['/rf/structure',                                                          ['GET','POST']];
         $_rf_routes['admin'][] = ['/rf/structure/{action:rename|rights|settings}/{type}/{id:[0-9]*}',       'POST'];
         $_rf_routes['admin'][] = ['/rf/structure/{action:add|sort}/{type}[/{id:[0-9]*}]',                   'POST'];
@@ -48,7 +48,7 @@ class Acl extends ZendAcl
         $_rf_routes['admin'][] = ['/rf/templates/field/{action:add|duplicate|delete}/{id:[0-9]*}',          ['GET','POST']];
         $_rf_routes['admin'][] = ['/rf/templates/field/{action:rename|update|sort}/{id:[0-9]*}',            'POST'];
 
-        // Root users (Like Admins but with added user management)
+        // Root users: User management
         $_rf_routes['root'][] = ['/rf/users',                                                               'GET'];
         $_rf_routes['root'][] = ['/rf/user[/{id:new|[0-9]*}]',                                              ['GET','POST']];
         $_rf_routes['root'][] = ['/rf/user/delete/{id:[0-9]*}',                                             'GET'];
@@ -59,15 +59,13 @@ class Acl extends ZendAcl
         // is handled per request to keep the api restful.
 
         $_api_routes = ['guest'=>[]];
-        $_api_routes['guest'][] = ['/api/contributions/{issue:[0-9]*}/{chapter:[0-9]*}',                    'GET'];
-        $_api_routes['guest'][] = ['/api/contribution/{id:[0-9]*}',                                         ['GET', 'POST']];
-        $_api_routes['guest'][] = ['/api/books[/{id:[0-9]*}]',                                              'GET'];
-        $_api_routes['guest'][] = ['/api/proxy/{id:[0-9]*}/{file}',                                         'GET'];
-        $_api_routes['guest'][] = ['/api/{action:issues|chapters}[/{id:[0-9]*}]',                           'GET'];
-        
-        /* Post Api Routes */
         $_api_routes['guest'][] = ['/api/login',                                                            'POST'];
+        $_api_routes['guest'][] = ['/api/books[/{id:[0-9]*}]',                                              'GET'];
+        $_api_routes['guest'][] = ['/api/{action:issues|chapters}[/{id:[0-9]*}]',                           'GET'];
         $_api_routes['guest'][] = ['/api/contribution',                                                     'PUT'];
+        $_api_routes['guest'][] = ['/api/contribution/{id:[0-9]*}',                                         ['GET', 'POST']];
+        $_api_routes['guest'][] = ['/api/contributions/{issue:[0-9]*}/{chapter:[0-9]*}',                    'GET'];
+        $_api_routes['guest'][] = ['/api/proxy/{id:[0-9]*}/{file}',                                         'GET'];
         
         // Store Routes
         foreach ([$_api_routes, $_rf_routes] as $_routes) {
