@@ -154,7 +154,7 @@ $ php -S 0.0.0.0:8080 -t public public/index.php
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Now you should be able to browse to **http://localhost:8080/rf** and log in with
-the default user **root** and password **1234**.
+the default user **root** and password **123**.
 
 ### Behind Apache
 There are 3 important things to keep in mind when running Rokfor with Apache:
