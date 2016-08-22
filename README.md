@@ -109,8 +109,8 @@ return [
 
 ### 4. Populate Database
 
-**Normally, the database is initialized if you log in the first time. In that case,
-you can skip this chapter.**
+**Normally, the database is initialized when you log in for the first time. If no
+error occured, you can skip this chapter.**
 
 Rokfor relies on [Propel](<http://propelorg.org>) as database object mapper.
 Propel is loaded via composer and installed like all other dependencies in the
