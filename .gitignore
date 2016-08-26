@@ -4,7 +4,6 @@ composer.phar
 vendor
 .tmp/rf.css
 cache/*.php
-composer.lock
 public/udb/*
 public/udb/thumbs/*
 !public/udb/thumbs/thumb.jpg
