@@ -1,12 +1,11 @@
 <?php
-    ini_set('display_errors', 1);
-
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 
 /* To help the built-in PHP dev server, check if the request was actually for
  * something which should probably be served as a static file
  */
 if (PHP_SAPI == 'cli-server') {
+    ini_set('xdebug.max_nesting_level', 1000);
     ini_set('display_errors', 1);
     $_p = explode("?",__DIR__ . $_SERVER['REQUEST_URI']);
     $file = reset($_p);
