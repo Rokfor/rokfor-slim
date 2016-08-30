@@ -1,0 +1,15 @@
+{
+  "name": "rokfor/rokfor-slim",
+  "description": "Admin Backend for a Rokfor Database built on slim using bootstrap, adminLte and jade",
+  "keywords": ["rokfor", "slim","framework","view","template","jade"],
+  "repository": "https://github.com/rokfor/rokfor-slim",
+  "addons": [
+    "dokku-mariadb",
+    "dokku-redis"
+  ],
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-php"
+    }
+  ]
+}

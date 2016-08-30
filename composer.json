@@ -47,5 +47,9 @@
     },
     "require-dev": {
         "phpunit/phpunit": "*"
+    },
+    "require": {
+        "ext-gd": "*",
+        "ext-imagick": "*"
     }
 }
