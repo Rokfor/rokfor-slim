@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e2c62d1f1cfec4fd347058996a8cc6b9",
-    "content-hash": "0fad48c42bd75f424c5236681450fb05",
+    "hash": "f8fea8d2f68b27ce7eb48ed6d4c41eda",
+    "content-hash": "7789c9e275203e4d1ab88b6fe529907a",
     "packages": [
         {
             "name": "akrabat/rka-ip-address-middleware",
@@ -1217,12 +1217,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Rokfor/rokfor-php-db.git",
-                "reference": "363a76ddc89466b79685d3626aecd688821f4473"
+                "reference": "df1302d89c719851aef1771c89bedd428e899e42"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Rokfor/rokfor-php-db/zipball/363a76ddc89466b79685d3626aecd688821f4473",
-                "reference": "363a76ddc89466b79685d3626aecd688821f4473",
+                "url": "https://api.github.com/repos/Rokfor/rokfor-php-db/zipball/df1302d89c719851aef1771c89bedd428e899e42",
+                "reference": "df1302d89c719851aef1771c89bedd428e899e42",
                 "shasum": ""
             },
             "require": {
@@ -1253,7 +1253,7 @@
                 "source": "https://github.com/Rokfor/rokfor-php-db/tree/versioning",
                 "issues": "https://github.com/Rokfor/rokfor-php-db/issues"
             },
-            "time": "2016-08-26 14:16:51"
+            "time": "2016-08-30 14:22:08"
         },
         {
             "name": "slim/csrf",
@@ -3332,7 +3332,8 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.5.0"
+        "php": ">=5.5.0",
+        "ext-gd": "*"
     },
     "platform-dev": []
 }

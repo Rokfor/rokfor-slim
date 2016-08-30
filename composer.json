@@ -44,8 +44,7 @@
         "erusev/parsedown": "^1.6",
         "predis/predis": "^1.0",
         "lcobucci/jwt": "^3.1",
-        "ext-gd": "*",
-        "ext-imagick": "*"        
+        "ext-gd": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "*"
