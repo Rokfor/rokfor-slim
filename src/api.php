@@ -523,10 +523,6 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
   $c = $this->db->getContribution($args['id'], true, true);
   $f = $this->db->getField($args['field']);
   $_isnginx = (strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== false);
-
-  print_r($_SERVER['SERVER_SOFTWARE']);
-  exit(0);
-  
   
   if ($c && $c->getId() == $args['id'] && $c->getTemplatenames()->getPublic() === "1" && stristr($f->getContent(), $args['file'])) {
     if ($_isnginx === true) {
