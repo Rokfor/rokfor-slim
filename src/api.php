@@ -526,7 +526,7 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
   
   if ($c && $c->getId() == $args['id'] && $c->getTemplatenames()->getPublic() === "1" && stristr($f->getContent(), $args['file'])) {
     if ($_isnginx === true) {
-      echo('X-Accel-Redirect: //'.$_SERVER['HTTP_HOST'].'/internal_redirect/' . str_replace('https://', '', $this->db->presign_file($args['file'])));
+      header('X-Accel-Redirect: //'.$_SERVER['HTTP_HOST'].'/internal_redirect/' . str_replace('https://', '', $this->db->presign_file($args['file'])));
     }
     else {
       header('Location: ' . $this->db->presign_file($args['file']));
