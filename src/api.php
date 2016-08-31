@@ -523,6 +523,10 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
   $c = $this->db->getContribution($args['id'], true, true);
   $f = $this->db->getField($args['field']);
   $_isnginx = (strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== false);
+
+  echo $_SERVER['SERVER_SOFTWARE'];
+  
+  
   if ($c && $c->getId() == $args['id'] && $c->getTemplatenames()->getPublic() === "1" && stristr($f->getContent(), $args['file'])) {
     if ($_isnginx === true) {
       header('X-Accel-Redirect: /internal_redirect/' . str_replace('https://', '', $this->db->presign_file($args['file'])));
