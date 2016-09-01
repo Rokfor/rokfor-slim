@@ -1217,12 +1217,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Rokfor/rokfor-php-db.git",
-                "reference": "4c538852fc862b01bde88320b083b8e8291deb10"
+                "reference": "f6f6094ccf99b8447b9d69b59e0a4c82cee00b78"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Rokfor/rokfor-php-db/zipball/4c538852fc862b01bde88320b083b8e8291deb10",
-                "reference": "4c538852fc862b01bde88320b083b8e8291deb10",
+                "url": "https://api.github.com/repos/Rokfor/rokfor-php-db/zipball/f6f6094ccf99b8447b9d69b59e0a4c82cee00b78",
+                "reference": "f6f6094ccf99b8447b9d69b59e0a4c82cee00b78",
                 "shasum": ""
             },
             "require": {
@@ -1253,7 +1253,7 @@
                 "source": "https://github.com/Rokfor/rokfor-php-db/tree/versioning",
                 "issues": "https://github.com/Rokfor/rokfor-php-db/issues"
             },
-            "time": "2016-09-01 15:16:37"
+            "time": "2016-09-01 15:49:48"
         },
         {
             "name": "slim/csrf",
