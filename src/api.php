@@ -523,7 +523,9 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
   $c = $this->db->getContribution($args['id'], true, true);
   $f = $this->db->getField($args['field']);
   $_isnginx = (strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== false);
+  $args['file'] = 'Bildschirmfoto_2016-08-30_um_14.36.45.png';
   if ($c && $c->getId() == $args['id'] && $c->getTemplatenames()->getPublic() === "1" && stristr($f->getContent(), $args['file'])) {
+    /*
     if ($_isnginx === true) {
 //      header('X-Accel-Redirect: /internal_redirect/' . str_replace('https://', '', $this->db->presign_file($args['file'])).';');
       $result = $this->db->s3_file_info($args['file']);
@@ -533,8 +535,19 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
     }
     else {
       header('Location: ' . $this->db->presign_file($args['file']));
-    }
+    }*/
+
+    /*  Temporary Fix unless X-Accel-Redirect is working */
+
+    $result = $this->db->s3_file_info($args['file']);
+    header('Content-Type: '. $result['ContentType']);
+    header('Content-Length: '. $result['ContentLength']);
+    readfile($this->db->presign_file($args['file']));
+
     exit(0);
+  }
+  else {
+    throw new \Slim\Exception\NotFoundException($request, $response);
   }
   return $response;
 }); 

@@ -29,7 +29,7 @@
             th
         tbody
           :php
-            | $rows = json_decode($field->getContent(), true); $sortcount = 1; if ($private === true) {$db->sign_request($rows);}
+            | $rows = json_decode($field->getContent(), true); $sortcount = 1; if ($private === true || $s3 === true) {$db->sign_request($rows, $private, false, $contribution->getId(), $field->getId());}
           if (is_array($rows))
             each row in $rows
               tr

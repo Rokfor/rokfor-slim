@@ -186,6 +186,7 @@ class helpers
         'moddate' => $difftime,
         'username' => $_c->getuserSysRef() ? $_c->getuserSysRef()->getUsername() : false,
         'private' =>  $_c->getTemplatenames()->getPublic() == 1 ? false : true,
+        's3'      => $this->container->paths['s3'] === true,
         'db' => &$this->container->db
       ]
     );
@@ -939,8 +940,8 @@ class helpers
       $_protocol = '//';
       if (is_array($_content)) {
         
-        if ($private === true) {
-          $this->container->db->sign_request($_content, '/api/proxy/'.$field->getForcontribution().'/');
+        if ($private === true || $this->container->paths['s3'] === true) {
+          $this->container->db->sign_request($_content, $private, '/api/proxy/'.$field->getForcontribution().'/', $field->getForcontribution(), $field_id);
         }
         foreach ($_content as &$_row) {
           $_versions = [];
