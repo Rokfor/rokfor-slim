@@ -267,29 +267,35 @@ $app->group('/api', function () {
     function ($request, $response, $args) {  
       $c = $this->db->getContribution($args['id']);
       if ($c && ($c->getStatus()=="Close" || $c->getStatus()=="Draft")) {
-        $url = base64_decode($args['file']);
-        if ($url) {
+        $url = base64_decode($args['file'], true);
+        if ($url !== false) {
           $this->get('logger')->info("DECODING: ".$url);
           return $this->db->proxy($url, $response);
         }
         else {
-          $r = $response->withHeader('Content-type', 'application/json');
-          $r->getBody()->write(json_encode(['error' => "404", 'message' => "File not found"]));
-          return $r;
+          $errcode = 500;
+          $newResponse = $response->withStatus($errcode);
+          $newResponse->getBody()->write(json_encode(['Error'=>'Base64 encoding failed'], JSON_CONSTANTS));
+          return $newResponse;
         }
       }
       else if ($c === false) {
-        $errcode = 404;
+        $errcode = 500;
         $newResponse = $response->withStatus($errcode);
-        $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'No access to Element'], JSON_CONSTANTS));
+        $newResponse->getBody()->write(json_encode(['Error'=>'No access to Contribution'], JSON_CONSTANTS));
         return $newResponse;      
       }
       else {
-        $errcode = 404;
+        $errcode = 500;
         $newResponse = $response->withStatus($errcode);
-        $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'Element not found'], JSON_CONSTANTS));
+        $newResponse->getBody()->write(json_encode(['Error'=>'Contribution not found'], JSON_CONSTANTS));
         return $newResponse;
       }      
+
+      $errcode = 500;
+      $newResponse = $response->withStatus($errcode);
+      $newResponse->getBody()->write(json_encode(['Error'=>'Unknown Error'], JSON_CONSTANTS));
+      return $newResponse;
     }
   );      
     
