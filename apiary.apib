@@ -1,80 +1,95 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
+HOST: http://demo.rokfor.ch
 
-# Rokfor
+# Rokfor Slim
+TODO: Add Description
 
-Polls is a simple API allowing consumers to view polls and vote in them.
+# Api Proxy 8 AHR0cHM6Ly9zMy5ldS1jZW50cmFsLTEuYW1hem9uYXdzLmNvbS9yb2tmb3IvNjFkNjNmMjAzMDY0ODRhOTU0ZDBiZDE5NDY0YjIxMjMvYmFja2VuZC0xLnBuZw [/api/proxy/8/aHR0cHM6Ly9zMy5ldS1jZW50cmFsLTEuYW1hem9uYXdzLmNvbS9yb2tmb3IvNjFkNjNmMjAzMDY0ODRhOTU0ZDBiZDE5NDY0YjIxMjMvYmFja2VuZC0xLnBuZw==]
 
-## Questions Collection [/questions]
+## File Proxy [GET]
+file proxy
 
-### List All Questions [GET]
 
-+ Response 200 (application/json)
+# Api Contribution 26 [/api/contribution/26]
 
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
-        ]
+## Contribution [POST]
+Updating a contribution
 
-### Create a New Question [POST]
 
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
+# Api Issues 1 [/api/issues/1{?populate,verbose,data}]
+
+## Issues [GET]
+Issues Query
++ Parameters
+    + populate (, required)
+
+    + verbose (, required)
+
+    + data (, required)
+
+
+
+# Api Contribution [/api/contribution]
+
+## Contribution [PUT]
+Adding new Contributions
 
 + Request (application/json)
+    + Attributes (ContributionRequest)
 
-        {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
-        }
 
-+ Response 201 (application/json)
+# Api Contributions 1 1 [/api/contributions/1/1{?populate}]
 
-    + Headers
+## Contributions [GET]
++ Parameters
+    + populate (, required)
 
-            Location: /questions/2
 
-    + Body
 
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
-                ]
-            }
+# Api Books [/api/books]
+
+## Books [GET]
+Books Query
+
+
+# Api Contribution 17 [/api/contribution/17]
+
+## Contribution [GET]
+
+
+# Api Chapters [/api/chapters{?populate,verbose,data}]
+
+## Chapters [GET]
+Chapters Query
++ Parameters
+    + populate (, required)
+
+    + verbose (, required)
+
+    + data (, required)
+
+
+
+# Api Login [/api/login]
+
+## Login [POST]
+Logging into the api for subsequent POST or PUT calls. Login generates a JWT token based on the username and the r/w api key.
++ Parameters
+    + username (, required)
+
+    + apikey (, required)
+
+
+
+# Data Structures
+
+## ContributionRequest (object)
+
+
+### Properties
++ `Template` (Number, required) 
++ `Name` (String, required) 
++ `Chapter` (Number, required) 
++ `Issue` (Number, required) 
++ `Status` (String, required) 
+
