@@ -1,94 +1,187 @@
 FORMAT: 1A
-HOST: http://demo.rokfor.ch
+HOST: https://youraccount.rokfor.ch
 
-# Rokfor Slim
-TODO: Add Description
+# Rokfor API
+Rokfor is a *api-first* cms. This means, that Rokfor is serving files and data structures only via a programmable, restful API.
 
-# File Proxy [/api/proxy/contribution:id/base64string]
+# Group File
 
-## File Proxy [GET]
-file proxy
+## File Proxy [/api/proxy/{contribution}/{file}]
+Downloading a file from a non public template. This function is normally not called directly, but acts as an url for a link.
 
-
-# Api Contribution 26 [/api/contribution/26]
-
-## Contribution [POST]
-Updating a contribution
-
-
-# Api Issues 1 [/api/issues/1{?populate,verbose,data}]
-
-## Issues [GET]
-Issues Query
 + Parameters
-    + populate (, required)
 
-    + verbose (, required)
+    + contribution: 1 (number) - Id of the contribution.
+    + file: aHR0cHM6Ly9zMy5ldS1jZW50cmFsLTEuYW1hem9uYXdzLmNvbS9yb2tmb3IvNjFkNjNmMjAzMDY0ODRhOTU0ZDBiZDE5NDY0YjIxMjMvYmFja2VuZC0xLnBuZw== (string) - base64 encoded string of the original file.
 
-    + data (, required)
+### Retrieve a File [GET]
+
++ Request
+
+    + Headers
+
+        Authorization: Bearer READ_ONLY_ACCESS_TOKEN_HERE
+
++ Response 200 (MIME_OF_FILE)
+
+    + Body
+
+            Binary File
+            
++ Response 404 (application/json)
+    
+    + Body
+        
+        {
+            "Error": "File not found"
+        }
+
++ Response 500 (application/json)
+
+    + Body
+
+        {
+            "Error": "Element not found"
+        }
+    
+    + Schema
+    
+        {
+            "type": "object",
+            "properties": {
+                "Error": {
+                    "enum": [        
+                        "Element not found",
+                        "No access to Element",
+                        "Base64 encoding failed",
+                        "Wrong key supplied",
+                        "Unknown Error"
+                    ]
+                }
+            }
+        }
 
 
+# Group Contributions 
 
-# Api Contribution [/api/contribution]
+## Contribution [/api/contribution/{contribution}]
+Working with a single contribution
 
-## Contribution [PUT]
-Adding new Contributions
++ Parameters
+
+    + contribution: 1 (number) - Id of the contribution.
+
+### Add Contribution [PUT]
 
 + Request (application/json)
-    + Attributes (ContributionRequest)
 
+    + Headers
 
-# Api Contributions 1 1 [/api/contributions/1/1{?populate}]
+        Authorization: Bearer READ_WRITE_JWT_TOKEN_HERE
+    
+    + Attributes
 
-## Contributions [GET]
+        + Template: 1
+            Id of the template
+        + Name: Name of the contribution
+            Title of the contribution
+        + Chapter: 1
+            Id of the chapter
+        + Issue: 1
+            Id of the issue
+        + Status: Draft
+            Status can be "Draft", "Open", "Published" or "Deleted".
+
+    + Schema
+
+        {
+            "type": "object",
+            "properties": {
+                "Template": {
+                    "type": "integer"
+                },
+                "Name": {
+                    "type": "string"
+                },
+                "Chapter": {
+                    "type": "integer"
+                },
+                "Issue": {
+                    "type": "integer"
+                },
+                "Status": {
+                    "type": "string"
+                }
+            }
+        }
+
++ Response 200 (application/json)
+
+    + Body
+
+        {
+            "Id": 3
+        }
+    
+    + Schema
+
+        {
+            "type": "object",
+            "properties": {
+                "Id": {
+                    "type": "integer"
+                }
+            }
+        }
+
++ Response 500 (application/json)
+
+    + Body
+
+        {
+            "Error": "Template Id missing or not an integer value."
+        }
+    
+    + Schema
+    
+        {
+            "type": "object",
+            "properties": {
+                "Error": {
+                    "enum": [ 
+                        "Template Id missing or not an integer value",
+                        "Chapter Id missing or not an integer value.",
+                        "Issue Id missing or not an integer value.",
+                        "Contribution Name missing or not a string.",
+                        "Contribution Name missing or not a string."
+                        "Issue does not exist or user has no access.",,
+                        "Chapter does not exist or user has no access.",
+                        "Issue and chapter are not in the same book.",
+                        "Template id not valid or not allowed within this chapter or issue.",
+                        "Error creating contribution.",
+                        "Body is not a valid json string.",
+                        "Wrong key supplied"
+                    ]
+                }
+            }
+        }
+
+### Get Contribution [GET]
+
++ Request Plain Text Message
+
+    + Headers
+
+        Authorization: Bearer READ_ONLY_ACCESS_TOKEN_HERE
+
+### Change Contribution [POST]
+
 + Parameters
-    + populate (, required)
 
+    + contribution: 1 (number) - Id of the contribution.
 
++ Request Plain Text Message
 
-# Api Books [/api/books]
+    + Headers
 
-## Books [GET]
-Books Query
-
-
-# Api Contribution 17 [/api/contribution/17]
-
-## Contribution [GET]
-
-
-# Api Chapters [/api/chapters{?populate,verbose,data}]
-
-## Chapters [GET]
-Chapters Query
-+ Parameters
-    + populate (, required)
-
-    + verbose (, required)
-
-    + data (, required)
-
-
-
-# Api Login [/api/login]
-
-## Login [POST]
-Logging into the api for subsequent POST or PUT calls. Login generates a JWT token based on the username and the r/w api key.
-+ Parameters
-    + username (, required)
-
-    + apikey (, required)
-
-
-
-# Data Structures
-
-## ContributionRequest (object)
-
-
-### Properties
-+ `Template` (number, required) 
-+ `Name` (string, required) 
-+ `Chapter` (number, required) 
-+ `Issue` (number, required) 
-+ `Status` (string, required)
+        Authorization: Bearer READ_WRITE_JWT_TOKEN_HERE
