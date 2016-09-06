@@ -481,25 +481,162 @@ $app->group('/api', function () {
 
           // Contribution Level Modification
 
-          // 1 Change State
+          // 1 Change State - this can be done always.
           
           if (is_string($data->Status)) {
-            $_status = $c->getStatus();
-            if ($data->Status == "Draft" || $data->Status == "Deleted") $_status = $data->Status;
-            if ($data->Status == "Published") $_status = "Close";
+            $_error = "Status must be Open, Draft, Deleted or Published.";
+            if ($data->Status == "Open"  || 
+                $data->Status == "Draft" || 
+                $data->Status == "Deleted") {
+              $_status = $data->Status;
+              $_error = false;
+            }
+            if ($data->Status == "Published") {
+              $_status = "Close";
+              $_error = false;              
+            }
+            if ($_error === false) {
+              $c->setStatus($_status);
+            }
           }
 
           // 2 Change Template
+          $_template = is_int($data->Template) ? $data->Template : $c->getFortemplate();
 
           // 3 Change Issue
+          $_issue =  is_int($data->Issue) ? $data->Issue : $c->getForissue();
 
           // 4 Change Chapter
+          $_chapter = is_int($data->Chapter) ? $data->Chapter : $c->getForchapter();
+          
+          
+          // Exectute the changements: Only if one of the relevant paramters are
+          // passed.
+          if (is_int($data->Chapter) || is_int($data->Issue) || is_int($data->Template)) {
+            
+            // Check Issue Access for the current User (determined in the JWT Token)
+          
+            $i = $this->db->getStructureByIssues($_issue);
+            if (is_array($i)) {
+              $i = $i[0];
+            }
+          
+            // Check Chapter Access for the current User (determined in the JWT Token)
+                    
+            $f = $this->db->getStructureByChapters($_chapter);
+            if (is_array($f)) {
+              $f = $f[0];
+            }          
 
-          // 5 Rename
+            // Check for valid Issue
 
-          // Data Level Modification - Loop trough fields and store data
+            if (!$i) {
+              $_error = "Issue does not exist or user has no access.";
+            }
+          
+            // Check for valid Chapter
+          
+            else if (!$f) {
+              $_error = "Chapter does not exist or user has no access.";
+            }          
+          
+            // Check for valid Book Association
+          
+            else if ($i->getForbook() !== $f->getForbook()) {
+              $_error = "Issue and chapter are not in the same book.";
+            }          
 
-          $r->getBody()->write(json_encode(["Id" => $c->getId()]));
+            // Check for Template permission within the given Chapter
+
+            else {
+              $template_ok = false;
+              foreach ($this->db->getTemplates($f) as $allowedTemplate) {
+                if ($allowedTemplate["id"] === $_template) {
+                  $template_ok = true;
+                }
+              }
+              if ($template_ok === false) {
+                $_error = "Template id not valid or not allowed within this chapter or issue.";
+              }
+            }
+            
+            // Continue if no error is raised
+          
+            if ($_error === false) {
+
+              if ($_template != $c->getFortemplate()) {
+                $this->db->ChangeTemplateContribution($c->getId(), $_template);
+              }
+              
+              if ($_issue != $c->getForissue()) {
+                $c->setForissue($_issue);
+              }
+                
+              if ($_chapter != $c->getForchapter()) {
+                $c->setForchapter($_chapter);
+              }
+            }            
+          }
+          
+          // 5 Rename if Name Parameter is set
+          if (is_string($data->Name)) {
+            if ($data->Name !== "")
+              $c->setName($data->Name);
+            else
+              $_error = "Name must not be an empty string. Omit Name completely if it should be ignored.";
+          } 
+
+          if ($_error === false) {
+            // Store Contribution
+            $c->save();
+            // Data Level Modification - Loop trough fields and store data
+            if (is_object($data->Data)) {
+              // Convert Datas into associative Array
+              $d = [];
+              // Return Values from Store Actions
+              $_data_store = [];
+              foreach ($c->getDatas() as $_data) {
+                $d[$_data->getTemplates()->getFieldname()] = $_data;
+              }
+              // Pass One: Control Fields
+              foreach ($data->Data as $fieldname => $fieldvalue) {
+                if (!$d[$fieldname]) {
+                  $_error = "Field $fieldname does not exist in this template.";
+                }
+              }
+              if ($_error === false) {              
+                foreach ($data->Data as $fieldname => $fieldvalue) {
+                  $field = $d[$fieldname];
+                  $type     = $field->getTemplates()->getFieldtype();
+                  $settings = json_decode($field->getTemplates()->getConfigSys(), true);
+                  switch ($type) {
+
+                    // Binary Uploads
+                    case 'Bild':
+                      /*$file = $request->getUploadedFiles()['file'];
+                      $data = json_decode($request->getParsedBody()['data'], true);
+                      if ((is_object($file) && $file->getError() == 0) && $data['action'] == 'add') {
+                        $json['success'] = $this->db->FileStore($args['id'], $file, $json['original'], $json['relative'], $json['thumb'], $json['caption'], $json['newindex']);
+                        $json['growing'] = $settings['growing'];
+                      }
+                      else if ($data['action'] == 'modify') {
+                        $json['success'] = $this->db->FileModify($args['id'],  $data['data']);
+                      }*/
+                    break;
+
+                    default:
+                      # code...
+                      $_data_store[] = $this->db->setField($field->getId(), $fieldvalue);
+                      break;
+                  }                  
+                }
+              }
+            }
+            if ($_error === false) {
+              $r->getBody()->write(json_encode(["Id" => $c->getId(), "Data" => $_data_store]));
+            }
+          }
+          
         }
         else {
           $_error = 'Contribution Id not known or User has no access to modify it.';

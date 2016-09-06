@@ -886,7 +886,7 @@ class helpers
     if (method_exists($object, "getConfigSys")) {
       $_cfg = json_decode($object->getConfigSys());
       $_refs = [];
-      if ($followrefs) {
+      if ($followrefs && is_array($_cfg->referenced)) {
         foreach ($_cfg->referenced as $_fieldid => $_contribid) {
           $_c = $this->container->db->getContribution($_contribid, true);
           if ($_c) {
