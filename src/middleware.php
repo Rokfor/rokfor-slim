@@ -279,7 +279,7 @@ $apiauth = function ($request, $response, $next) {
 
       // Post Requests: JWT Token Required
     
-      if ($request->isPost() || $request->isPut()) {
+      if ($request->isPost() || $request->isPut() || $request->isDelete()) {
         $signer = new Sha256();
         $token  = (new Parser())->parse((string) $apikey); // Parses from a string
         $u      = $this->db->getUsers()->findPk((int)$token->getClaim('uid'));
@@ -409,7 +409,7 @@ $app->add(function ($request, $response, $next) {
       "allowMethods"      => array("GET", "OPTIONS", "POST")
     ];
   }
-  if ($request->isPost()) {
+  if ($request->isPost() || $request->isPut() || $request->isDelete()) {
     $corsOptions = [
       "origin"            => $this->settings['cors']['rw'],
       "maxAge"            => 1728000,

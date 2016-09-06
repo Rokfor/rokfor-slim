@@ -304,7 +304,11 @@ $app->group('/api', function () {
    * Returns a JWT Token for further usage 
    *
    */
-  
+
+  $this->options('/login', 
+    function ($request, $response, $args) {}
+  );  
+    
   $this->post('/login', 
     function ($request, $response, $args) {
       
@@ -350,6 +354,10 @@ $app->group('/api', function () {
    * {"Template": Int, "Name": String, "Chapter": Int, "Issue": Int, "Status": "Draft|Published|Open|Deleted"}
    *
    */
+  
+  $this->options('/contribution', 
+    function ($request, $response, $args) {}
+  );  
   
   $this->put('/contribution', 
     function ($request, $response, $args) {
@@ -465,7 +473,7 @@ $app->group('/api', function () {
    * 
    *
    */
-  
+
   $this->post('/contribution/{id:[0-9]*}', 
     function ($request, $response, $args) {
       $r = $response->withHeader('Content-type', 'application/json');
@@ -654,13 +662,46 @@ $app->group('/api', function () {
       }
       return $r;
     }
-  );      
-
+  );
+  
+  /* Post Contribution
+   * Storing Data in a contribution with id :id and changing the contribution itself. All parameters are optional
+   * 
+   * {"Template": Int, "Name": String, "Chapter": Int, "Issue": Int, "Status": "Draft|Published|Open|Deleted", "Data":{field:value, field:value...}}
+   * 
+   *
+   */
+  
+  $this->delete('/contribution/{id:[0-9]*}', 
+    function ($request, $response, $args) {
+      $r = $response->withHeader('Content-type', 'application/json');
+      $_error = false;
+      $c = $this->db->getContribution($args['id']);
+      
+      if ($c === null) 
+        $_error = "Contribution id does not exist.";
+      else if ($c === false) 
+        $_error = "No access for this contribution.";      
+      else {
+        $this->db->DeleteContributions([$args['id']]);
+        $r->getBody()->write(json_encode(["Id" => $args['id']]));
+        return $r;
+      }
+      
+      // Return error message
+      $r->withStatus(500)->getBody()->write(json_encode(["Error" => $_error]));
+      return $r;
+    }
+  );
   
   
 })->add($redis)->add($apiauth);
 
 /* Asset Rewriting - only running on nginx. all other servers are just redirecting to */
+
+$app->options('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', 
+  function ($request, $response, $args) {}
+);  
 
 $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $response, $args) {
   $c = $this->db->getContribution($args['id'], true, true);
