@@ -2,82 +2,42 @@ FORMAT: 1A
 HOST: https://demo.rokfor.ch
 
 # Rokfor API
-Rokfor is a *api-first* cms. This means, that Rokfor is serving files and data structures only via a programmable, restful API.
+Rokfor is a *api-first*, *decoupled*, *headless* CMS serving a JSON
+api. Meaning: Rokfor is serving files and data structures only via 
+a programmable, restful API. 
 
-# Group File
+Rokfor is open source, installable with composer and built with 
+PHP, Slim Framework and other Libraries. It runs well on Amazon 
+EC2 and has the ability to use S3 as its storage backend.
 
-## File Proxy [/api/proxy/{contribution}/{file}]
-Downloading a file from a non public template. This function is normally not called directly, but acts as an url for a link.
-
-+ Parameters
-
-    + contribution: 1 (number) - Id of the contribution.
-    + file: aHR0cHM6Ly9zMy5ldS1jZW50cmFsLTEuYW1hem9uYXdzLmNvbS9yb2tmb3IvNjFkNjNmMjAzMDY0ODRhOTU0ZDBiZDE5NDY0YjIxMjMvYmFja2VuZC0xLnBuZw== (string) - base64 encoded string of the original file.
-
-### Retrieve a File [GET]
-
-+ Request
-
-    + Headers
-
-        Authorization: Bearer READ_ONLY_ACCESS_TOKEN_HERE
-
-+ Response 200 (MIME_OF_FILE)
-
-    + Body
-
-            Binary File
-
-+ Response 404 (application/json)
-    
-    + Body
-    
-        {
-            "Error": "File not found"
-        }
-
-+ Response 500 (application/json)
-
-    + Body
-
-        {
-            "Error": "Element not found"
-        }
-    
-    + Schema
-    
-        {
-            "type": "object",
-            "properties": {
-                "Error": {
-                    "enum": [        
-                        "Element not found",
-                        "No access to Element",
-                        "Base64 encoding failed",
-                        "Wrong key supplied",
-                        "Unknown Error"
-                    ]
-                }
-            }
-        }
-
+Rokfor is still in early stage, the API might change and will be
+extended for sure.
 
 # Group Contributions 
 
-## Contribution [/api/contribution/{contribution}]
-Working with a single contribution
+Contributions are the main elements containing data. 
+They are defined by templates, so the returned json data is
+higly dependant on what kind of template is used.
+Only contributions with the status "draft" or "published" are exposed
+by the API.
+
+## Single Contribution [/api/contribution/{contribution}]
+
+Basic __CRUD__ Functions: Create, read, update and delete a single
+contribution. Binary Uploads are currently unsupported. We're looking
+for the best way to do it.
 
 + Parameters
 
     + contribution: 1 (number) - Id of the contribution.
 
-### Add Contribution [PUT]
+### Create Contribution [PUT /api/contribution]
 
 + Request (application/json)
 
     + Headers
 
-        Authorization: Bearer READ_WRITE_JWT_TOKEN_HERE
+            Authorization: Bearer READ_WRITE_JWT_TOKEN_HERE
     
     + Attributes
 
@@ -94,94 +54,433 @@ Working with a single contribution
 
     + Schema
 
-        {
-            "type": "object",
-            "properties": {
-                "Template": {
-                    "type": "integer"
-                },
-                "Name": {
-                    "type": "string"
-                },
-                "Chapter": {
-                    "type": "integer"
-                },
-                "Issue": {
-                    "type": "integer"
-                },
-                "Status": {
-                    "type": "string"
+            {
+                "type": "object",
+                "properties": {
+                    "Template": {
+                        "type": "integer"
+                    },
+                    "Name": {
+                        "type": "string"
+                    },
+                    "Chapter": {
+                        "type": "integer"
+                    },
+                    "Issue": {
+                        "type": "integer"
+                    },
+                    "Status": {
+                        "type": "string"
+                    }
                 }
             }
-        }
 
 + Response 200 (application/json)
 
     + Body
 
-        {
-            "Id": 3
-        }
+            {
+                "Id": 3
+            }
     
     + Schema
 
-        {
-            "type": "object",
-            "properties": {
-                "Id": {
-                    "type": "integer"
+            {
+                "type": "object",
+                "properties": {
+                    "Id": {
+                        "type": "integer"
+                    }
                 }
             }
+
++ Response 500 (application/json)
+
+    + Body
+
+            {
+                "Error": "Template Id missing or not an integer value."
+            }
+    
+    + Schema
+    
+            {
+                "type": "object",
+                "properties": {
+                    "Error": {
+                        "enum": [ 
+                            "Template Id missing or not an integer value",
+                            "Chapter Id missing or not an integer value.",
+                            "Issue Id missing or not an integer value.",
+                            "Contribution Name missing or not a string.",
+                            "Contribution Name missing or not a string."
+                            "Issue does not exist or user has no access.",,
+                            "Chapter does not exist or user has no access.",
+                            "Issue and chapter are not in the same book.",
+                            "Template id not valid or not allowed within this chapter or issue.",
+                            "Error creating contribution.",
+                            "Body is not a valid json string.",
+                            "Wrong key supplied"
+                        ]
+                    }
+                }
+            }
+
+### Read Contribution [GET /api/contribution{?verbose}]
+
++ Parameters
+
+    + verbose (boolean, optional) - Higher verbosity level.
+        + Default: false
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer READ_ONLY_ACCESS_TOKEN_HERE
+ 
++ Response 200 (application/json)
+
+        {
+          "Contribution": {
+            "Id": 1,
+            "Name": "Was gehts",
+            "Forissue": 1,
+            "Forchapter": 1,
+            "Fortemplate": 1,
+            "Forbook": 1,
+            "ForissueName": "Issue 1",
+            "ForchapterName": "Chapter 1",
+            "FortemplateName": "Demo",
+            "ForbookName": "Book",
+            "Sort": 0,
+            "ReferencedFrom": [
+        
+            ]
+          },
+          "Data": {
+            "Upload": {
+              "Id": 1,
+              "Content": [
+                {
+                  "Files": {
+                    "Thumbnail": "/asset/1/1/Out_of_Time_DE.png-thmb.jpg",
+                    "Original": "/asset/1/1/Out_of_Time_DE.png",
+                    "Resized": [
+                      "/asset/1/1/Out_of_Time_DE.png-preview0.jpg"
+                    ]
+                  },
+                  "Captions": "Caption",
+                  "Parsed": "Caption"
+                }
+              ]
+            },
+            "Text": {
+              "Id": 2,
+              "Content": "This is a _markdown_ text.",
+              "Parsed": "<p>This is a <em>markdown</em> text.</p>"
+            },
+            "Table": {
+              "Id": 3,
+              "Content": [
+                [
+                  "Miller",
+                  "Henry",
+                  "Street",
+                  "Location"
+                ]
+              ]
+            },
+            "Matrix": {
+              "Id": 4,
+              "Content": [
+                45.454545454545,
+                40.816326530612
+              ]
+            },
+            "Slider": {
+              "Id": 5,
+              "Content": null
+            },
+            "Location": {
+              "Id": 6,
+              "Content": [
+                47.354021140816,
+                8.5201042890553
+              ]
+            },
+            "Number": {
+              "Id": 7,
+              "Content": null
+            },
+            "Select": {
+              "Id": 8,
+              "Content": "1",
+              "Reference": {
+                "1": {
+                  "Id": 1,
+                  "Name": "Book",
+                  "ReferencedFrom": [
+        
+                  ],
+                  "Localization": [
+        
+                  ],
+                  "Options": [
+        
+                  ],
+                  "Type": null,
+                  "Parent": null
+                }
+              },
+              "ReferenceType": "Books"
+            },
+            "Keywords": {
+              "Id": 9,
+              "Content": [
+                "Keyword 1",
+                "Keywords 2"
+              ],
+              "Reference": {
+                "Keyword 1": "Keyword 1",
+                "Keywords 2": "Keywords 2"
+              },
+              "ReferenceType": "Self"
+            }
+          },
+          "QueryTime": 0.010781049728394,
+          "Hash": "40cd750bba9870f18aada2478b24840a"
+        }
+
+### Update Contribution [POST]
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer READ_WRITE_JWT_TOKEN_HERE
+
+    + Attributes
+
+        + Template: 1
+            Id of the template
+        + Name: Name of the contribution
+            Title of the contribution
+        + Chapter: 1
+            Id of the chapter
+        + Issue: 1
+            Id of the issue
+        + Status: Draft
+            Status can be "Draft", "Open", "Published" or "Deleted".
+        + Data (array)
+            + (object)
+                + Field 1: Value
+                Value depends on the field type. It is mostly a json 
+                encoded string. Text fields accept also a string, number
+                fields integers.
+                Field name refers to the name of the field within the 
+                template. The post call will fail if the field name does
+                not exist in the template.
+            + (object)
+                + Field 2: Value 
+            + (object)
+                + Field …: Value 
+
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "Template": {
+                        "type": "integer"
+                    },
+                    "Name": {
+                        "type": "string"
+                    },
+                    "Chapter": {
+                        "type": "integer"
+                    },
+                    "Issue": {
+                        "type": "integer"
+                    },
+                    "Status": {
+                        "type": "string"
+                    }
+                    "Data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "Id": 3
+            }
+
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "Id": {
+                        "type": "integer"
+                    }
+                }
+            }
+    
++ Response 500 (application/json)
+
+    + Body
+
+            {
+                "Error": "Template Id missing or not an integer value."
+            }
+
+    + Schema
+    
+            {
+                "type": "object",
+                "properties": {
+                    "Error": {
+                        "enum": [ 
+                            "Template Id missing or not an integer value",
+                            "Chapter Id missing or not an integer value.",
+                            "Issue Id missing or not an integer value.",
+                            "Contribution Name missing or not a string.",
+                            "Contribution Name missing or not a string."
+                            "Issue does not exist or user has no access.",,
+                            "Chapter does not exist or user has no access.",
+                            "Issue and chapter are not in the same book.",
+                            "Template id not valid or not allowed within this chapter or issue.",
+                            "Error creating contribution.",
+                            "Body is not a valid json string.",
+                            "Wrong key supplied",
+                            "Field [fieldname] does not exist in this template.",
+                            "Name must not be an empty string. Omit Name completely if it should be ignored."
+                        ]
+                    }
+                }
+            }
+    
+### Delete Contribution [DELETE]
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer READ_WRITE_ACCESS_TOKEN_HERE
+ 
++ Response 200 (application/json)
+
+        {
+            "Id": 1
         }
 
 + Response 500 (application/json)
 
     + Body
 
-        {
-            "Error": "Template Id missing or not an integer value."
-        }
-    
+            {
+                "Error: "Contribution id does not exist."
+            }
+
     + Schema
-    
-        {
-            "type": "object",
-            "properties": {
+        
+            {
+                "type": "object",
+                "properties": {
                 "Error": {
-                    "enum": [ 
-                        "Template Id missing or not an integer value",
-                        "Chapter Id missing or not an integer value.",
-                        "Issue Id missing or not an integer value.",
-                        "Contribution Name missing or not a string.",
-                        "Contribution Name missing or not a string."
-                        "Issue does not exist or user has no access.",,
-                        "Chapter does not exist or user has no access.",
-                        "Issue and chapter are not in the same book.",
-                        "Template id not valid or not allowed within this chapter or issue.",
-                        "Error creating contribution.",
-                        "Body is not a valid json string.",
-                        "Wrong key supplied"
-                    ]
+                    "enum": [        
+                        "Contribution id does not exist.",
+                        "No access for this contribution."]
+                    }
                 }
             }
-        }
 
-### Get Contribution [GET]
 
-+ Request Plain Text Message
+# Group File
 
-    + Headers
-
-        Authorization: Bearer READ_ONLY_ACCESS_TOKEN_HERE
-
-### Change Contribution [POST]
+## Private Files [/api/proxy/{contribution}/{file}]
+Downloading a file from a *non public* template. This function is 
+normally not called directly. It is sent within a contribution
+response as an url for a upload/binary field.
 
 + Parameters
 
     + contribution: 1 (number) - Id of the contribution.
+    + file: aHR0cHM6Ly9zMy5ldS1jZW50cmFsLTEuYW1hem9uYXdzLmNvbS9yb2tmb3IvNjFkNjNmMjAzMDY0ODRhOTU0ZDBiZDE5NDY0YjIxMjMvYmFja2VuZC0xLnBuZw== (string) - base64 encoded string of the original file.
 
-+ Request Plain Text Message
+### Retrieve a private file [GET]
+
++ Request
 
     + Headers
 
-        Authorization: Bearer READ_WRITE_JWT_TOKEN_HERE
+            Authorization: Bearer READ_ONLY_ACCESS_TOKEN_HERE
+
++ Response 200 (image/jpeg)
+The content is depending on the stored resource.
+
+    + Body
+
+            SOME_BINARY_DATA
+
++ Response 404 (application/json)
+    
+    + Body
+    
+            {"Error": "File not found"}
+
++ Response 500 (application/json)
+
+    + Body
+
+            {"Error": "Element not found"}
+    
+    + Schema
+    
+            {
+                "type": "object",
+                "properties": {
+                "Error": {
+                    "enum": [        
+                        "Element not found",
+                        "No access to Element",
+                        "Base64 encoding failed",
+                        "Wrong key supplied",
+                        "Unknown Error"]
+                    }
+                }
+            }
+
+## Public Files [/asset/{contribution}/{field}/{file}]
+Downloading a file from a *public* template. This function
+is callable without any credentials and serves as a static
+url.
+
++ Parameters
+
+    + contribution: 1 (number) - Id of the contribution.
+    + field: 1 (number) - Id of the field.
+    + file: picture.jpg (string) - Name of the file.
+
+### Retrieve a public file [GET]
+
++ Response 200 (image/jpeg)
+The content is depending on the stored resource.
+
+    + Body
+
+            SOME_BINARY_DATA
+
++ Response 404 (text/plain)
+    
+    + Body
+    
+            {"Error": "File not found"}
