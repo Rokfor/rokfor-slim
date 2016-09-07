@@ -13,7 +13,7 @@ EC2 and has the ability to use S3 as its storage backend.
 Rokfor is still in early stage, the API might change and will be
 extended for sure.
 
-# Group Contributions 
+# Group Contribution 
 
 Contributions are the main elements containing data. 
 They are defined by templates, so the returned json data is
@@ -34,7 +34,6 @@ the state by issuing a `POST` command.
 + Parameters
 
     + contribution: 1 (number) - Id of the contribution.
-
 
 ### Create Contribution [PUT /api/contribution]
 
@@ -408,8 +407,14 @@ the state by issuing a `POST` command.
                 }
             }
 
+## Selection of Contributions [/contributions/{issue}/{chapter}{?query}{?sort}{?limit}{?offset}{?filter}{?data}{?populate}{?verbose}{?template}{?status}]
 
-## Group of Contributions [/contributions/{issue}/{chapter}{?query}{?sort}{?limit}{?offset}{?filter}{?data}{?populate}{?verbose}{?template}{?status}]
+A selection of contributions is similar to a SQL "select" command. There are various options
+to filter, sort and paginate the selection. It is also possible to "populate" the selection call
+with contribution data by setting `populate` to true or defining a selection of fields with
+`data=Fieldname 1|...|...`. 
+
+**Please Note:** Selections support only `GET` calls (Read only).
 
 + Parameters
 
@@ -445,7 +450,7 @@ the state by issuing a `POST` command.
     + verbose: true (boolean, optional) - Higher verbosity level.
         + Default: false
 
-### Read Contribution [GET]
+### Read Contributions [GET]
 
 + Request (application/json)
 
@@ -455,7 +460,114 @@ the state by issuing a `POST` command.
  
 + Response 200 (application/json)
 
+            {
+              "Documents": [
+                {
+                  "Contribution": {
+                    "Id": 682,
+                    "Name": "Contribution Title",
+                    "Forissue": 1,
+                    "Forchapter": 1,
+                    "Fortemplate": 1,
+                    "Forbook": 1,
+                    "ForissueName": "Issue Title",
+                    "ForchapterName": "Chapter Title",
+                    "FortemplateName": "Template Name",
+                    "ForbookName": "Book Name",
+                    "Sort": 2,
+                    "ReferencedFrom": []
+                  },
+                  "Data": {
+                    "Synopsis": {
+                      "Id": 5223,
+                      "Content": [
+                        "Text content of the field named \"Synopsis\"",
+                        "Content contains the raw\n text string.",
+                        "Parsed contains a _html_ string.",
+                        "If the field is configured as markdown."
+                      ],
+                      "Parsed": [
+                        "Text content of the field named \"Synopsis\"",
+                        "Content contains the raw<br> text string.",
+                        "Parsed contains a <i>html</i> string.",
+                        "If the field is configured as markdown."
+                      ]
+                    }
+                  }
+                }
+              ],
+              "NumFound": 2,
+              "Limit": 1,
+              "Offset": null,
+              "QueryTime": 0.090133905410767,
+              "Hash": "85a46d1aa1170c98cf14f24cee579eec"
+            }
+            
++ Response 500 (application/json)
 
+    + Body
+
+            {"Error": "Wrong key supplied"}
+
+    + Schema
+        
+            {
+                "type": "object",
+                "properties": {
+                "Error": {
+                    "enum": [        
+                        "Wrong key supplied.",
+                        "Access denied to the selected issues and chapters."
+                        ]
+                    }
+                }
+            }        
+
+# Group Login
+
+## Read Only Access
+
+There is no login action required to access read only functions. Read only keys are
+generated in the Rokfor backend in the `Profile` section. A user is only allowed 
+to expose the data he has access to.
+The read only key needs to be passed as a `Authorization: Bearer KEY` header.
+
+## Read Write Access [/api/login]
+
+Read write access requires a login first to obtain a valid read write token. Tokens
+are based on the [JWT](http://jwt.io) standard. The JWT token returned after a successful
+login will be used as the `Authorization: Bearer READ_WRITE_JWT_TOKEN_HERE` header
+for read write actions.
+
+### Login [POST]
+
++ Request (application/x-www-form-urlencoded)
+
+    + Body
+        
+            username=user&apikey=fdkjn498usdfkjsdfr9w83u4rjflskdjg
+
+    + Attributes
+    
+        + username: user (string) - Login name of the user
+        + apikey: fdkjn498usdfkjsdfr9w83u4rjflskdjg (string) - Read write api key
+
++ Response 200 (application/json)
+
+    + Body
+    
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImp0aSI6InJmNTdjZmRhODdlYjMwNzYuNjU4MjA4NTAifQ.
+            eyJpc3MiOiJleGFtcGxlLmNvbSIsImF1ZCI6ImV4YW1wbGUuY29tIiwianRpIjoicmY1N2NmZGE4N2ViMzA3
+            Ni42NTgyMDg1MCIsImlhdCI6MTQ3MzIzOTY4NywibmJmIjoxNDczMjM5Njg3LCJleHAiOjE0NzMyNDMyODcs
+            InVpZCI6MX0.tS9c-GigZZUdcL4wzIR_6SmTFAjl9rsuRW2ADY5xNx4"
+            
++ Response 500 (application/json)
+
+    + Body
+    
+            {
+                "Error": "Wrong key supplied"
+            }
 
 
 # Group File
