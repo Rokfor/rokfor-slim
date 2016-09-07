@@ -616,12 +616,9 @@ for read write actions.
 
     + Body
         
-            username=test&apikey=358e6316fcd7d76f415c4fcdc0e1caef
+            apikey=358e6316fcd7d76f415c4fcdc0e1caef&username=test&
 
-    + Attributes
-    
-        + username: test (string) - Login name of the user
-        + apikey: 358e6316fcd7d76f415c4fcdc0e1caef (string) - Read write api key
+
 
 + Response 200 (application/json)
 
@@ -638,6 +635,13 @@ for read write actions.
                 "type": "string"
             }
             
+
++ Request (application/x-www-form-urlencoded)
+
+    + Body
+        
+            username=test&apikey=wrong_key
+
 + Response 500 (application/json)
 
     + Body
