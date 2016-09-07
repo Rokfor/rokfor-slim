@@ -27,9 +27,14 @@ Basic __CRUD__ Functions: Create, read, update and delete a single
 contribution. Binary Uploads are currently unsupported. We're looking
 for the best way to do it.
 
+Contributions are only available with the status _Draft_ or _Published_.
+There is no way to export a unpublished contribution, unless you change 
+the state by issuing a `POST` command.
+
 + Parameters
 
     + contribution: 1 (number) - Id of the contribution.
+
 
 ### Create Contribution [PUT /api/contribution]
 
@@ -402,6 +407,55 @@ for the best way to do it.
                     }
                 }
             }
+
+
+## Group of Contributions [/contributions/{issue}/{chapter}{?query}{?sort}{?limit}{?offset}{?filter}{?data}{?populate}{?verbose}{?template}{?status}]
+
++ Parameters
+
+    + issue: `1-2-4` or 1 (string) - Id(s) of the issue(s). Multiple values are
+    separated with `-`
+    + chapter: `15-22` or 12 (string) - Id(s) of the chapter(s). Multiple values are
+    separated with `-`
+    + query: Test (string, optional) - String to search for
+        + Default: empty
+    + filter: 7|9|12:eq  (string, optional) - Fields to search in, or 
+    specific metadata. 
+    If omitted, the search will be executed in all fields. 
+    Possible values are [id|date|sort|templateid[s]]:[lt[e]|gt[e]|eq|like]
+        + Default: [omitted]:like
+    + sort: date|chapter:desc (string, optional) - Sort options for 
+    the result set. 
+    Possible values are [[id|date|name|sort]|chapter|issue|templateid[s]]:[asc|desc]
+        + Default: sort:asc
+    + limit: 7 (integer, optional) - Limit of returned results
+        + Default: empty
+    + offset: 10 (integer, optional) - Offset of the result set 
+    (for pagination)
+        + Default: empty
+    + data: Title|Subtitle (string, optional) - Selection of 
+    field [Fieldname X|Fieldname Y|Fieldname Z]
+        + Default: empty
+    + populate: true (boolean, optional) - Show all fields
+        + Default: false
+    + template: 12 (integer, optional) - Filter by template id
+        + Default: omitted
+    + status: both (string, optional) - draft, published or both 
+        + Default: published
+    + verbose: true (boolean, optional) - Higher verbosity level.
+        + Default: false
+
+### Read Contribution [GET]
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer READ_ONLY_ACCESS_TOKEN_HERE
+ 
++ Response 200 (application/json)
+
+
 
 
 # Group File
