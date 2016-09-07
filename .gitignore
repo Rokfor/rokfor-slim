@@ -16,3 +16,4 @@ config/redis.php
 logs/propel.log
 logs/app.log
 .DS_Store
+dredd.yml

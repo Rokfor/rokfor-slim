@@ -135,7 +135,7 @@ $app->group('/api', function () {
       $compact = $request->getQueryParams()['verbose'] ? false : true;
       $c = $this->db->getContribution($args['id']);
       if ($c && ($c->getStatus()=="Close" || $c->getStatus()=="Draft")) {
-        $response->getBody()->write(json_encode([
+        $response->withHeader('Content-type', 'application/json')->getBody()->write(json_encode([
           "Contribution"              => $this->helpers->prepareApiContribution($c, $compact),
           "Data"                      => $this->helpers->prepareApiContributionData($c, $compact),
           "QueryTime"                 => (microtime(true) - $qt),
@@ -143,15 +143,15 @@ $app->group('/api', function () {
         ], JSON_CONSTANTS));
       }
       else if ($c === false) {
-        $errcode = 404;
-        $newResponse = $response->withStatus($errcode);
-        $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'No access to Element'], JSON_CONSTANTS));
+        $errcode = 500;
+        $newResponse = $response->withStatus($errcode)->withHeader('Content-type', 'application/json');
+        $newResponse->getBody()->write(json_encode(['Error'=>'No access to Element'], JSON_CONSTANTS));
         return $newResponse;      
       }
       else {
-        $errcode = 404;
-        $newResponse = $response->withStatus($errcode);
-        $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'Element not found'], JSON_CONSTANTS));
+        $errcode = 500;
+        $newResponse = $response->withStatus($errcode)->withHeader('Content-type', 'application/json');
+        $newResponse->getBody()->write(json_encode(['Error'=>'Element not found'], JSON_CONSTANTS));
         return $newResponse;
       }
     }
