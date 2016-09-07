@@ -256,6 +256,28 @@ the state by issuing a `POST` command.
           "Hash": "40cd750bba9870f18aada2478b24840a"
         }
 
++ Response 500 (application/json)
+
+    + Body
+
+            {
+                "Error": "No access to Element"
+            }
+
+    + Schema
+    
+            {
+                "type": "object",
+                "properties": {
+                    "Error": {
+                        "enum": [ 
+                            "Element not found",
+                            "No access to Element"
+                            ]
+                    }
+                }
+            }
+
 ### Update Contribution [POST]
 
 + Request (application/json)
