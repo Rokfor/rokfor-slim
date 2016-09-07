@@ -130,12 +130,12 @@ the state by issuing a `POST` command.
                 }
             }
 
-### Read Contribution [GET /api/contribution{?verbose}]
+### Read Contribution [GET /api/contribution/{contribution}{?verbose}]
 
 + Parameters
 
-    + verbose (boolean, optional) - Higher verbosity level.
-        + Default: false
+    + contribution: 1 (number) - Id of the contribution.
+    + verbose: false (boolean, optional) - Higher verbosity level.
 
 + Request (application/json)
 
@@ -278,7 +278,11 @@ the state by issuing a `POST` command.
                 }
             }
 
-### Update Contribution [POST]
+### Update Contribution [POST /api/contribution/{contribution}]
+
++ Parameters
+
+    + contribution: 1 (number) - Id of the contribution.
 
 + Request (application/json)
 
@@ -394,8 +398,12 @@ the state by issuing a `POST` command.
                 }
             }
     
-### Delete Contribution [DELETE]
+### Delete Contribution [DELETE /api/contribution/{contribution}]
 
++ Parameters
+
+    + contribution: 1 (number) - Id of the contribution.
+    
 + Request (application/json)
 
     + Headers
