@@ -144,13 +144,13 @@ $app->group('/api', function () {
       }
       else if ($c === false) {
         $errcode = 500;
-        $newResponse = $response->withStatus($errcode)->withHeader('Content-type', 'application/json');
+        $newResponse = $response->withHeader('Content-type', 'application/json')->withStatus($errcode);
         $newResponse->getBody()->write(json_encode(['Error'=>'No access to Element'], JSON_CONSTANTS));
         return $newResponse;      
       }
       else {
         $errcode = 500;
-        $newResponse = $response->withStatus($errcode)->withHeader('Content-type', 'application/json');
+        $newResponse = $response->withHeader('Content-type', 'application/json')->withStatus($errcode);
         $newResponse->getBody()->write(json_encode(['Error'=>'Element not found'], JSON_CONSTANTS));
         return $newResponse;
       }
