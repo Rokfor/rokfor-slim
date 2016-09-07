@@ -255,6 +255,34 @@ the state by issuing a `POST` command.
           "QueryTime": 0.010781049728394,
           "Hash": "40cd750bba9870f18aada2478b24840a"
         }
+        
+    + Schema
+    
+            {
+                "type": "object",
+                "properties": {
+                    "Contribution": {
+                        "type": "object",
+                        "properties": {
+                            "Id": "integer",
+                            "Name": "string",
+                            "Forissue": "integer",
+                            "Forchapter": "integer",
+                            "Fortemplate": "integer",
+                            "Forbook": "integer",
+                            "ForissueName": "string",
+                            "ForchapterName": "string",
+                            "FortemplateName": "string",
+                            "ForbookName": "string",
+                            "Sort": "integer",
+                            "ReferencedFrom": "array"
+                        }
+                    }
+                    "Data": "array",
+                    "QueryTime": "float",
+                    "Hash": "string"
+                }
+            }        
 
 + Response 500 (application/json)
 
