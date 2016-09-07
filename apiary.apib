@@ -169,31 +169,31 @@ the state by issuing a `POST` command.
         
     + Schema
     
-            {
-                "type": "object",
-                "properties": {
-                    "Contribution": {
-                        "type": "object",
-                        "properties": {
-                            "Id": "integer",
-                            "Name": "string",
-                            "Forissue": "integer",
-                            "Forchapter": "integer",
-                            "Fortemplate": "integer",
-                            "Forbook": "integer",
-                            "ForissueName": "string",
-                            "ForchapterName": "string",
-                            "FortemplateName": "string",
-                            "ForbookName": "string",
-                            "Sort": "integer",
-                            "ReferencedFrom": "array"
-                        }
+                {
+                    "type": "object",
+                    "properties": {
+                        "Contribution": {
+                            "type": "object",
+                            "properties": {
+                                "Id": {"type": "integer"},
+                                "Name": {"type": "string"},
+                                "Forissue": {"type": "integer"},
+                                "Forchapter": {"type": "integer"},
+                                "Fortemplate": {"type": "integer"},
+                                "Forbook": {"type": "integer"},
+                                "ForissueName": {"type": "string"},
+                                "ForchapterName": {"type": "string"},
+                                "FortemplateName": {"type": "string"},
+                                "ForbookName": {"type": "string"},
+                                "Sort": {"type": "integer"},
+                                "ReferencedFrom": {"type": "array"}
+                            }
+                        },
+                        "Data": {"type": "object"},
+                        "QueryTime": {"type": "number"},
+                        "Hash": {"type": "string"}
                     }
-                    "Data": "array",
-                    "QueryTime": "float",
-                    "Hash": "string"
-                }
-            }        
+                }        
 
 + Response 500 (application/json)
 
