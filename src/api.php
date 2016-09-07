@@ -113,9 +113,8 @@ $app->group('/api', function () {
       );
     }
     else {
-      $errcode = 200;
-      $newResponse = $response->withStatus($errcode);
-      $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'Request contains no content'], JSON_CONSTANTS));
+      $errcode = 500;
+      $newResponse = $response->withStatus($errcode)->getBody()->write(json_encode(['Error'=>'Access denied to the selected issues and chapters.'], JSON_CONSTANTS));
       return $newResponse;
     }
   }
