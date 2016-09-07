@@ -282,14 +282,21 @@ the state by issuing a `POST` command.
                         "QueryTime": {"type": "number"},
                         "Hash": {"type": "string"}
                     }
-                }        
+                }     
+
++ Request Error (application/json)
+
+    + Parameters
+
+        + contribution: 0 (number) - Id of the contribution.
+
 
 + Response 500 (application/json)
 
     + Body
 
             {
-                "Error": "No access to Element"
+                "Error": "Element not found"
             }
 
     + Schema
