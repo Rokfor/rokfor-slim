@@ -285,7 +285,11 @@ the state by issuing a `POST` command.
                 }     
 
 + Request Error (application/json)
+    
+    + Headers
 
+            Authorization: Bearer b309376e96d5f364c72bb677bf0c1266
+    
     + Parameters
 
         + contribution: 999999 (number) - Id of the contribution.
@@ -308,7 +312,8 @@ the state by issuing a `POST` command.
                         "enum": [ 
                             "Element not found",
                             "No access to Element",
-                            "Wrong key supplied"
+                            "Wrong key supplied",
+                            "No key supplied"
                             ]
                     }
                 }
