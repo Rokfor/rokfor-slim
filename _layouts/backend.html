@@ -5,9 +5,9 @@
 
     {% include menu.html %}
 
-    <section class="main-content">
+    <section class="main-content" markdown="1">
 
-    {{ page.content }}
+    {{ page.content | markdownify }}
 
     {% include footer.html %}
 
