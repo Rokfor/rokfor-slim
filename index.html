@@ -2,25 +2,67 @@
 <html lang="en-us">
   <head>
     <meta charset="UTF-8">
-    <title>Rokfor by Rokfor</title>
+    <title>Rokfor: Another Headless CMS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name">Rokfor</h1>
+      <h1 class="project-name">
+        <img src="rokfor-screenshots/logo-w.svg">
+      </h1>
       <h2 class="project-tagline">Headless CMS with JSON Api</h2>
-      <a href="https://github.com/Rokfor/rokfor-slim" class="btn">View on GitHub</a>
+      <a href="index.html" class="btn">About</a>      
+      <a href="backend.html" class="btn">Backend</a>
+      <a href="api.html" class="btn">Api</a>      
+      <a href="https://github.com/Rokfor/rokfor-slim" class="btn">GitHub</a>
       <a href="http://docs.rokfor.apiary.io" class="btn">Documentation</a>
     </section>
 
     <section class="main-content">
-      <p>Rokfor build based on <a href="http://slimframework.com/">Slim Framework</a> for PHP. 
-Rokfor is a api-first, data centristic content management. It currently
-features:</p>
+      <h2>About</h2>
+      <p>
+        Rokfor is a headless, api-only content management. The API talks JSON. 
+        The core is based on <a href="http://slimframework.com/">Slim Framework</a> for PHP
+        and various other open source projects like <a href="http://propelorm.org/">Propel</a>
+        for the database abstraction and <a href="https://almsaeedstudio.com/preview">AdminLTE</a>
+        for the backend templating.
+      </p>
+      <p>
+        Rokfor is installable with <a href="https://getcomposer.org">Composer</a> and requires a 
+        MySQL Database to work properly.
+      </p>
+      <p>
+        <table>
+          <tr>
+            <td class="noborder"  colspan="2">
+              <img src="rokfor-screenshots/rf-dashboard.png" alt="Dashboard">
+            </td>
+          </tr>
+          <tr>
+            <td class="noborder">
+              <img src="rokfor-screenshots/rf-contributions.png" alt="Contributions">
+            </td>
+            <td class="noborder">
+              <img src="rokfor-screenshots/rf-structure.png" alt="Structure">
+            </td>
+          </tr>
+          <tr>
+            <td class="noborder">
+              <img src="rokfor-screenshots/rf-templates.png" alt="Templates">
+            </td>
+            <td class="noborder">
+              <img src="rokfor-screenshots/rf-users.png" alt="Users">
+            </td>
+          </tr>          
+        </table>            
+      </p>
+    </section>
+    <section class="main-content">
+      
 
 <ul>
 <li>  Flexible structures called "Books", divided into parts, called "Chapters".</li>
@@ -38,17 +80,11 @@ rights.</li>
 <li>  Installable via composer, using grunt and bower as build system.</li>
 </ul>
 
-<p><img src="/rokfor-screenshots/rf-dashboard.png" alt="Dashboard"></p>
+
 
 <p>Rokfor has already a longer history. The <a href="https://github.com/Rokfor/rokfor-cms">old build</a> 
 was mainly used to create printed matter. In order to make it more useful for the public, we 
 decided to rewrite it completely applying a modern way of writing php applications:</p>
-
-<ul>
-<li>  Composer install system</li>
-<li>  AdminLTE backend theme</li>
-<li>  Propel ORM</li>
-</ul>
 
 <h2>
 <a id="setup-and-installation" class="anchor" href="#setup-and-installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Setup and Installation</h2>

@@ -4,26 +4,26 @@
 body {
   padding: 0;
   margin: 0;
-  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Source Sans Pro", Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 1.5;
-  color: #606c71; }
+  background: #919191;
+  color: #FFF; }
 
 a {
-  color: #1e6bb8;
+  color: #FFF;
+  border-bottom: 1px dotted;
   text-decoration: none; }
   a:hover {
-    text-decoration: underline; }
+      border-bottom: 1px solid;
+    }
 
 .btn {
   display: inline-block;
-  margin-bottom: 1rem;
-  color: rgba(255, 255, 255, 0.7);
-  background-color: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
-  border-style: solid;
-  border-width: 1px;
-  border-radius: 0.3rem;
+  margin-bottom: 0rem;
+  color: #FFF;
+  border-color: #FFF;
+  border-bottom: 1px solid;
   transition: color 0.2s, background-color 0.2s, border-color 0.2s; }
   .btn + .btn {
     margin-left: 1rem; }
@@ -56,12 +56,12 @@ a {
 .page-header {
   color: #fff;
   text-align: center;
-  background-color: #159957;
-  background-image: linear-gradient(120deg, #155799, #159957); }
+  background-color: #367fa9;
+  }
 
 @media screen and (min-width: 64em) {
   .page-header {
-    padding: 5rem 6rem; } }
+    padding: 3rem 6rem; } }
 
 @media screen and (min-width: 42em) and (max-width: 64em) {
   .page-header {
@@ -74,6 +74,11 @@ a {
 .project-name {
   margin-top: 0;
   margin-bottom: 0.1rem; }
+
+.project-name img {
+  width: 33%;
+  max-width: 400px;}
+
 
 @media screen and (min-width: 64em) {
   .project-name {
@@ -112,7 +117,7 @@ a {
   margin-top: 2rem;
   margin-bottom: 1rem;
   font-weight: normal;
-  color: #159957; }
+  color: #E22; }
 .main-content p {
   margin-bottom: 1em; }
 .main-content code {
@@ -186,6 +191,8 @@ a {
   .main-content table th, .main-content table td {
     padding: 0.5rem 1rem;
     border: 1px solid #e9ebec; }
+  .main-content table td.noborder {
+    border: none; }    
 .main-content dl {
   padding: 0; }
   .main-content dl dt {
