@@ -1,40 +1,40 @@
 .btn-toolbar(id='editor-toolbar_' . ($config[arrayeditor] ? ''.$row."_".$field->getId() : $field->getId()))
   
   .btn-group
-    a.btn.btn-default.btn-sm.fa.fa-bold(data-wysihtml5-command="bold")
-    a.btn.btn-default.btn-sm.fa.fa-italic(data-wysihtml5-command="italic")
-    a.btn.btn-default.btn-sm.fa.fa-underline(data-wysihtml5-command="underline")
+    a.btn.btn-default.btn-sm.fa.fa-bold(data-wysihtml-command="bold")
+    a.btn.btn-default.btn-sm.fa.fa-italic(data-wysihtml-command="italic")
+    a.btn.btn-default.btn-sm.fa.fa-underline(data-wysihtml-command="underline")
 
   .btn-group
-    a.btn.btn-default.btn-sm.fa.fa-header(data-wysihtml5-command="formatBlock", data-wysihtml5-command-value="h1")
-    a.btn.btn-default.btn-sm.fa.fa-paragraph(data-wysihtml5-command="formatBlock", data-wysihtml5-command-value="p")
-    a.btn.btn-default.btn-sm.fa.fa-quote-right(data-wysihtml5-command="formatBlock", data-wysihtml5-command-value="blockquote")
+    a.btn.btn-default.btn-sm.fa.fa-header(data-wysihtml-command="formatBlock", data-wysihtml-command-value="h1")
+    a.btn.btn-default.btn-sm.fa.fa-paragraph(data-wysihtml-command="formatBlock", data-wysihtml-command-value="p")
+    a.btn.btn-default.btn-sm.fa.fa-quote-right(data-wysihtml-command="formatBlock", data-wysihtml-command-value="blockquote")
 
   .btn-group.open
-    a.btn.btn-default.btn-sm.fa.fa-link(data-wysihtml5-command="createLink")
-    ul.dropdown-menu(data-wysihtml5-dialog="createLink", style="display: none; position: absolute;")
+    a.btn.btn-default.btn-sm.fa.fa-link(data-wysihtml-command="createLink")
+    ul.dropdown-menu(data-wysihtml-dialog="createLink", style="display: none; position: absolute;")
       li
         .margin Link
       li
         .margin
-          input(data-wysihtml5-dialog-field="href", value="http://")
+          input(data-wysihtml-dialog-field="href", value="http://")
       li
         .margin Target
       li
         .margin
-          input(data-wysihtml5-dialog-field="target", value="_blank")
+          input(data-wysihtml-dialog-field="target", value="_blank")
       li.divider
       li
         .margin 
-          a.btn.btn-default.btn-sm.pull-left(data-wysihtml5-dialog-action="cancel") Cancel
-          a.btn.btn-success.btn-sm.pull-right(data-wysihtml5-dialog-action="save") OK
-    a.btn.btn-default.btn-sm.fa.fa-unlink(data-wysihtml5-command="removeLink")
+          a.btn.btn-default.btn-sm.pull-left(data-wysihtml-dialog-action="cancel") Cancel
+          a.btn.btn-success.btn-sm.pull-right(data-wysihtml-dialog-action="save") OK
+    a.btn.btn-default.btn-sm.fa.fa-unlink(data-wysihtml-command="removeLink")
 
   .btn-group
-    a.btn.btn-default.btn-sm.fa.fa-list-ol(data-wysihtml5-command="insertOrderedList")
-    a.btn.btn-default.btn-sm.fa.fa-list-ul(data-wysihtml5-command="insertUnorderedList")
+    a.btn.btn-default.btn-sm.fa.fa-list-ol(data-wysihtml-command="insertOrderedList")
+    a.btn.btn-default.btn-sm.fa.fa-list-ul(data-wysihtml-command="insertUnorderedList")
 
   .btn-group
-    a.btn.btn-default.btn-sm.fa.fa-undo(data-wysihtml5-command="undo")
-    a.btn.btn-default.btn-sm.fa.fa-repeat(data-wysihtml5-command="redo")
+    a.btn.btn-default.btn-sm.fa.fa-undo(data-wysihtml-command="undo")
+    a.btn.btn-default.btn-sm.fa.fa-repeat(data-wysihtml-command="redo")
 

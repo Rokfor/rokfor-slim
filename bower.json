@@ -41,13 +41,13 @@
     "datatables.net-select-bs": "^1.1.2",
     "datatables.net-select": "^1.1.2",
     "jquery-ui": "^1.11.4",
-    "roboto-fontface": "^0.4.5",
     "datatables.net-rowreorder": "^1.1.1",
     "datatables.net-rowreorder-bs": "^1.1.1",
     "bower": "*",
     "install": "^1.0.4",
     "bootstrap-markdown": "^2.10.0",
     "marked": "^0.3.5",
-    "wysihtml": "https://github.com/Voog/wysihtml.git#master"
+    "wysihtml": "https://github.com/Voog/wysihtml.git#master",
+    "source-sans-pro": "^1.0.0"
   }
 }

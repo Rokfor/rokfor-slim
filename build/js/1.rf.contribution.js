@@ -444,7 +444,7 @@
       
     $(".rtftextarea").each(function(i,n) {
         var e = $(this);
-        e.data('editor', new wysihtml5.Editor(e[0], {
+        e.data('editor', new wysihtml.Editor(e[0], {
           toolbar: 'editor-toolbar_' + e.attr('id'),
           parserRules:  {
             tags: {
@@ -456,6 +456,7 @@
               p:      {},
               div:    {},
               ul:     {},
+              u:      {},              
               ol:     {},
               li:     {},
               blockquote: {
