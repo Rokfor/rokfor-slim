@@ -4,7 +4,7 @@
     "keywords": ["rokfor", "slim","framework","view","template","jade"],
     "homepage": "http://www.rokfor.ch",
     "license": "MIT",
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "type": "project",
     "time": "2016-02-28",
     "authors": [
