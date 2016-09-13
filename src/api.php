@@ -704,11 +704,10 @@ $app->options('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}',
 
 $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $response, $args) {
 
-  print_r($_SESSION['Zend_Auth']->__isset('username'));
-  die();
+  $auth = new \Zend\Authentication\AuthenticationService();
+  $logged_in = $auth->getIdentity()['username'];
 
-
-  $c = $this->db->getContribution($args['id'], true, true);
+  $c = $this->db->getContribution($args['id'], $logged_in ? false : true, true);
   $f = $this->db->getField($args['field']);
   $_isnginx = (strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== false);
   if ($c && $c->getId() == $args['id'] && $c->getTemplatenames()->getPublic() === "1" && stristr($f->getContent(), $args['file'])) {
