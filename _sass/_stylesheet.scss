@@ -1,6 +1,33 @@
 * {
   box-sizing: border-box; }
 
+.infographic {
+  display: block; 
+  background: rgba(200,200,200,.5); 
+  margin: auto; 
+  width: 70%;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+}
+
+.infographic:hover {
+  background: rgba(200,200,200,1); 
+};
+
+.fix {
+  position: fixed;
+  width: 100%;
+  background-color: rgba(54, 127,169,0.9) !important;
+  padding: 0rem 6rem !important;
+}
+
+.fix a {
+  border: none !important;
+}
+
+.fix h1, .fix h2 {
+  display: none !important;
+}
+
 body {
   padding: 0;
   margin: 0;
@@ -56,8 +83,9 @@ a {
 .page-header {
   color: #fff;
   text-align: center;
-  background-color: #367fa9;
-  }
+  background-color: rgba(54, 127,169, 1);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+}
 
 @media screen and (min-width: 64em) {
   .page-header {
