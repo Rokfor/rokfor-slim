@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ead2d5764f03157aa7f8b790e3c953b7",
-    "content-hash": "a46e1fb079c8afcf8c70ea167812d1b5",
+    "hash": "bed95e1e815891cbee8daf96a27ca501",
+    "content-hash": "80d546c353787f3660f3ea8f7fd30796",
     "packages": [
         {
             "name": "akrabat/rka-ip-address-middleware",
@@ -568,7 +568,7 @@
         },
         {
             "name": "jlndk/slim-jade",
-            "version": "dev-master",
+            "version": "1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/urshofer/slim-jade.git",
@@ -614,7 +614,7 @@
                 "view"
             ],
             "support": {
-                "source": "https://github.com/urshofer/slim-jade/tree/master"
+                "source": "https://github.com/urshofer/slim-jade/tree/1.0"
             },
             "time": "2016-03-16 00:27:00"
         },
@@ -3323,7 +3323,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "jlndk/slim-jade": 20,
         "rokfor/db": 20,
         "jeremykendall/slim-auth": 20,
         "palanik/corsslim": 20
