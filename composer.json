@@ -1,10 +1,10 @@
 {
     "name": "rokfor/rokfor-slim",
-    "description": "Admin Backend for a Rokfor Database built on slim using bootstrap, adminLte and jade",
+    "description": "Rokfor CMS: Headless CMS with JSON api",
     "keywords": ["rokfor", "slim","framework","view","template","jade"],
-    "homepage": "http://www.rokfor.ch",
+    "homepage": "http://cloud.rokfor.ch",
     "license": "MIT",
-      "type": "project",
+    "type": "project",
     "time": "2016-02-28",
     "authors": [
         {

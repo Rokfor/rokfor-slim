@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "764767f282c8a5c45120e1c92aea642b",
+    "hash": "50016372f2559706d5c8d1c7910c6654",
     "content-hash": "9e42930dd901288fdef39f13f509c0e4",
     "packages": [
         {
@@ -1217,12 +1217,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Rokfor/rokfor-php-db.git",
-                "reference": "8574f8d5dd7af64f4c0efe2cedc273e22f6ac379"
+                "reference": "4a2bd4a7b28edd305816166a467f1cbb891edd22"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Rokfor/rokfor-php-db/zipball/8574f8d5dd7af64f4c0efe2cedc273e22f6ac379",
-                "reference": "8574f8d5dd7af64f4c0efe2cedc273e22f6ac379",
+                "url": "https://api.github.com/repos/Rokfor/rokfor-php-db/zipball/4a2bd4a7b28edd305816166a467f1cbb891edd22",
+                "reference": "4a2bd4a7b28edd305816166a467f1cbb891edd22",
                 "shasum": ""
             },
             "require": {
@@ -1253,7 +1253,7 @@
                 "source": "https://github.com/Rokfor/rokfor-php-db/tree/versioning",
                 "issues": "https://github.com/Rokfor/rokfor-php-db/issues"
             },
-            "time": "2016-09-05 12:10:29"
+            "time": "2016-09-13 10:46:55"
         },
         {
             "name": "slim/csrf",
