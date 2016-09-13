@@ -704,7 +704,7 @@ $app->options('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}',
 
 $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $response, $args) {
 
-  print_r($_SESSION);
+  print_r($_SESSION['Zend_Auth']->__isset('username'));
   die();
 
 
