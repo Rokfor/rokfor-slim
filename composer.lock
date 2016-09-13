@@ -1250,7 +1250,7 @@
             ],
             "description": "PHP Library to access a Rokfor DB Structure",
             "support": {
-                "source": "https://github.com/Rokfor/rokfor-php-db/tree/versioning",
+                "source": "https://github.com/Rokfor/rokfor-php-db/tree/1.1-alpha",
                 "issues": "https://github.com/Rokfor/rokfor-php-db/issues"
             },
             "time": "2016-09-13 11:22:00"
