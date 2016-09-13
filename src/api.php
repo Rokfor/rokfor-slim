@@ -703,6 +703,11 @@ $app->options('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}',
 );  
 
 $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $response, $args) {
+
+  print_r($_SESSION);
+  die();
+
+
   $c = $this->db->getContribution($args['id'], true, true);
   $f = $this->db->getField($args['field']);
   $_isnginx = (strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== false);
