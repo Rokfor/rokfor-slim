@@ -1,8 +1,4 @@
-> #### Please Note
-> 
-> This repository is still under heavy development. Although it's already quite usable,
-> the API might change a lot in the future.
-
+[![Build Status](https://travis-ci.org/Rokfor/rokfor-slim.svg?branch=master)](https://travis-ci.org/Rokfor/rokfor-slim)
 
 rokfor-slim
 ===========
