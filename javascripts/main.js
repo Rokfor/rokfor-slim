@@ -7,6 +7,9 @@ $(function() {
     } else {
       wrap.removeClass("fix");
     }
-  
   });
+  
+  $('#toggle').click(function() {
+    $('#menu').toggleClass('toggled');
+  })
 });
