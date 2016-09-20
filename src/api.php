@@ -724,12 +724,12 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
     }*/
 
     /*  Temporary Fix unless X-Accel-Redirect is working */
-
-    $result = $this->db->s3_file_info($args['file']);
+    header('Location: ' . $this->db->presign_file($args['file']));
+    /*$result = $this->db->s3_file_info($args['file']);
     header('Content-Type: '. $result['ContentType']);
     header('Content-Length: '. $result['ContentLength']);
     readfile($this->db->presign_file($args['file']));
-
+    */
     exit(0);
   }
   else {
