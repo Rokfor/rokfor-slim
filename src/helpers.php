@@ -441,7 +441,7 @@ class helpers
           'collapsed' => true
         ],
         'type' => 'array',
-        'propertyOrder' => 10,
+        'propertyOrder' => 100,
         'format' => 'table',
         'items' => [
           'type' => 'object',
@@ -476,7 +476,7 @@ class helpers
               'options' => [
                 'collapsed' => true
               ],
-              'propertyOrder' => 10,
+              'propertyOrder' => 100,
               'type' => 'array',
               'format' => 'table',
               'items' => [
@@ -566,7 +566,7 @@ class helpers
               'options' => [
                 'collapsed' => true
               ],
-              'propertyOrder' => 10,
+              'propertyOrder' => 100,
               'type' => 'array',
               'format' => 'table',
               'items' => [
@@ -601,7 +601,7 @@ class helpers
               'options' => [
                 'collapsed' => true
               ],
-              'propertyOrder' => 10,
+              'propertyOrder' => 100,
               'type' => 'array', 
               'format' => 'table',
               'items' => [
@@ -677,7 +677,7 @@ class helpers
                 'grid_columns' => 12,
               ],
               'title'  => $this->container->translations['field_config'.'legends'],
-              'propertyOrder' => 10,
+              'propertyOrder' => 100,
               'type' => 'array', 
               'format' => 'table',
               'items' => [
@@ -690,7 +690,7 @@ class helpers
                 'grid_columns' => 12,
               ],
               'title'  => $this->container->translations['field_config'.'fixedvalues'],
-              'propertyOrder' => 10,
+              'propertyOrder' => 100,
               'type' => 'array', 
               'format' => 'table',
               'items' => [
