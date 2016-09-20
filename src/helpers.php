@@ -185,6 +185,7 @@ class helpers
         'base_path' => '/rf/contributions/'.$_c->getIssues()->getForbook().'/'.$_c->getForissue().'/'.$_c->getForchapter(),
         'moddate' => $difftime,
         'username' => $_c->getuserSysRef() ? $_c->getuserSysRef()->getUsername() : false,
+        'apikey'  => $_c->getuserSysRef() ? $_c->getuserSysRef()->getRoapikey() : false,
         'private' =>  $_c->getTemplatenames()->getPublic() == 1 ? false : true,
         's3'      => $this->container->paths['s3'] === true,
         'db' => &$this->container->db

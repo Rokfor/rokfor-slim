@@ -8,24 +8,30 @@ if (is_array($alert))
 // Content Header (Page header)
 section.content-header
   h1=$contribution->getName()
-    small
-      span.label.label-success#savestate(style="float: right;") Saved
-    small
-      span.label(
-        style="float: right; margin-right: 0;",
-        class=(
-          $contribution->getStatus()=='Open'?
-            "label-primary":
-            ($contribution->getStatus()=='Draft' ? 
-              'label-warning':
-              ($contribution->getStatus()=='Deleted' ? 
-                'label-danger':
-                'label-success')
-            )
+  small
+    span.label.label-success#savestate Saved
+  span &nbsp;
+  small
+    span.label(
+      class=(
+        $contribution->getStatus()=='Open'?
+          "label-primary":
+          ($contribution->getStatus()=='Draft' ? 
+            'label-warning':
+            ($contribution->getStatus()=='Deleted' ? 
+              'label-danger':
+              'label-success')
           )
-        )=$translations[strtolower("status_".$contribution->getStatus())]
+        )
+      )=$translations[strtolower("status_".$contribution->getStatus())]
+  span &nbsp;
+  small
+    span.label.label-success.contribversion='rev. '.$contribution->getVersion()
+  if apikey
+    span &nbsp;
     small
-      span.label.label-success.contribversion(style="float: right;")='rev. '.$contribution->getVersion()
+      span.label.label-default
+        a(href="/api/contribution/".$contribution->getId()."?access_token=".$apikey target="_blank") API GET    
   ol.breadcrumb
     each crumb in breadcrumb
       li

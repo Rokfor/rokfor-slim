@@ -513,6 +513,7 @@ $app->group('/rf', function () {
       ]
     ];
     $args['templates'] = $this->db->getTemplates($format);
+    $args['apikey'] = $this->db->getUser()['api'];
 
     $this->db->addLog('get_contributions', md5("/rf/contributions/".$args['book']."/".$args['issue']."/".$args['chapter']) , $request->getAttribute('ip_address'));
     $this->view->render($response, 'content-wrapper/contributions.jade', $args);
