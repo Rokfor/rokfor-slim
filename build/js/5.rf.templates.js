@@ -63,6 +63,9 @@
         iconlib: "bootstrap3",
       });
       m.modal.editor.setValue(value);
+      
+      console.log(value);
+      
       // Close Modal - store JSON
       $('#rfaction_jsonedit').find('button.rfmodal_continue').on('click', function(e) {
         e.stopPropagation();

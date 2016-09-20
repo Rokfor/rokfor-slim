@@ -11,12 +11,33 @@
   }
 
   // Some JSON Editor Default Changes
+  JSONEditor.defaults.editors.select.prototype.setupSelect2 = function() { 
+    this.select2 = null;
+  }
+
   JSONEditor.defaults.themes.rokfor = JSONEditor.defaults.themes.bootstrap3.extend({
     getButton: function(text, icon, title) {
       var el = this._super(text, icon, title);
-      el.className += 'btn btn-default btn-xs';
+      el.className += 'btn btn-default btn-flat';
+      return el;
+    },
+
+    getIndentedPanel:  function() {
+      var el = document.createElement('div');
+      el.className = '';
+      el.style.paddingBottom = 0;
+      return el;
+    },
+    
+    getTable: function() {
+      var el = document.createElement('table');
+      el.className = 'table table-striped';
+      el.style.width = '100%';
+      el.style.maxWidth = 'none';
       return el;
     }
+    
+    
   });
 
   // Some Modal Overrules if a select 2 is within a modal

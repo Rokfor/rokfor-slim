@@ -146,8 +146,14 @@ tr.ui-sortable-helper {
 tr.ui-sortable-placeholder {
 	border: 2px solid #000000;
 }
-.rfjsoneditor>div>h4 {
-	display: none;
+.rfjsoneditor {
+  h3 {
+    font-size: inherit;
+    font-weight: 700;
+  }
+  & > div > h3 {
+    display: none;
+  }
 }
 p.divider {
   border-bottom: 1px solid @gray;
