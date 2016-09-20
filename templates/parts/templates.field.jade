@@ -8,6 +8,10 @@
       li(class=($type=='name'||!$type?'active':''))
         a(href="#name_".$template->getId(), data-toggle="tab")=$translations['template_name']
       li.pull-left.header=$template->getName()
+      li.pull-left(style="margin-top: 0.5em")
+        small
+          span.label.label-default='Id '.$template->getId()
+      
     .tab-content
       //- Fields Editor
       .tab-pane.fields(id="fields_".$template->getId(), class=($type=='fields'?'active':''))
@@ -24,11 +28,13 @@
             :php
               | $fields_in_template["id"][] = $field->getId(); $fields_in_template["label"][] = $field->getFieldname();
             .panel.box.box-default.box-solid.fieldtemplate(id=$field->getId())
-              .box-header(data-toggle="collapse", data-parent="#fields_".$template->getId(), href="#f_".$field->getId()) 
-                .col-xs-2
-                  button.btn.btn-gray
-                    i.fa.fa-arrows &nbsp;
-                    span Edit
+              .box-header(data-toggle="collapse", style="cursor:ns-resize;", data-parent="#fields_".$template->getId(), href="#f_".$field->getId()) 
+                .col-xs-2(style="padding-left: 0")
+                  button.btn
+                    i.fa.fa-bars
+                  small
+                    span.label.label-default!='&nbsp;Id&nbsp;'.$field->getId()
+                    
                 .input-group.has-warning.col-xs-10
                   input.form-control.onchange(name="Fieldname", type="text", value=$field->getFieldname())
                   span.input-group-btn

@@ -8,6 +8,9 @@
       li(class=($type=='book'||!$type?'active':''))
         a(href="#book_".$book['book']->getId() data-toggle="tab")=$translations['structure_book']
       li.pull-left.header=book.name
+      li.pull-left(style="margin-top: 0.5em")
+        small
+          span.label.label-default='Id '.$book['book']->getId()
     .tab-content
       // Chapter Editor
       .tab-pane.chapter(id="chapter_".$book['book']->getId(), class=($type=='chapter'?'active':''))
@@ -31,7 +34,9 @@
                           span=$translations['structure_chapter_rights']
                         a.btn.btn-solid.btn-default.btn-sm.settingschapter(href="settings", data-rights=$chapter['chapter']->getConfigSys())
                           span=$translations['structure_chapter_settings']
-                      input.form-control.input-sm(value=chapter.name)
+                      small(style="position: absolute; z-index: 1000; margin-left: 0.5em; margin-top: 0.5em;")
+                        span.label.label-default!='Id&nbsp;'.$chapter['chapter']->getId()
+                      input.form-control.input-sm(value=chapter.name, style="padding-left: 4em;")
                       span.input-group-btn
                         a.btn.btn-solid.btn-danger.btn-sm
                           i.fa.fa-danger &nbsp;
@@ -71,7 +76,9 @@
                           span=$translations['structure_issue_rights']
                         a.btn.btn-solid.btn-default.btn-sm.settingsissue(href="settings", data-rights=$issue['issue']->getConfigSys())
                           span=$translations['structure_issue_settings']
-                      input.form-control.input-sm(value=issue.name)
+                      small(style="position: absolute; z-index: 1000; margin-left: 0.5em; margin-top: 0.5em;")
+                        span.label.label-default!='Id&nbsp;'.$issue['issue']->getId()
+                      input.form-control.input-sm(value=issue.name, style="padding-left: 4em;")
                       span.input-group-btn
                         a.btn.btn-solid.btn-danger.btn-sm
                           i.fa.fa-danger &nbsp;
