@@ -713,12 +713,16 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
   if ($c && $c->getId() == $args['id'] && $c->getTemplatenames()->getPublic() === "1" && stristr($f->getContent(), $args['file'])) {
 
     if ($_isnginx === true) {
-//      echo('X-Accel-Redirect: /cdn/' . str_replace('https://', '', $this->db->presign_file($args['file'])).';');
-      header('X-Accel-Redirect: /cdn/' . str_replace('https://', '', $this->db->presign_file($args['file'])));
-/*      $result = $this->db->s3_file_info($args['file']);
+      $result = $this->db->s3_file_info($args['file']);
+      $seconds_to_cache = 3600 * 24 * 7; // 1 Week
+      $ts = gmdate("D, d M Y H:i:s", time() + $seconds_to_cache) . " GMT";
+      header("Expires: $ts");
+      header("Pragma: cache");
+      header("Cache-Control: max-age=$seconds_to_cache");      
       header('Content-Type: '. $result['ContentType']);
       header('Content-Length: '. $result['ContentLength']);
-      readfile($this->db->presign_file($args['file']));*/
+      ob_end_flush();
+      readfile($this->db->presign_file($args['file']));
     }
     else {
       header('Location: ' . $this->db->presign_file($args['file']));
