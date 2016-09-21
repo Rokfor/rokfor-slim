@@ -713,6 +713,8 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
   if ($c && $c->getId() == $args['id'] && $c->getTemplatenames()->getPublic() === "1" && stristr($f->getContent(), $args['file'])) {
 
     if ($_isnginx === true) {
+      echo('X-Accel-Redirect: /cdn/' . str_replace('https://', '', $this->db->presign_file($args['file'])).';');
+      die();
       header('X-Accel-Redirect: /cdn/' . str_replace('https://', '', $this->db->presign_file($args['file'])).';');
 /*      $result = $this->db->s3_file_info($args['file']);
       header('Content-Type: '. $result['ContentType']);
