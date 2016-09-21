@@ -918,7 +918,7 @@ class helpers
    * @return void
    * @author Urs Hofer
    */
-  public function prepareApiData($field, $compact = true, $_recursion_check = []) {
+  public function prepareApiData($field, $compact = true, $_recursion_check = [], $_fieldlist = false) {
     /* Preliminary Checks */
     if (!$field) return false;
     if (!$field_id = $field->getId()) return false;
@@ -1007,15 +1007,15 @@ class helpers
               // Resolve Field Content
             case 'other':
               if ($_f = $this->container->db->getField($_value))
-                $_nc[$_value] = $this->prepareApiData($_f, $compact, $_recursion_check);
+                $_nc[$_value] = $this->prepareApiData($_f, $compact, $_recursion_check, $_fieldlist);
               break;
             // Resolve Complete
             case 'contributional':
               if ($_c = $this->container->db->getContribution($_value)) {
                 $_temp = [];
                 foreach ($_c->getDatas() as $_f) {
-                  if ($_f->getId())
-                    $_temp[$_f->getTemplates()->getFieldname()] = $this->prepareApiData($_f, $compact, $_recursion_check);
+                  if ($_f->getId() && ($_fieldlist == false || (is_array($_fieldlist) && (in_array($_f->getTemplates()->getFieldname(), $_fieldlist))))) 
+                    $_temp[$_f->getTemplates()->getFieldname()] = $this->prepareApiData($_f, $compact, $_recursion_check, $_fieldlist);
                 }
                 $_nc[$_value] = $_temp;
               }
@@ -1176,7 +1176,7 @@ class helpers
 
     if ($request === null || $criteria !== null || $request->getQueryParams()['populate'] == "true") {
       foreach ($c->getDatas($criteria) as $field) {
-        $d[$field->getTemplates()->getFieldname()] = $this->prepareApiData($field, $compact);
+        $d[$field->getTemplates()->getFieldname()] = $this->prepareApiData($field, $compact, [], explode('|', $request->getQueryParams()['data']));
       }
     }
 
@@ -1226,7 +1226,7 @@ class helpers
         "FortemplateName"         => $c->getTemplatenames()->getName(),
         "ForbookName"             => $_book->getName(),
         "Sort"                    => $c->getSort(),
-        "ReferencedFrom"          => $_references,
+        /*"ReferencedFrom"          => $_references,*/
       ];
     }
     else {
