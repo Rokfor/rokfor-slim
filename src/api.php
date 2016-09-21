@@ -711,20 +711,20 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
   $f = $this->db->getField($args['field']);
   $_isnginx = (strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== false);
   if ($c && $c->getId() == $args['id'] && $c->getTemplatenames()->getPublic() === "1" && stristr($f->getContent(), $args['file'])) {
-    /*
+
     if ($_isnginx === true) {
-//      header('X-Accel-Redirect: /internal_redirect/' . str_replace('https://', '', $this->db->presign_file($args['file'])).';');
-      $result = $this->db->s3_file_info($args['file']);
+      header('X-Accel-Redirect: /cdn/' . str_replace('https://', '', $this->db->presign_file($args['file'])).';');
+/*      $result = $this->db->s3_file_info($args['file']);
       header('Content-Type: '. $result['ContentType']);
       header('Content-Length: '. $result['ContentLength']);
-      readfile($this->db->presign_file($args['file']));
+      readfile($this->db->presign_file($args['file']));*/
     }
     else {
       header('Location: ' . $this->db->presign_file($args['file']));
-    }*/
+    }
 
     /*  Temporary Fix unless X-Accel-Redirect is working */
-    header('Location: ' . $this->db->presign_file($args['file']));
+
     /*$result = $this->db->s3_file_info($args['file']);
     header('Content-Type: '. $result['ContentType']);
     header('Content-Length: '. $result['ContentLength']);
