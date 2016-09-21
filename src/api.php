@@ -714,8 +714,8 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
 
     if ($_isnginx === true) {
       // header('X-Accel-Redirect: /cdn/' . str_replace('https://', '', $this->db->presign_file($args['file'])));
-      header('X-Sendfile-Type: X-Accel-Redirect;');
-      header('X-Accel-Redirect: /cdn/www.royalcanin.ch/var/royalcanin/storage/images/subsidiaries/ch/home/lifestage/alle/mon-chien-ne-m-obeit-plus/32074759-2-ger-DE/mein-hund-gehorcht-nicht-mehr_articleV3.jpg');
+      ob_end_flush();
+      header('X-Accel-Redirect: https://nieves.rokfor.ch/cdn/www.royalcanin.ch/var/royalcanin/storage/images/subsidiaries/ch/home/lifestage/alle/mon-chien-ne-m-obeit-plus/32074759-2-ger-DE/mein-hund-gehorcht-nicht-mehr_articleV3.jpg');
       exit(0);
       $result = $this->db->s3_file_info($args['file']);
       $seconds_to_cache = 3600 * 24 * 7; // 1 Week
