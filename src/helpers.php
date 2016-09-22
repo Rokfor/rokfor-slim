@@ -946,13 +946,13 @@ class helpers
         }
         foreach ($_content as &$_row) {
           $_versions = [];
-          $_versions['Thumbnail'] = $private === true || $this->container->paths['s3'] === true
+          $_versions['Thumbnail'] = $private === true
                                     ? $_protocol.$_SERVER['HTTP_HOST'].$_row[2]->thumbnail
                                     : ($this->container->paths['s3'] === true 
                                       ? $this->container->presign_file($_row[2]->thumbnail)
                                       : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['webthumbs'].$_row[2]->thumbnail);
           
-          $_versions['Original'] = $private === true || $this->container->paths['s3'] === true
+          $_versions['Original'] = $private === true
                                    ? $_protocol.$_SERVER['HTTP_HOST'].$_row[1]
                                    : ($this->container->paths['s3'] === true 
                                       ? $this->container->presign_file($_row[1])
@@ -960,7 +960,7 @@ class helpers
           
           if (is_array($_row[2]->scaled)) {
             foreach ($_row[2]->scaled as $_scaled) {
-              $_versions['Resized'][] = $private === true || $this->container->paths['s3'] === true
+              $_versions['Resized'][] = $private === true
                                         ? $_protocol.$_SERVER['HTTP_HOST'].$_scaled
                                         : ($this->container->paths['s3'] === true 
                                            ? $this->container->presign_file($_scaled)
