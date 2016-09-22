@@ -949,13 +949,13 @@ class helpers
           $_versions['Thumbnail'] = $private === true
                                     ? $_protocol.$_SERVER['HTTP_HOST'].$_row[2]->thumbnail
                                     : ($this->container->paths['s3'] === true 
-                                      ? $this->container->presign_file($_row[2]->thumbnail)
+                                      ? $this->container->db->presign_file($_row[2]->thumbnail)
                                       : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['webthumbs'].$_row[2]->thumbnail);
           
           $_versions['Original'] = $private === true
                                    ? $_protocol.$_SERVER['HTTP_HOST'].$_row[1]
                                    : ($this->container->paths['s3'] === true 
-                                      ? $this->container->presign_file($_row[1])
+                                      ? $this->container->db->presign_file($_row[1])
                                       : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_row[1]);
           
           if (is_array($_row[2]->scaled)) {
@@ -963,7 +963,7 @@ class helpers
               $_versions['Resized'][] = $private === true
                                         ? $_protocol.$_SERVER['HTTP_HOST'].$_scaled
                                         : ($this->container->paths['s3'] === true 
-                                           ? $this->container->presign_file($_scaled)
+                                           ? $this->container->db->presign_file($_scaled)
                                            : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_scaled);
             }
           }
