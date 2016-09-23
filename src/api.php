@@ -712,6 +712,8 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
   $_isnginx = (strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== false);
   if ($c && $c->getId() == $args['id'] && $c->getTemplatenames()->getPublic() === "1" && stristr($f->getContent(), $args['file'])) {
 
+    /*  Temporary Fix unless X-Accel-Redirect is working 
+
     if ($_isnginx === true) {
       // header('X-Accel-Redirect: /cdn/' . str_replace('https://', '', $this->db->presign_file($args['file'])));
       // ob_end_flush();
@@ -731,14 +733,14 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
     else {
       header('Location: ' . $this->db->presign_file($args['file']));
     }
-
-    /*  Temporary Fix unless X-Accel-Redirect is working */
+    */
 
     /*$result = $this->db->s3_file_info($args['file']);
     header('Content-Type: '. $result['ContentType']);
     header('Content-Length: '. $result['ContentLength']);
     readfile($this->db->presign_file($args['file']));
     */
+    header('Location: ' . $this->db->presign_file($args['file']));
     exit(0);
   }
   else {
