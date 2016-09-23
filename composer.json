@@ -40,8 +40,11 @@
         "palanik/corsslim": "dev-slim3",
         "erusev/parsedown": "^1.6",
         "predis/predis": "^1.0",
-        "lcobucci/jwt": "^3.1",
-        "ext-gd": "*"
+        "lcobucci/jwt": "^3.1"
+    },
+    "suggest": {
+        "ext-imagick": "to use the Imagick implementation",
+        "ext-gd": "to use the GD implementation"
     },
     "require-dev": {
         "phpunit/phpunit": "*"
