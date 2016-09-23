@@ -938,27 +938,35 @@ class helpers
     $_fieldsettings = json_decode($t->getConfigSys());
     
     if ($t->getFieldtype() == "Bild") {
-      $_protocol = '//';
       if (is_array($_content)) {
         
         if ($private === true || $this->container->paths['s3'] === true) {
           $this->container->db->sign_request($_content, $private, '/api/proxy/'.$field->getForcontribution().'/', $field->getForcontribution(), $field_id);
         }
+
+        // Prefixing, unless it is not private and s3 has public pages
+        if (!$private && $this->container->paths['s3_aws_public_pages'] === true) {
+          $_protocol = '';
+        }
+        else {
+          $_protocol = '//'.$_SERVER['HTTP_HOST'];
+        }
+
         foreach ($_content as &$_row) {
           $_versions = [];
           $_versions['Thumbnail'] = $private === true || $this->container->paths['s3'] === true
-                                    ? $_protocol.$_SERVER['HTTP_HOST'].$_row[2]->thumbnail
-                                    : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['webthumbs'].$_row[2]->thumbnail;
+                                    ? $_protocol.$_row[2]->thumbnail
+                                    : $_protocol.$this->container->paths['webthumbs'].$_row[2]->thumbnail;
           
           $_versions['Original'] = $private === true || $this->container->paths['s3'] === true
-                                   ? $_protocol.$_SERVER['HTTP_HOST'].$_row[1]
-                                   : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_row[1];
+                                   ? $_protocol.$_row[1]
+                                   : $_protocol.$this->container->paths['web'].$_row[1];
           
           if (is_array($_row[2]->scaled)) {
             foreach ($_row[2]->scaled as $_scaled) {
               $_versions['Resized'][] = $private === true || $this->container->paths['s3'] === true
-                                        ? $_protocol.$_SERVER['HTTP_HOST'].$_scaled
-                                        : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_scaled;
+                                        ? $_protocol.$_scaled
+                                        : $_protocol.$this->container->paths['web'].$_scaled;
             }
           }
           // Parse Captions
