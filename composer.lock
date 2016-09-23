@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "71a6cee4b78a22d1fd19081579392857",
-    "content-hash": "efc650cf8cda9bf8b436cdcb5563dec1",
+    "hash": "598b80ecd5a57f83ab20826972202bd3",
+    "content-hash": "21535c9e36852f05091cffd491f9c1db",
     "packages": [
         {
             "name": "akrabat/rka-ip-address-middleware",
@@ -3347,8 +3347,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.5.0",
-        "ext-gd": "*"
+        "php": ">=5.5.0"
     },
     "platform-dev": []
 }
