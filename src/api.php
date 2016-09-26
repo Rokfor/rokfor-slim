@@ -47,9 +47,7 @@ $app->group('/api', function () {
     $compact = $request->getQueryParams()['verbose'] == "true" ? false : true;
     $_limit    = isset($request->getQueryParams()['limit']) ? intval($request->getQueryParams()['limit']) : null;
     $_offset   = isset($request->getQueryParams()['offset']) ? intval($request->getQueryParams()['offset']) : null;
-    $_query    = isset($request->getQueryParams()['query']) 
-      ? (stristr($request->getQueryParams()['query'], '|') ? explode('|', $request->getQueryParams()['query']) : $request->getQueryParams()['query'])
-      : false;
+    $_query    = isset($request->getQueryParams()['query']) ? $request->getQueryParams()['query'] : false;
     $_template = isset($request->getQueryParams()['template']) ? (int)$request->getQueryParams()['template'] : false;
     
     // Translate $_status to Rokfor Standards
