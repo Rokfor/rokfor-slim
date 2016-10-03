@@ -719,6 +719,10 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
         echo 'X-Accel-Redirect: /cdn/' . str_replace('https://', '', $this->db->presign_file($args['file']));
         exit(0);
       }
+      if ($request->getQueryParams()['dummy'] == "true") {
+        header('X-Accel-Redirect: /cdn/dummyimage.com/600x400/000/fff');
+        exit(0);
+      }
       
       header('X-Accel-Redirect: /cdn/' . str_replace('https://', '', $this->db->presign_file($args['file'])));
       //header('X-Accel-Redirect: /cdn/www.royalcanin.ch/var/royalcanin/storage/images/subsidiaries/ch/home/lifestage/alle/mon-chien-ne-m-obeit-plus/32074759-2-ger-DE/mein-hund-gehorcht-nicht-mehr_articleV3.jpg');
