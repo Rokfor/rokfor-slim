@@ -720,7 +720,7 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
         exit(0);
       }
       if ($request->getQueryParams()['dummy'] == "true") {
-        header('X-Accel-Redirect: /cdn/dummyimage.com/600x400/000/fff');
+        header('X-Accel-Redirect: /cdn/s3-us-west-1.amazonaws.com/powr/defaults/image-slider2.jpg');
         exit(0);
       }
       
