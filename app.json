@@ -9,7 +9,7 @@
   ],
   "buildpacks": [
     {
-      "url": "https://github.com/heroku/heroku-buildpack-php"
+      "url": "https://github.com/Rokfor/heroku-buildpack-php"
     }
   ]
 }
