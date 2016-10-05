@@ -950,7 +950,7 @@ class helpers
         }
         else {
           if ($this->container->paths['enforce_https']) {
-            $_protocol = '//'.$_SERVER['HTTP_HOST'];
+            $_protocol = 'https://'.$_SERVER['HTTP_HOST'];
           }
           else {
             $_protocol = '//'.$_SERVER['HTTP_HOST'];
