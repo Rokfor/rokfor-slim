@@ -9,7 +9,12 @@ php:
 
 before_script:
 
+  - echo "autodetect" | pecl install imagick;
+
+install:
+
   - composer install;
+
 
 script:
 
