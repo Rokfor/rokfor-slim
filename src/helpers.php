@@ -949,7 +949,12 @@ class helpers
           $_protocol = '';
         }
         else {
-          $_protocol = '//'.$_SERVER['HTTP_HOST'];
+          if ($this->container->paths['enforce_https']) {
+            $_protocol = '//'.$_SERVER['HTTP_HOST'];
+          }
+          else {
+            $_protocol = '//'.$_SERVER['HTTP_HOST'];
+          }
         }
 
         foreach ($_content as &$_row) {

@@ -50,7 +50,10 @@ return [
           's3_aws_region'   => "",                                // Amazon S3 Region - necessary for AWS
           's3_aws_bucket'   => "",                                // Amazon S3 Bucket Name
           's3_aws_endpoint' => false                              // Not neccesary for Amazon AWS
+          's3_aws_public_pages' => true,                          // Support for public Pages, if not, assets are redirected
+                                                                  // Amazon supports public pages.
             
+          'enforce_https'   => true,                              // Prepend https: in api binary references if true
             
         ],
 
