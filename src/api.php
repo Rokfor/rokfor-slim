@@ -713,11 +713,12 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
   if ($c && $c->getId() == $args['id'] && $c->getTemplatenames()->getPublic() === "1" && stristr($f->getContent(), $args['file'])) {
 
     if ($_isnginx === true) {
-      // header('X-Accel-Redirect: /cdn/' . str_replace('https://', '', $this->db->presign_file($args['file'])));
-      // ob_end_flush();
+      ob_end_flush();
+      header('X-Accel-Redirect: /cdn/' . str_replace('https://', '', $this->db->presign_file($args['file'])));
+
       // header('X-Accel-Redirect: /cdn/www.royalcanin.ch/var/royalcanin/storage/images/subsidiaries/ch/home/lifestage/alle/mon-chien-ne-m-obeit-plus/32074759-2-ger-DE/mein-hund-gehorcht-nicht-mehr_articleV3.jpg');
       // exit(0);
-      $result = $this->db->s3_file_info($args['file']);
+      /*  $result = $this->db->s3_file_info($args['file']);
       $seconds_to_cache = 3600 * 24 * 7; // 1 Week
       $ts = gmdate("D, d M Y H:i:s", time() + $seconds_to_cache) . " GMT";
       header("Expires: $ts");
@@ -726,7 +727,7 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
       header('Content-Type: '. $result['ContentType']);
       header('Content-Length: '. $result['ContentLength']);
       ob_end_flush();
-      readfile($this->db->presign_file($args['file']));
+      readfile($this->db->presign_file($args['file']));*/
     }
     else {
       header('Location: ' . $this->db->presign_file($args['file']));

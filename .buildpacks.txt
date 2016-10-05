@@ -1,0 +1,1 @@
+https://github.com/Rokfor/heroku-buildpack-php.git
