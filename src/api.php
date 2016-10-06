@@ -663,11 +663,7 @@ $app->group('/api', function () {
     }
   );
   
-  /* Post Contribution
-   * Storing Data in a contribution with id :id and changing the contribution itself. All parameters are optional
-   * 
-   * {"Template": Int, "Name": String, "Chapter": Int, "Issue": Int, "Status": "Draft|Published|Open|Deleted", "Data":{field:value, field:value...}}
-   * 
+  /* Delete Contribution
    *
    */
   
@@ -703,43 +699,24 @@ $app->options('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}',
 );  
 
 $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $response, $args) {
-
+  // Check if user is logged in
   $auth = new \Zend\Authentication\AuthenticationService();
   $logged_in = $auth->getIdentity()['username'];
-
+  // Check for existing contribution. If logged in ignore state, otherwise just published or draft
   $c = $this->db->getContribution($args['id'], $logged_in ? false : true, true);
+  // Check for field
   $f = $this->db->getField($args['field']);
+  // Check for NGINX
   $_isnginx = (strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== false);
+  // Do the presigining if contribution
   if ($c && $c->getId() == $args['id'] && $c->getTemplatenames()->getPublic() === "1" && stristr($f->getContent(), $args['file'])) {
-
     if ($_isnginx === true) {
       ob_end_flush();
       header('X-Accel-Redirect: /cdn/' . str_replace('https://', '', $this->db->presign_file($args['file'])));
-
-      // header('X-Accel-Redirect: /cdn/www.royalcanin.ch/var/royalcanin/storage/images/subsidiaries/ch/home/lifestage/alle/mon-chien-ne-m-obeit-plus/32074759-2-ger-DE/mein-hund-gehorcht-nicht-mehr_articleV3.jpg');
-      // exit(0);
-      /*  $result = $this->db->s3_file_info($args['file']);
-      $seconds_to_cache = 3600 * 24 * 7; // 1 Week
-      $ts = gmdate("D, d M Y H:i:s", time() + $seconds_to_cache) . " GMT";
-      header("Expires: $ts");
-      header("Pragma: cache");
-      header("Cache-Control: max-age=$seconds_to_cache");      
-      header('Content-Type: '. $result['ContentType']);
-      header('Content-Length: '. $result['ContentLength']);
-      ob_end_flush();
-      readfile($this->db->presign_file($args['file']));*/
     }
     else {
       header('Location: ' . $this->db->presign_file($args['file']));
     }
-
-    /*  Temporary Fix unless X-Accel-Redirect is working */
-    /*$result = $this->db->s3_file_info($args['file']);
-    header('Content-Type: '. $result['ContentType']);
-    header('Content-Length: '. $result['ContentLength']);
-    readfile($this->db->presign_file($args['file']));
-    */
-    //header('Location: ' . $this->db->presign_file($args['file']));
     exit(0);
   }
   else {
