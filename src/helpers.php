@@ -1239,7 +1239,7 @@ class helpers
         "FortemplateName"         => $c->getTemplatenames()->getName(),
         "ForbookName"             => $_book->getName(),
         "Sort"                    => $c->getSort(),
-        /*"ReferencedFrom"          => $_references,*/
+        "ReferencedFrom"          => $_references,
       ];
     }
     else {
