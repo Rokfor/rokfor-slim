@@ -1091,7 +1091,7 @@ class helpers
                   foreach ($_row[2]->scaled as $_key=>$_scaled) {
                     $_imgstring .= '<img class="scaled_'.$_key.'" src="';
                     $_imgstring .= ($private === true || $this->container->paths['s3'] === true
-                                     ? $this->container->db->_add_proxy_single_file($_scaled, $private, $contribid, $_imageid)
+                                     ? $_protocol.$this->container->db->_add_proxy_single_file($_scaled, $private, $contribid, $_imageid)
                                      : $_protocol.$this->container->paths['web'].$_scaled);
                     $_imgstring .= '">';
                   }
