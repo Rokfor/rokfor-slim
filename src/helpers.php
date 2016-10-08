@@ -1213,7 +1213,19 @@ class helpers
 
     if ($request === null || $criteria !== null || $request->getQueryParams()['populate'] == "true") {
       foreach ($c->getDatas($criteria) as $field) {
-        $d[$field->getTemplates()->getFieldname()] = $this->prepareApiData($field, $compact, [], $request !== null ? explode('|', $request->getQueryParams()['data']) : []);
+        // Creating Fieldlist for further API Calls: Default: Do not resolve
+        $_fieldlist = [];
+        if ($request !== null) {
+          // If fields are defined: Select Fields also for recursive calls
+          if ($request->getQueryParams()['data']) {
+            $_fieldlist = explode('|', $request->getQueryParams()['data']);
+          }
+          // If Populate is selected: Set to false (populate all data in recursive calls)
+          else if($request->getQueryParams()['populate'] == "true") {
+            $_fieldlist = false;
+          }
+        }
+        $d[$field->getTemplates()->getFieldname()] = $this->prepareApiData($field, $compact, [], $_fieldlist);
       }
     }
 
