@@ -1,6 +1,7 @@
 <?php
 
 use Slim\Exception\NotFoundException;
+use Slim\Http\Response;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\ValidationData;
@@ -333,35 +334,59 @@ $apiauth = function ($request, $response, $next) {
 $redis = function ($request, $response, $next) {
   if ($this->redis['redis'] && ($request->isPost() || $request->isGet())) {
     $qt = microtime(true);
-      
-    $apicall = substr($request->getUri()->getPath(), 0, 4) === "/api";
-    $proxycall = substr($request->getUri()->getPath(), 0, 10) === "/api/proxy";
+    
+    $_calltype = substr($request->getUri()->getPath(), 0, 10) === "/api/proxy" 
+        ? "proxycall"
+        : (
+          substr($request->getUri()->getPath(), 0, 4) === "/api"
+            ? "apicall"
+            : false
+        );
 
     // Call Cache on Get and Api Calls, But not on private file proxy calls
-    if ($request->isGet() && $apicall && !$proxycall) {
+    if ($request->isGet() && $_calltype === "apicall") {
       // Create Transaction Hash
       $hash = md5($request->getUri()->getPath().$request->getUri()->getQuery().serialize($request->getHeader('Authorization')));
       // Send Cache
-      
       $redis_expiration = $this->redis['client']->get('expiration');
       
-      if ($this->redis['client']->exists($hash) === 1 && ($redis_expiration == false || time() < $redis_expiration)) {
-        $response->getBody()->write($this->redis['client']->get($hash));
+      if ($this->redis['client']->exists($hash) === 1 && $this->redis['client']->exists($hash."-hash") === 1 && ($redis_expiration == false || time() < $redis_expiration)) {
+        if ($request->getHeader('Hash')) {
+          $response->getBody()->write($this->redis['client']->get($hash."-hash"));
+        }
+        else {
+          $response->getBody()->write($this->redis['client']->get($hash));
+        }
         return $response
           ->withAddedHeader('X-Redis-Cache', 'true')
           ->withAddedHeader('X-Redis-Expiration', $redis_expiration ? date('r', $redis_expiration) : -1 )
           ->withAddedHeader('X-Redis-Time', (microtime(true) - $qt));
+
       }
       // Send Original
       else {
         $response = $next($request, $response);
         $this->redis['client']->set($hash, $response->getBody());
-        return $response;
+        $_hash = json_encode(json_decode($response->getBody())->Hash);
+        $this->redis['client']->set($hash."-hash", $_hash);
+
+        if ($request->getHeader('Hash')) {
+          // Cors to everybody. It's only a hash.
+          $newresponse = new Response;
+          return $newresponse
+            ->withHeader('Content-type', 'application/json')
+            ->withHeader('Access-Control-Allow-Credentials', 'true')
+            ->withHeader('Access-Control-Allow-Origin', '*')
+            ->write($_hash);
+        }
+        else {
+          return $response;
+        }
       }
     }
 
     // Clear Cache on Post or Backend Calls
-    if ($request->isPost() || !$apicall) {
+    if ($request->isPost() || $_calltype != "apicall") {
       $prefix = $this->redis['client']->getOptions()->__get('prefix')->getPrefix();
       $keys = $this->redis['client']->keys("*");
       $removed = 0;
@@ -369,6 +394,7 @@ $redis = function ($request, $response, $next) {
         if (substr($key, 0, strlen($prefix)) == $prefix) {
           $key = substr($key, strlen($prefix));
           $this->redis['client']->del($key);
+          $this->redis['client']->del($key."-hash");
         }
       }
       $response = $next($request, $response);
