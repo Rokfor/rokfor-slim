@@ -1047,12 +1047,18 @@ class helpers
 
     
     $parse_tags = function($template, $contribid) {
-
-      if ($this->container->paths['enforce_https']) {
-        $_protocol = 'https://'.$_SERVER['HTTP_HOST'];
+      
+      // Prefixing, unless it is not private and s3 has public pages
+      if (!$private && $this->container->paths['s3_aws_public_pages'] === true) {
+        $_protocol = '';
       }
       else {
-        $_protocol = '//'.$_SERVER['HTTP_HOST'];
+        if ($this->container->paths['enforce_https']) {
+          $_protocol = 'https://'.$_SERVER['HTTP_HOST'];
+        }
+        else {
+          $_protocol = '//'.$_SERVER['HTTP_HOST'];
+        }
       }
       
       if (preg_match_all("/{{(.*?)}}/", $template, $m)) {
