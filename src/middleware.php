@@ -360,7 +360,8 @@ $redis = function ($request, $response, $next) {
         return $response
           ->withAddedHeader('X-Redis-Cache', 'true')
           ->withAddedHeader('X-Redis-Expiration', $redis_expiration ? date('r', $redis_expiration) : -1 )
-          ->withAddedHeader('X-Redis-Time', (microtime(true) - $qt));
+          ->withAddedHeader('X-Redis-Time', (microtime(true) - $qt))
+          ->withAddedHeader('X-Cache-Hash', $hash);
 
       }
       // Send Original
@@ -377,10 +378,11 @@ $redis = function ($request, $response, $next) {
             ->withHeader('Content-type', 'application/json')
             ->withHeader('Access-Control-Allow-Credentials', 'true')
             ->withHeader('Access-Control-Allow-Origin', '*')
+            ->withHeader('X-Cache-Hash', $hash)
             ->write($_hash);
         }
         else {
-          return $response;
+          return $response->withAddedHeader('X-Cache-Hash', $hash);
         }
       }
     }
