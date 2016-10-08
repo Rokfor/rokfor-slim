@@ -1038,8 +1038,23 @@ class helpers
       }
     }
     
+    // Scanning for {{fieldname:counter}} Elements
+    // Currently, __vimeo__, __youtube__ and Upload Fields are supported.
+    // 
+    // {{__vimeo__:VIMEOID}}
+    // {{__youtube__:VIMEOID}}
+    // {{FIELDNAME:index}}
+
+    
     $parse_tags = function($template, $contribid) {
-      $_protocol = '//';
+
+      if ($this->container->paths['enforce_https']) {
+        $_protocol = 'https://'.$_SERVER['HTTP_HOST'];
+      }
+      else {
+        $_protocol = '//'.$_SERVER['HTTP_HOST'];
+      }
+      
       if (preg_match_all("/{{(.*?)}}/", $template, $m)) {
         foreach ($m[1] as $i => $varname) {
           list($fieldname,$id) = explode(":", $varname);
@@ -1054,21 +1069,24 @@ class helpers
               $template = str_replace($m[0][$i], $_imgstring, $template);
               break;            
             default:
-              $_imagedata = $this->container->db->getData()
+              // Resolve Image Field
+              $_imagefield = $this->container->db->getData()
                 ->filterByForcontribution($contribid) 
                 ->useTemplatesQuery()
                   ->filterByFieldname($fieldname)
                 ->endUse()
-                ->findOne()
-                ->getContent();
+                ->findOne();
+              $_imagedata = $_imagefield->getContent();
+              $_imageid   = $_imagefield->getId();
+              // Parse Text Field
               if ($_row = @json_decode($_imagedata)[$id-1]) {
                 if (is_array($_row[2]->scaled)) {
                   $_imgstring = '<figure class="rf-parsed"><div class="rf-container">';
                   foreach ($_row[2]->scaled as $_key=>$_scaled) {
                     $_imgstring .= '<img class="scaled_'.$_key.'" src="';
-                    $_imgstring .= ($this->container->paths['s3'] === true
-                                     ? $_scaled
-                                     : $_protocol.$_SERVER['HTTP_HOST'].$this->container->paths['web'].$_scaled);
+                    $_imgstring .= ($private === true || $this->container->paths['s3'] === true
+                                     ? $this->db->_add_proxy_single_file($_scaled, $private, $contribid, $_imageid)
+                                     : $_protocol.$this->container->paths['web'].$_scaled);
                     $_imgstring .= '">';
                   }
               

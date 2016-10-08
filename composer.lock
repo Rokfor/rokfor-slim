@@ -1226,12 +1226,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Rokfor/rokfor-php-db.git",
-                "reference": "58cee527d874883f46ed47146223251ce79ad94f"
+                "reference": "32957237819e7593ef72d9a47463027bdb64e56f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Rokfor/rokfor-php-db/zipball/58cee527d874883f46ed47146223251ce79ad94f",
-                "reference": "58cee527d874883f46ed47146223251ce79ad94f",
+                "url": "https://api.github.com/repos/Rokfor/rokfor-php-db/zipball/32957237819e7593ef72d9a47463027bdb64e56f",
+                "reference": "32957237819e7593ef72d9a47463027bdb64e56f",
                 "shasum": ""
             },
             "require": {
@@ -1269,7 +1269,7 @@
                 "source": "https://github.com/Rokfor/rokfor-php-db/tree/versioning",
                 "issues": "https://github.com/Rokfor/rokfor-php-db/issues"
             },
-            "time": "2016-10-06 07:43:50"
+            "time": "2016-10-08 12:37:41"
         },
         {
             "name": "slim/csrf",
@@ -2888,16 +2888,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "5.5.7",
+            "version": "5.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "3f67cee782c9abfaee5e32fd2f57cdd54bc257ba"
+                "reference": "60c32c5b5e79c2248001efa2560f831da11cc2d7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/3f67cee782c9abfaee5e32fd2f57cdd54bc257ba",
-                "reference": "3f67cee782c9abfaee5e32fd2f57cdd54bc257ba",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/60c32c5b5e79c2248001efa2560f831da11cc2d7",
+                "reference": "60c32c5b5e79c2248001efa2560f831da11cc2d7",
                 "shasum": ""
             },
             "require": {
@@ -2931,7 +2931,6 @@
                 "ext-pdo": "*"
             },
             "suggest": {
-                "ext-tidy": "*",
                 "ext-xdebug": "*",
                 "phpunit/php-invoker": "~1.1"
             },
@@ -2941,7 +2940,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.5.x-dev"
+                    "dev-master": "5.6.x-dev"
                 }
             },
             "autoload": {
@@ -2967,7 +2966,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-10-03 13:04:15"
+            "time": "2016-10-07 13:03:26"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
