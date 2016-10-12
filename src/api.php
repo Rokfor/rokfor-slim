@@ -135,9 +135,10 @@ $app->group('/api', function () {
       $compact = $request->getQueryParams()['verbose'] ? false : true;
       $c = $this->db->getContribution($args['id']);
       if ($c && ($c->getStatus()=="Close" || $c->getStatus()=="Draft")) {
+        $j = $this->helpers->prepareApiContributionData($c, $compact);
         $response->withHeader('Content-type', 'application/json')->getBody()->write(json_encode([
           "Contribution"              => $this->helpers->prepareApiContribution($c, $compact),
-          "Data"                      => $this->helpers->prepareApiContributionData($c, $compact),
+          "Data"                      => $j,
           "QueryTime"                 => (microtime(true) - $qt),
           "Hash"                      => md5(serialize($j))
         ], JSON_CONSTANTS));
