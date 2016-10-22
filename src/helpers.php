@@ -918,7 +918,7 @@ class helpers
    * @return void
    * @author Urs Hofer
    */
-  public function prepareApiData($field, $compact = true, $_recursion_check = [], $_fieldlist = false) {
+  public function prepareApiData($field, $compact = true, $_recursion_check = [], $_fieldlist = false, $_recursion = true, $_follow_references = true) {
     /* Preliminary Checks */
     if (!$field) return false;
     if (!$field_id = $field->getId()) return false;
@@ -1019,16 +1019,16 @@ class helpers
               break;
               // Resolve Field Content
             case 'other':
-              if ($_f = $this->container->db->getField($_value))
-                $_nc[$_value] = $this->prepareApiData($_f, $compact, $_recursion_check, $_fieldlist);
+              if ($_f = $this->container->db->getField($_value) && $_follow_references)
+                $_nc[$_value] = $this->prepareApiData($_f, $compact, $_recursion_check, $_fieldlist, $_recursion, $_recursion == true ? true : false);
               break;
             // Resolve Complete
             case 'contributional':
               if ($_c = $this->container->db->getContribution($_value)) {
                 $_temp = [];
                 foreach ($_c->getDatas() as $_f) {
-                  if ($_f->getId() && ($_fieldlist == false || (is_array($_fieldlist) && (in_array($_f->getTemplates()->getFieldname(), $_fieldlist))))) 
-                    $_temp[$_f->getTemplates()->getFieldname()] = $this->prepareApiData($_f, $compact, $_recursion_check, $_fieldlist);
+                  if ($_follow_references && $_f->getId() && ($_fieldlist == false || (is_array($_fieldlist) && (in_array($_f->getTemplates()->getFieldname(), $_fieldlist))))) 
+                    $_temp[$_f->getTemplates()->getFieldname()] = $this->prepareApiData($_f, $compact, $_recursion_check, $_fieldlist, $_recursion, $_recursion == true ? true : false);
                 }
                 $_nc[$_value] = $_temp;
               }
@@ -1178,7 +1178,7 @@ class helpers
    * @return void
    * @author Urs Hofer
    */
-  function prepareApiContributionData($c, $compact, $request = null) {
+  function prepareApiContributionData($c, $compact, $request = null, $recursion = true) {
     /* Checks */
     if (!$c) return false;
     if (!$c->getId()) return false;
@@ -1225,7 +1225,7 @@ class helpers
             $_fieldlist = false;
           }
         }
-        $d[$field->getTemplates()->getFieldname()] = $this->prepareApiData($field, $compact, [], $_fieldlist);
+        $d[$field->getTemplates()->getFieldname()] = $this->prepareApiData($field, $compact, [], $_fieldlist, $recursion);
       }
     }
 
@@ -1239,7 +1239,7 @@ class helpers
    * @return void
    * @author Urs Hofer
    */
-  function prepareApiContribution($c, $compact = true, $request = null, $_recursion_check = [])
+  function prepareApiContribution($c, $compact = true, $request = null, $_recursion_check = [], $_recursion = true, $_follow_references = true)
   {
     /* Checks */
     if (!$c) return false;
@@ -1251,14 +1251,31 @@ class helpers
     
     $_book = $this->container->db->getBook($c->getFormats()->getForbook());
     $_references = [];
+    $_references_to_delete = [];
     // Referenced Contributions
-    if ($_nodes = json_decode($c->getConfigSys())) {
+    if (($_nodes = json_decode($c->getConfigSys())) && $_follow_references === true) {
       if ($_nodes->referenced) foreach ($_nodes->referenced as $thrufield => $refId) {
-        array_push($_references, [
-          "ByField"       => $thrufield, 
-          "Contribution"  => $this->prepareApiContribution($this->container->db->getContribution($refId), $compact, $request, $_recursion_check),
-          "Data"          => $this->prepareApiContributionData($this->container->db->getContribution($refId), $compact, $request)
-        ]);
+        $_referencedContribution = $this->container->db->getContribution($refId);
+        if ($_referencedContribution !== null) {
+          array_push($_references, [
+            "ByField"       => $thrufield, 
+            "Contribution"  => $this->prepareApiContribution($_referencedContribution, $compact, $request, $_recursion_check, $_recursion, $_recursion == true ? true : false),
+            "Data"          => $this->prepareApiContributionData($_referencedContribution, $compact, $request)
+          ]);
+        }
+        else {
+          /* Reference is null
+           * The referenced contribution does not exist
+           * Therefore, we clean the id from the json reference
+           */
+          $_references_to_delete[] = $thrufield;
+        } 
+      }
+      if (count($_references_to_delete)>0) {
+        foreach ($_references_to_delete as $_delete_reference) {
+          unset($_nodes->referenced->$_delete_reference);
+        }
+        $c->setConfigSys(json_encode($_nodes))->save();
       }
     }
     

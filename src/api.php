@@ -91,9 +91,9 @@ $app->group('/api', function () {
           }
           continue;
         }
-
-        $_contribution["Contribution"]  = $this->helpers->prepareApiContribution($_c, $compact, $request); 
-        $_contribution["Data"]          = $this->helpers->prepareApiContributionData($_c, $compact, $request);
+        // No Recursion on multiple contributions
+        $_contribution["Contribution"]  = $this->helpers->prepareApiContribution($_c, $compact, $request, [], false); 
+        $_contribution["Data"]          = $this->helpers->prepareApiContributionData($_c, $compact, $request, false);
         $j[] = $_contribution;
       }
       if ($this->get('redis')['client']) {
