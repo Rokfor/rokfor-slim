@@ -49,6 +49,7 @@ $app->group('/api', function () {
     $_offset   = isset($request->getQueryParams()['offset']) ? intval($request->getQueryParams()['offset']) : null;
     $_query    = isset($request->getQueryParams()['query']) ? $request->getQueryParams()['query'] : false;
     $_template = isset($request->getQueryParams()['template']) ? (int)$request->getQueryParams()['template'] : false;
+    $_sort     = isset($request->getQueryParams()['sort']) ? (int)$request->getQueryParams()['sort'] : 'asc';
     
     // Translate $_status to Rokfor Standards
     $_status   = 'Close';
@@ -72,8 +73,8 @@ $app->group('/api', function () {
     list($filterfields, $filterclause) = explode(':',$request->getQueryParams()['filter']);
     $qt = microtime(true);
     $c = $_query !== false
-          ? $this->db->searchContributions($_query, $args['issue'], $args['chapter'], $_status, $_limit, $_offset, $filterfields, $filterclause, $request->getQueryParams()['sort'], false, $_template)
-          : $this->db->getContributions($args['issue'], $args['chapter'], $request->getQueryParams()['sort'], $_status, $_limit,  $_offset, false, $_template);
+          ? $this->db->searchContributions($_query, $args['issue'], $args['chapter'], $_status, $_limit, $_offset, $filterfields, $filterclause, $_sort, false, $_template)
+          : $this->db->getContributions($args['issue'], $args['chapter'], $_sort, $_status, $_limit,  $_offset, false, $_template);
 
     if (is_object($c)) {
       

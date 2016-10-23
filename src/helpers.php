@@ -1245,11 +1245,17 @@ class helpers
     if (!$c) return false;
     if (!$c->getId()) return false;
     
+    /* Books */
+    static $__book = [];
+    
     /* Recursion Check */
     if (in_array($c->getId(), $_recursion_check)) return false;
     $_recursion_check[] = $c->getId();
     
-    $_book = $this->container->db->getBook($c->getFormats()->getForbook());
+    if (!$__book[$c->getFormats()->getForbook()]) {
+      $__book[$c->getFormats()->getForbook()] = $this->container->db->getBook($c->getFormats()->getForbook());
+    }
+    $_book = $__book[$c->getFormats()->getForbook()];
     $_references = [];
     $_references_to_delete = [];
     // Referenced Contributions
