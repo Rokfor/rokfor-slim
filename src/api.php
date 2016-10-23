@@ -49,7 +49,7 @@ $app->group('/api', function () {
     $_offset   = isset($request->getQueryParams()['offset']) ? intval($request->getQueryParams()['offset']) : null;
     $_query    = isset($request->getQueryParams()['query']) ? $request->getQueryParams()['query'] : false;
     $_template = isset($request->getQueryParams()['template']) ? (int)$request->getQueryParams()['template'] : false;
-    $_sort     = isset($request->getQueryParams()['sort']) ? (int)$request->getQueryParams()['sort'] : 'asc';
+    $_sort     = isset($request->getQueryParams()['sort']) ? $request->getQueryParams()['sort'] : 'asc';
     
     // Translate $_status to Rokfor Standards
     $_status   = 'Close';
