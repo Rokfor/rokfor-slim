@@ -26,7 +26,13 @@ section.content-header
       )=$translations[strtolower("status_".$contribution->getStatus())]
   span &nbsp;
   small
-    span.label.label-success.contribversion='rev. '.$contribution->getVersion()
+    a.label.label-info.ajaxload(href='/rf/contribution/revertversion/'.$contribution->getId(), target=".content-wrapper#detail")
+      i.fa.fa-undo
+    span &nbsp;
+    span.label.label-info.contribversion='rev. '.$contribution->getVersion()
+    span &nbsp;
+    a.label.label-danger.ajaxload(href='/rf/contribution/clearversion/'.$contribution->getId(), target=".content-wrapper#detail")
+      i.fa.fa-repeat
   if apikey
     span &nbsp;
     small

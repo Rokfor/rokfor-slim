@@ -593,6 +593,48 @@ $app->group('/rf', function () {
    *
    */
 
+  $this->get('/contribution/{action}/{id:[0-9]*}', function ($request, $response, $args) {
+    $_c = $this->db->getContribution($args['id']);   
+    if ($this->db->DisableVersioning()) {
+      switch ($args['action']) {
+        case 'revertversion':
+          $current = $_c->getVersion();
+          if ($current > 1) {
+            $_c
+              ->toVersion($current - 1)
+              ->save();
+          }
+          break;
+        case 'clearversion':
+          $this->db
+            ->ContributionsVersionQuery()
+            ->filterByContributions($_c)
+            ->delete();
+          $this->db
+            ->DataVersionQuery()
+            ->filterByForcontribution($_c->getId())
+            ->delete();  
+          foreach ($_c->getDatas() as $_data) {
+            $_data->setVersion(1)->save();
+          }
+          $_c->setVersion(1)->save();
+          break;
+      }
+      $_c->updateCache();
+      $this->db->EnableVersioning();
+    }
+    $this->helpers->prepareContributionTemplate($_c, $args);
+    $this->view->render($response, 'content-wrapper/contribution.jade', $args);
+  });
+
+
+  /* Ajax Call:  
+   * 
+   * Work on Single Contribution: rename, move to other contrib/issue reference, reload 
+   * data from other contribution, change template reference and delete/add fields.
+   *
+   */
+
   $this->post('/contribution/{action}/{id:[0-9]*}', function ($request, $response, $args) {
     $data   = $request->getParsedBody()['data'];
     $_c = $this->db->getContribution($args['id']);   
