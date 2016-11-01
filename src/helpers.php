@@ -884,13 +884,13 @@ class helpers
    * @author Urs Hofer
    */
   function prepareApiStructureInfo($object, $followrefs = false, $compact = false, $request = false) {
-    if (method_exists($object, "getConfigSys")) {
+    if (method_exists($object, "getRDatas")) {
       $_cfg = json_decode($object->getConfigSys());
       $_refs = [];
-      if ($followrefs && (is_object($_cfg->referenced) || is_array($_cfg->referenced))) {
-        foreach ((array)$_cfg->referenced as $_fieldid => $_contribid) {
-          $_c = $this->container->db->getContribution($_contribid, true);
-          if ($_c) {
+      if ($followrefs) {
+        foreach ($object->getRDatas() as $_field) {
+          $_c = $_field->getContributions();
+          if ($_c && in_array($_c->getStatus(),["Open","Draft"])) {
             $_refs[] = array (
               "Contribution"  => $this->prepareApiContribution($_c, $compact, $request),
               "Data"          => $this->prepareApiContributionData($_c, $compact, $request)
@@ -910,6 +910,77 @@ class helpers
     }
     else return false;
   }
+  
+  // Scanning for {{fieldname:counter}} Elements
+  // Currently, __vimeo__, __youtube__ and Upload Fields are supported.
+  // 
+  // {{__vimeo__:VIMEOID}}
+  // {{__youtube__:VIMEOID}}
+  // {{FIELDNAME:index}}
+  
+  private function parse_tags($template, $contribid) {
+    
+    // Prefixing, unless it is not private and s3 has public pages
+    if (!$private && $this->container->paths['s3_aws_public_pages'] === true) {
+      $_protocol = '';
+    }
+    else {
+      if ($this->container->paths['enforce_https']) {
+        $_protocol = 'https://'.$_SERVER['HTTP_HOST'];
+      }
+      else {
+        $_protocol = '//'.$_SERVER['HTTP_HOST'];
+      }
+    }
+    
+    if (preg_match_all("/{{(.*?)}}/", $template, $m)) {
+      foreach ($m[1] as $i => $varname) {
+        list($fieldname,$id) = explode(":", $varname);
+        
+        switch ($fieldname) {
+          case '__vimeo__':
+            $_imgstring = '<iframe class="rf-embedded rf-vimeo" src="//player.vimeo.com/video/'.$id.'?title=0&byline=0&portrait=0" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>';
+            $template = str_replace($m[0][$i], $_imgstring, $template);
+            break;
+          case '__youtube__':
+            $_imgstring = '<iframe class="rf-embedded rf-youtube" src="//www.youtube.com/embed/'.$id.'" frameborder="0" allowfullscreen></iframe>';
+            $template = str_replace($m[0][$i], $_imgstring, $template);
+            break;            
+          default:
+            // Resolve Image Field
+            $_imagefield = $this->container->db->getData()
+              ->filterByForcontribution($contribid) 
+              ->useTemplatesQuery()
+                ->filterByFieldname($fieldname)
+              ->endUse()
+              ->findOne();
+            $_imagedata = $_imagefield->getContent();
+            $_imageid   = $_imagefield->getId();
+            // Parse Text Field
+            if ($_row = @json_decode($_imagedata)[$id-1]) {
+              if (is_array($_row[2]->scaled)) {
+                $_imgstring = '<figure class="rf-parsed"><div class="rf-container">';
+                foreach ($_row[2]->scaled as $_key=>$_scaled) {
+                  $_imgstring .= '<img class="scaled_'.$_key.'" src="';
+                  $_imgstring .= ($private === true || $this->container->paths['s3'] === true
+                                   ? $_protocol.$this->container->db->_add_proxy_single_file($_scaled, $private, $contribid, $_imageid)
+                                   : $_protocol.$this->container->paths['web'].$_scaled);
+                  $_imgstring .= '">';
+                }
+            
+                foreach ((array)$_row[0] as $_key=>$caption) {
+                  $_imgstring .= '<figcaption rf-caption class="caption_'.$_key.'">'.$caption.'</figcaption>';
+                }
+                $_imgstring .= '</div></figure>';              
+                $template = str_replace($m[0][$i], $_imgstring, $template);
+              }
+            }
+            break;
+        }
+      }
+    }
+    return $template;
+  }
 
 
   /**
@@ -927,7 +998,6 @@ class helpers
     if (in_array($field_id, $_recursion_check)) return false;
     $_recursion_check[] = $field_id;
     
-    
     $t = $field->getTemplates();
     $private = $t->getTemplatenames()->getPublic() == 1 ? false : true;
     
@@ -936,6 +1006,9 @@ class helpers
 
     // Parse & Prepare Image Content
     $_fieldsettings = json_decode($t->getConfigSys());
+
+    $_nc = false;
+    $_parsed = false;
     
     if ($t->getFieldtype() == "Bild") {
       if (is_array($_content)) {
@@ -992,133 +1065,61 @@ class helpers
     }
     
     // Recursively resolve foreign Data
-    $_nc = false;
+
     if ($t->getFieldtype() == "TypologySelect" || $t->getFieldtype() == "TypologyKeyword") {
-      $_nc = [];
-      foreach ((is_array($_content) ? $_content : [$_content]) as $_value) {
-        if ($_value >= 0) {
-          switch ($_fieldsettings->history_command) {
-            // Just Loading Objects
-            case 'books':
-              $_nc[$_value] = $this->prepareApiStructureInfo($this->container->db->getBook(intval($_value)));
-              break;
-            case 'issues':
-              $_nc[$_value] = $this->prepareApiStructureInfo($this->container->db->getIssue(intval($_value)));
-              break;
-            case 'chapters':
-              $_nc[$_value] = $this->prepareApiStructureInfo($this->container->db->getFormat(intval($_value)));
-              break;
-            case 'structural':
-              $_nc[$_value] = $this->prepareApiStructureInfo($this->container->db->getTemplatefield(intval($_value)));
-              break;
-            case 'fixed':
-              $_nc[$_value] = $_fieldsettings->fixedvalues[$_value];
-              break;
-            case 'self':
-              $_nc[$_value] = $_value;
-              break;
-              // Resolve Field Content
-            case 'other':
-              if ($_f = $this->container->db->getField($_value) && $_follow_references)
-                $_nc[$_value] = $this->prepareApiData($_f, $compact, $_recursion_check, $_fieldlist, $_recursion, $_recursion == true ? true : false);
-              break;
-            // Resolve Complete
-            case 'contributional':
-              if ($_c = $this->container->db->getContribution($_value)) {
-                $_temp = [];
-                foreach ($_c->getDatas() as $_f) {
-                  if ($_follow_references && $_f->getId() && ($_fieldlist == false || (is_array($_fieldlist) && (in_array($_f->getTemplates()->getFieldname(), $_fieldlist))))) 
-                    $_temp[$_f->getTemplates()->getFieldname()] = $this->prepareApiData($_f, $compact, $_recursion_check, $_fieldlist, $_recursion, $_recursion == true ? true : false);
-                }
-                $_nc[$_value] = $_temp;
+      switch ($_fieldsettings->history_command) {
+        // Just Loading Objects
+        case 'structural':
+        case 'chapters':
+        case 'issues':
+        case 'books':
+          foreach ($field->getRelationsAsObject($_fieldsettings->history_command) as $related_object) {
+            if ($related_object)
+              $_nc[$related_object->getId()] = $this->prepareApiStructureInfo($related_object);
+          }
+          $_content = $_nc ? array_keys($_nc) : $_content;
+          break;
+        case 'self':
+        case 'fixed':
+          foreach ((array)$_content as $_value) {
+            if ($related_object)
+              $_nc[$_value] = ($_fieldsettings->history_command == "self" ? $_value : $_fieldsettings->fixedvalues[$_value]);
+          }
+          break;
+          // Resolve Field Content
+        case 'other':
+          foreach ($field->getRelationsAsObject($_fieldsettings->history_command) as $related_object) {
+            if ($related_object)
+              $_nc[$related_object->getId()] = $this->prepareApiData($related_object, $compact, $_recursion_check, $_fieldlist, $_recursion, $_recursion == true ? true : false);
+          }
+          $_content = $_nc ? array_keys($_nc) : $_content;
+          break;
+        // Resolve Complete
+        case 'contributional':
+          foreach ($field->getRelationsAsObject($_fieldsettings->history_command) as $_c) {
+            if ($_c) {
+              $_temp = [];
+              foreach ($_c->getDatas() as $_f) {
+                if ($_follow_references && $_f->getId() && ($_fieldlist == false || (is_array($_fieldlist) && (in_array($_f->getTemplates()->getFieldname(), $_fieldlist))))) 
+                  $_temp[$_f->getTemplates()->getFieldname()] = $this->prepareApiData($_f, $compact, $_recursion_check, $_fieldlist, $_recursion, $_recursion == true ? true : false);
               }
-              break;
-          } 
-        }
+              $_nc[$_c->getId()] = $_temp;
+            }
+          }
+          $_content = $_nc ? array_keys($_nc) : $_content;
+          break;
       }
     }
     
-    // Scanning for {{fieldname:counter}} Elements
-    // Currently, __vimeo__, __youtube__ and Upload Fields are supported.
-    // 
-    // {{__vimeo__:VIMEOID}}
-    // {{__youtube__:VIMEOID}}
-    // {{FIELDNAME:index}}
-
-    
-    $parse_tags = function($template, $contribid) {
-      
-      // Prefixing, unless it is not private and s3 has public pages
-      if (!$private && $this->container->paths['s3_aws_public_pages'] === true) {
-        $_protocol = '';
-      }
-      else {
-        if ($this->container->paths['enforce_https']) {
-          $_protocol = 'https://'.$_SERVER['HTTP_HOST'];
-        }
-        else {
-          $_protocol = '//'.$_SERVER['HTTP_HOST'];
-        }
-      }
-      
-      if (preg_match_all("/{{(.*?)}}/", $template, $m)) {
-        foreach ($m[1] as $i => $varname) {
-          list($fieldname,$id) = explode(":", $varname);
-          
-          switch ($fieldname) {
-            case '__vimeo__':
-              $_imgstring = '<iframe class="rf-embedded rf-vimeo" src="https://player.vimeo.com/video/'.$id.'?title=0&byline=0&portrait=0" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>';
-              $template = str_replace($m[0][$i], $_imgstring, $template);
-              break;
-            case '__youtube__':
-              $_imgstring = '<iframe class="rf-embedded rf-youtube" src="https://www.youtube.com/embed/'.$id.'" frameborder="0" allowfullscreen></iframe>';
-              $template = str_replace($m[0][$i], $_imgstring, $template);
-              break;            
-            default:
-              // Resolve Image Field
-              $_imagefield = $this->container->db->getData()
-                ->filterByForcontribution($contribid) 
-                ->useTemplatesQuery()
-                  ->filterByFieldname($fieldname)
-                ->endUse()
-                ->findOne();
-              $_imagedata = $_imagefield->getContent();
-              $_imageid   = $_imagefield->getId();
-              // Parse Text Field
-              if ($_row = @json_decode($_imagedata)[$id-1]) {
-                if (is_array($_row[2]->scaled)) {
-                  $_imgstring = '<figure class="rf-parsed"><div class="rf-container">';
-                  foreach ($_row[2]->scaled as $_key=>$_scaled) {
-                    $_imgstring .= '<img class="scaled_'.$_key.'" src="';
-                    $_imgstring .= ($private === true || $this->container->paths['s3'] === true
-                                     ? $_protocol.$this->container->db->_add_proxy_single_file($_scaled, $private, $contribid, $_imageid)
-                                     : $_protocol.$this->container->paths['web'].$_scaled);
-                    $_imgstring .= '">';
-                  }
-              
-                  foreach ((array)$_row[0] as $_key=>$caption) {
-                    $_imgstring .= '<figcaption rf-caption class="caption_'.$_key.'">'.$caption.'</figcaption>';
-                  }
-                  $_imgstring .= '</div></figure>';              
-                  $template = str_replace($m[0][$i], $_imgstring, $template);
-                }
-              }
-              break;
-          }
-        }
-      }
-      return $template;
-    };
-    
     // Prepare Text Editors
     // echo $Parsedown->text('Hello _Parsedown_!'); # prints: <p>Hello <em>Parsedown</em>!</p>
-    $_parsed = false;
+
     if ($t->getFieldtype() == "Text") {
       if (is_array($_content)) {
         $_parsed = [];        
         foreach ($_content as $__c) {
           if ($_fieldsettings->rtfeditor)
-            $_parsed[] = $parse_tags($__c, $field->getForcontribution());
+            $_parsed[] = $this->parse_tags($__c, $field->getForcontribution());
           else if ($_fieldsettings->markdowneditor)
             $_parsed[] = $this->Parsedown->text($__c);
           else
@@ -1127,7 +1128,7 @@ class helpers
       }
       else {
         if ($_fieldsettings->rtfeditor)
-          $_parsed = $parse_tags($_content, $field->getForcontribution());
+          $_parsed = $this->parse_tags($_content, $field->getForcontribution());
         else if ($_fieldsettings->markdowneditor)
           $_parsed = $this->Parsedown->text($_content);
         else
@@ -1257,34 +1258,27 @@ class helpers
     }
     $_book = $__book[$c->getFormats()->getForbook()];
     $_references = [];
-    $_references_to_delete = [];
+//    echo '<pre>';
+//    foreach ($c->getRDataContributions() as $__c) {
+//      $__c->getRData();
+    //      print_r(($__c->getContributionid()));
+    //}
+   // print_r(get_class_methods($c->getRDataContributions())); 
+
     // Referenced Contributions
-    if (($_nodes = json_decode($c->getConfigSys())) && $_follow_references === true) {
-      if ($_nodes->referenced) foreach ($_nodes->referenced as $thrufield => $refId) {
-        $_referencedContribution = $this->container->db->getContribution($refId);
-        if ($_referencedContribution !== null) {
-          array_push($_references, [
-            "ByField"       => $thrufield, 
-            "Contribution"  => $this->prepareApiContribution($_referencedContribution, $compact, $request, $_recursion_check, $_recursion, $_recursion == true ? true : false),
-            "Data"          => $this->prepareApiContributionData($_referencedContribution, $compact, $request)
-          ]);
-        }
-        else {
-          /* Reference is null
-           * The referenced contribution does not exist
-           * Therefore, we clean the id from the json reference
-           */
-          $_references_to_delete[] = $thrufield;
-        } 
-      }
-      if (count($_references_to_delete)>0) {
-        foreach ($_references_to_delete as $_delete_reference) {
-          unset($_nodes->referenced->$_delete_reference);
-        }
-        $c->setConfigSys(json_encode($_nodes))->save();
+    if ($_follow_references === true) {
+      foreach ($c->getRDataContributions() as $_referencedContribution) {
+        $_f = $_referencedContribution->getRData();
+        $_c = $_f->getContributions(); 
+        array_push($_references, [
+          "ByField"       => $_f->getId(), 
+          "Contribution"  => $this->prepareApiContribution($_c, $compact, $request, $_recursion_check, $_recursion, $_recursion == true ? true : false),
+          "Data"          => $this->prepareApiContributionData($_c, $compact, $request)
+        ]);
       }
     }
-    
+//    die(print_r($_references,true));    
+
     if ($compact) {
       return [
         "Id"                      => $c->getId(),

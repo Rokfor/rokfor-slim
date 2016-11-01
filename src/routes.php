@@ -595,7 +595,9 @@ $app->group('/rf', function () {
 
   $this->post('/contribution/{action}/{id:[0-9]*}', function ($request, $response, $args) {
     $data   = $request->getParsedBody()['data'];
-    $_c = $this->db->getContribution($args['id']);    
+    $_c = $this->db->getContribution($args['id']);   
+    $_c->updateCache();
+     
     switch ($args['action']) {
       // Json Return (list mode)
       case 'releasedate':
@@ -688,7 +690,6 @@ $app->group('/rf', function () {
    */
 
   $this->post('/field/{id:[0-9]*}', function ($request, $response, $args) {
-
     $json = $this->view->offsetGet('csrf');
     $json['success']  = false;
     $field = $this->db->getField($args['id']);
@@ -728,9 +729,10 @@ $app->group('/rf', function () {
           $json['success'] = $this->db->setField($args['id'],  $request->getParsedBody()['data']);
           break;
       }
-      // Update Store Time
+      // Update Store Time & Updating Contribution Cache via callback function
       $_t = time();
       $field->getContributions()
+        ->updateCache()
         ->setModdate($_t)
         ->setUserSys($this->db->getUser()['id'])
         ->save();

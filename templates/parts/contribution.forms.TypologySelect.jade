@@ -12,18 +12,7 @@
     .box-body
       .form-group
         :php
-          | $data = $field->getDataAlwaysAsArray(); if (!is_array($data)) $data = [$data];
-        if ($config['multiple'])
-          select.form-control.rfselect(id=field->getId(), style='width: 100%;', multiple='true')
-            each select in field->getHistory()
-              if (in_array($select['id'], $data))
-                option(value=select.id, selected='selected')=select.value
-              else
-                option(value=select.id)=select.value
-        else
-          select.form-control.rfselect(id=field->getId(), style='width: 100%;')
-            each select in field->getHistory()
-              if (in_array($select['id'], $data))
-                option(value=select.id, selected='selected')=select.value
-              else
-                option(value=select.id)=select.value
+          $data = $field->getRelationsAsArray($config['history_command']);
+        select.form-control.rfselect(id=field->getId(), style='width: 100%;', multiple=($config['multiple']==1?'multiple':false))
+          each select in field->getHistory()
+            option(value=select.id, selected=(in_array($select['id'], $data)?'selected':false))=select.value

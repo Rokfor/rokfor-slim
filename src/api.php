@@ -77,7 +77,6 @@ $app->group('/api', function () {
           : $this->db->getContributions($args['issue'], $args['chapter'], $_sort, $_status, $_limit,  $_offset, false, $_template);
 
     if (is_object($c)) {
-      
       // Counting Max Objects without pages and limits
       $_count = $_query !== false
           ? $this->db->searchContributions($_query, $args['issue'], $args['chapter'], $_status, false, false, $filterfields, $filterclause, false, true, $_template)
@@ -93,8 +92,22 @@ $app->group('/api', function () {
           continue;
         }
         // No Recursion on multiple contributions
-        $_contribution["Contribution"]  = $this->helpers->prepareApiContribution($_c, $compact, $request, [], false); 
-        $_contribution["Data"]          = $this->helpers->prepareApiContributionData($_c, $compact, $request, false);
+        $recursion = false;
+        // Creating Cache Signature
+        $signatur_fields = explode("|", strtolower($request->getQueryParams()['data']));
+        sort($signatur_fields);
+        $signature = md5($compact."-".$recursion."-".$request->getQueryParams()['populate'].join(".",$signatur_fields));
+        // Asking Cache first
+        if ($h = $_c->checkCache($signature)) {
+          $_contribution["Contribution"] = $h->Contribution;
+          $_contribution["Data"]         = $h->Data;
+        }
+        // Create new Entry and store in Cache
+        else {
+          $_contribution["Contribution"]  = $this->helpers->prepareApiContribution($_c, $compact, $request, [], $recursion); 
+          $_contribution["Data"]          = $this->helpers->prepareApiContributionData($_c, $compact, $request, $recursion);
+          $this->db->NewContributionCache($_c, ["Contribution" => $_contribution["Contribution"], "Data" => $_contribution["Data"]], $signature);
+        }
         $j[] = $_contribution;
       }
       if ($this->get('redis')['client']) {
@@ -107,7 +120,7 @@ $app->group('/api', function () {
                           "Limit"     => count($c), 
                           "Offset"    =>  $_offset,
                           "QueryTime" => (microtime(true) - $qt),
-                          "Hash"      => md5(serialize($j))
+                          "Hash"      => md5(json_encode($j))
                     ), 
                     JSON_CONSTANTS
                    )
@@ -136,13 +149,21 @@ $app->group('/api', function () {
       $compact = $request->getQueryParams()['verbose'] ? false : true;
       $c = $this->db->getContribution($args['id']);
       if ($c && ($c->getStatus()=="Close" || $c->getStatus()=="Draft")) {
-        $jc = $this->helpers->prepareApiContribution($c, $compact);
-        $j  = $this->helpers->prepareApiContributionData($c, $compact);
+        $signature = md5($compact);
+        if ($h = $c->checkCache($signature)) {
+          $jc = $h->Contribution;
+          $j  = $h->Data;
+        }
+        else {
+          $jc = $this->helpers->prepareApiContribution($c, $compact);
+          $j  = $this->helpers->prepareApiContributionData($c, $compact);
+          $this->db->NewContributionCache($c, ["Contribution" => $jc, "Data" => $j], $signature);
+        }
         $response->withHeader('Content-type', 'application/json')->getBody()->write(json_encode([
           "Contribution"              => $jc,
           "Data"                      => $j,
           "QueryTime"                 => (microtime(true) - $qt),
-          "Hash"                      => md5(serialize([$j, $jc]))
+          "Hash"                      => md5(json_encode([$j, $jc])),
         ], JSON_CONSTANTS));
       }
       else if ($c === false) {
@@ -192,7 +213,7 @@ $app->group('/api', function () {
         $response->getBody()->write(json_encode([
           "Books"                     => $j,
           "QueryTime"                 => (microtime(true) - $qt),
-          "Hash"                      => md5(serialize($j))
+          "Hash"                      => md5(json_encode($j))
         ], JSON_CONSTANTS));
       }
       else if ($b === false) {
@@ -238,7 +259,7 @@ $app->group('/api', function () {
         $response->getBody()->write(json_encode([
           ucfirst($args['action'])    => $j,
           "QueryTime"                 => (microtime(true) - $qt),
-          "Hash"                      => md5(serialize($j))
+          "Hash"                      => md5(json_encode($j))
         ], JSON_CONSTANTS));
       }
       else if ($i === false) {

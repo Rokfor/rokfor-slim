@@ -12,10 +12,7 @@
     .box-body          
       .form-group
         :php
-          | $data = json_decode($field->getContent(), true); if (!is_array($data)) $data = [$data];
+          $data = $field->getRelationsAsArray($config['history_command']);
         select.form-control.rfkeyword(id=field->getId(), style='width: 100%;', multiple="multiple", data-tags=($config['history_command']=='self'?'true':'false'))
           each select in $field->getHistory()
-            if (in_array($select['id'], $data))
-              option(value=select.id, selected='selected')=select.value
-            else
-              option(value=select.id)=select.value
+            option(value=select.id, selected=(in_array($select['id'], $data)?'selected':''))=select.value
