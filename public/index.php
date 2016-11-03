@@ -5,6 +5,7 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
  * something which should probably be served as a static file
  */
 if (PHP_SAPI == 'cli-server') {
+    $_SERVER['SCRIPT_NAME'] = "/index.php";
     ini_set('xdebug.max_nesting_level', 1000);
     ini_set('display_errors', 1);
     $_p = explode("?",__DIR__ . $_SERVER['REQUEST_URI']);

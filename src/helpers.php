@@ -921,17 +921,8 @@ class helpers
   private function parse_tags($template, $contribid) {
     
     // Prefixing, unless it is not private and s3 has public pages
-    if (!$private && $this->container->paths['s3_aws_public_pages'] === true) {
-      $_protocol = '';
-    }
-    else {
-      if ($this->container->paths['enforce_https']) {
-        $_protocol = 'https://'.$_SERVER['HTTP_HOST'];
-      }
-      else {
-        $_protocol = '//'.$_SERVER['HTTP_HOST'];
-      }
-    }
+    $_protocol = ($this->container->paths['enforce_https'] ? 'https://' : '//' ).$_SERVER['HTTP_HOST'];
+      
     
     if (preg_match_all("/{{(.*?)}}/", $template, $m)) {
       foreach ($m[1] as $i => $varname) {
@@ -962,9 +953,7 @@ class helpers
                 $_imgstring = '<figure class="rf-parsed"><div class="rf-container">';
                 foreach ($_row[2]->scaled as $_key=>$_scaled) {
                   $_imgstring .= '<img class="scaled_'.$_key.'" src="';
-                  $_imgstring .= ($private === true || $this->container->paths['s3'] === true
-                                   ? $_protocol.$this->container->db->_add_proxy_single_file($_scaled, $private, $contribid, $_imageid)
-                                   : $_protocol.$this->container->paths['web'].$_scaled);
+                  $_imgstring .= $_protocol.$this->container->db->_add_proxy_single_file($_scaled, $private, $contribid, $_imageid);
                   $_imgstring .= '">';
                 }
             
@@ -1013,38 +1002,15 @@ class helpers
     if ($t->getFieldtype() == "Bild") {
       if (is_array($_content)) {
         
-        if ($private === true || $this->container->paths['s3'] === true) {
-          $this->container->db->sign_request($_content, $private, '/api/proxy/'.$field->getForcontribution().'/', $field->getForcontribution(), $field_id);
-        }
-
-        // Prefixing, unless it is not private and s3 has public pages
-        if (!$private && $this->container->paths['s3_aws_public_pages'] === true) {
-          $_protocol = '';
-        }
-        else {
-          if ($this->container->paths['enforce_https']) {
-            $_protocol = 'https://'.$_SERVER['HTTP_HOST'];
-          }
-          else {
-            $_protocol = '//'.$_SERVER['HTTP_HOST'];
-          }
-        }
-
+        $this->container->db->sign_request($_content, $private, $field->getForcontribution(), $field_id);
+        $_protocol = ($this->container->paths['enforce_https'] ? 'https://' : '//' ).$_SERVER['HTTP_HOST'];
         foreach ($_content as &$_row) {
           $_versions = [];
-          $_versions['Thumbnail'] = $private === true || $this->container->paths['s3'] === true
-                                    ? $_protocol.$_row[2]->thumbnail
-                                    : $_protocol.$this->container->paths['webthumbs'].$_row[2]->thumbnail;
-          
-          $_versions['Original'] = $private === true || $this->container->paths['s3'] === true
-                                   ? $_protocol.$_row[1]
-                                   : $_protocol.$this->container->paths['web'].$_row[1];
-          
+          $_versions['Thumbnail'] = $_protocol.$_row[2]->thumbnail;
+          $_versions['Original']  = $_protocol.$_row[1];
           if (is_array($_row[2]->scaled)) {
             foreach ($_row[2]->scaled as $_scaled) {
-              $_versions['Resized'][] = $private === true || $this->container->paths['s3'] === true
-                                        ? $_protocol.$_scaled
-                                        : $_protocol.$this->container->paths['web'].$_scaled;
+              $_versions['Resized'][] = $_protocol.$_scaled;
             }
           }
           // Parse Captions

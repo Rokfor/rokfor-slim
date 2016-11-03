@@ -723,23 +723,86 @@ $app->options('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}',
 );  
 
 $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $response, $args) {
+
   // Check if user is logged in
-  $auth = new \Zend\Authentication\AuthenticationService();
+  $auth      = new \Zend\Authentication\AuthenticationService();
   $logged_in = $auth->getIdentity()['username'];
+  $apikey    = false;
+  $access    = false;
+  $s3        = $this->get('settings')['paths']['s3'];
+  
   // Check for existing contribution. If logged in ignore state, otherwise just published or draft
   $c = $this->db->getContribution($args['id'], $logged_in ? false : true, true);
+  
+  if (!($c && $c->getId() == $args['id'])) {
+    throw new \Slim\Exception\NotFoundException($request, $response);    
+  }
+  
+  // Public
+  $public = $c->getTemplatenames()->getPublic() === "1";
+  
   // Check for field
   $f = $this->db->getField($args['field']);
+  
   // Check for NGINX
   $_isnginx = (strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== false);
-  // Do the presigining if contribution
-  if ($c && $c->getId() == $args['id'] && $c->getTemplatenames()->getPublic() === "1" && stristr($f->getContent(), $args['file'])) {
-    if ($_isnginx === true) {
-      ob_end_flush();
-      header('X-Accel-Redirect: /cdn/' . str_replace('https://', '', $this->db->presign_file($args['file'])));
+  // Check for Authentification if Public = 0
+
+  if (!$public) {
+    if ($request->getQueryParams()['access_token']) {
+      $apikey = $request->getQueryParams()['access_token'];
     }
     else {
-      header('Location: ' . $this->db->presign_file($args['file']));
+      $bearer = $request->getHeader('Authorization');
+      if ($bearer[0]) {
+        preg_match('/^Bearer (.*)/', $bearer[0], $bearer);
+        $apikey = $bearer[1];
+      }
+    }
+    if ($apikey !== false) {
+      $u = $this->db->getUsers()
+            ->filterByRoapikey($apikey)
+            ->limit(1)
+            ->findOne();
+      if ($u) {
+        $access = true;
+      }
+    }
+  }
+  
+  // Do the presigining if contribution
+  if (($public || $access || $logged_in) && stristr($f->getContent(), $args['file'])) {
+    ob_end_flush();
+    if ($s3 === true) {
+      if ($_isnginx === true) {
+        header('X-Accel-Redirect: /cdn/' . str_replace('https://', '', $this->db->presign_file($args['file'])));
+      }
+      else {
+        header('Location: ' . $this->db->presign_file($args['file']));
+      }
+    }
+    else {
+      if ($_isnginx === true) {
+        if ($_file = $this->db->presign_file($args['file'], $public, false)) {
+          header('X-Accel-Redirect: /cdn-local'.($public?'-public':'-private') . $_file);
+        }
+        else {
+          throw new \Slim\Exception\NotFoundException($request, $response);
+        }
+      }
+      else {
+        if ($_file = $this->db->presign_file($args['file'], $public)) {
+          header('Content-Type: '.mime_content_type($_file));
+          header('Expires: 0');
+          header('Cache-Control: must-revalidate');
+          header('Pragma: public');
+          header('Content-Length: ' . filesize($_file));
+          readfile($_file);
+        }
+        else {
+          throw new \Slim\Exception\NotFoundException($request, $response);
+        }
+      }
     }
     exit(0);
   }
