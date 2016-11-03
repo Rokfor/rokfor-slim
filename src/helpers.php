@@ -945,23 +945,25 @@ class helpers
                 ->filterByFieldname($fieldname)
               ->endUse()
               ->findOne();
-            $_imagedata = $_imagefield->getContent();
-            $_imageid   = $_imagefield->getId();
-            // Parse Text Field
-            if ($_row = @json_decode($_imagedata)[$id-1]) {
-              if (is_array($_row[2]->scaled)) {
-                $_imgstring = '<figure class="rf-parsed"><div class="rf-container">';
-                foreach ($_row[2]->scaled as $_key=>$_scaled) {
-                  $_imgstring .= '<img class="scaled_'.$_key.'" src="';
-                  $_imgstring .= $_protocol.$this->container->db->_add_proxy_single_file($_scaled, $private, $contribid, $_imageid);
-                  $_imgstring .= '">';
-                }
+            if ($_imagefield) {
+              $_imagedata = $_imagefield->getContent();
+              $_imageid   = $_imagefield->getId();
+              // Parse Text Field
+              if ($_row = @json_decode($_imagedata)[$id-1]) {
+                if (is_array($_row[2]->scaled)) {
+                  $_imgstring = '<figure class="rf-parsed"><div class="rf-container">';
+                  foreach ($_row[2]->scaled as $_key=>$_scaled) {
+                    $_imgstring .= '<img class="scaled_'.$_key.'" src="';
+                    $_imgstring .= $_protocol.$this->container->db->_add_proxy_single_file($_scaled, $private, $contribid, $_imageid);
+                    $_imgstring .= '">';
+                  }
             
-                foreach ((array)$_row[0] as $_key=>$caption) {
-                  $_imgstring .= '<figcaption rf-caption class="caption_'.$_key.'">'.$caption.'</figcaption>';
+                  foreach ((array)$_row[0] as $_key=>$caption) {
+                    $_imgstring .= '<figcaption rf-caption class="caption_'.$_key.'">'.$caption.'</figcaption>';
+                  }
+                  $_imgstring .= '</div></figure>';              
+                  $template = str_replace($m[0][$i], $_imgstring, $template);
                 }
-                $_imgstring .= '</div></figure>';              
-                $template = str_replace($m[0][$i], $_imgstring, $template);
               }
             }
             break;
