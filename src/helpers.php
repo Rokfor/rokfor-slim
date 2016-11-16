@@ -1047,11 +1047,16 @@ class helpers
           }
           $_content = $_nc ? array_keys($_nc) : $_content;
           break;
+        // Self is plain Text. For compatibility purposes cloning content into refereneces
         case 'self':
+          foreach ((array)$_content as $_value) {
+              $_nc[$_value] = $_value;
+          }
+          break;
+        // Resolve Fixed Values from Settings...
         case 'fixed':
           foreach ((array)$_content as $_value) {
-            if ($related_object)
-              $_nc[$_value] = ($_fieldsettings->history_command == "self" ? $_value : $_fieldsettings->fixedvalues[$_value]);
+              $_nc[$_value] = $_fieldsettings->fixedvalues[$_value];
           }
           break;
           // Resolve Field Content
