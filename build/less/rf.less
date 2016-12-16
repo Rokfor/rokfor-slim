@@ -101,9 +101,12 @@ input.rowedit {
 textarea.rowedit {
 	background-color: transparent;
 	border: none;
-	border-bottom: 1px solid #CCC;
 	height: 100%;
 	outline: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 0.5em;
 	width: @width0;
 }
 .overlength {
@@ -230,6 +233,9 @@ p.divider {
     td:first-child {
       cursor: move;
     }
+  }
+  td {
+    position: relative;
   }
 }
 

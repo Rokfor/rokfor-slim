@@ -147,28 +147,38 @@
     }
     $('section.content').on('keyup', 'form.access input', templatemodify );
     $('section.content').on('change', 'form.access select, form.access textarea', templatemodify );
-    $('section.content').on('click', 'form.access input:checkbox', templatemodify );
+    $('section.content').on('click', 'form.access input[type=checkbox]', templatemodify );
     
     
     // Field Form
     
-    var fieldmodify = function(e) {
+    var fieldmodify = function(e,d) {
       e.stopPropagation();
       var f    = $(this);
       var val  = f.parents('form.fields').serializeArray();
       var id   = f.parents('div.fieldtemplate').attr('id');
-      var url = "/rf/templates/field/update/"+id;
-      $.rokfor.delay(function(){
+      var url  = "/rf/templates/field/update/"+id;
+
+      if (e.data.delay === false) {
+        f.parents('form.fields').find('button.rfconfigopen').attr("disabled", true);
         $.rokfor.post(url, val, function(data){
-          // Store new settings in configuration button. probably changed
-          // the field type
-          f.parents('form.fields').find('input:hidden').val(data.newconfig);
+          f.parents('form.fields').find('input[type=hidden]').val(data.newconfig);
+          f.parents('form.fields').find('button.rfconfigopen').removeAttr("disabled");
         });
-      }, 1000, "u"+id );
+      }
+      else {
+        $.rokfor.delay(function(){
+          $.rokfor.post(url, val, function(data){
+            // Store new settings in configuration button. probably changed
+            // the field type
+            f.parents('form.fields').find('input[type=hidden]').val(data.newconfig);
+          });
+        }, 1000, "u"+id );
+      }
     }
-    $('section.content').on('keyup', 'form.fields input', fieldmodify );
-    $('section.content').on('change', 'form.fields select', fieldmodify );
-    $('section.content').on('change', 'form.fields input:hidden', fieldmodify );    
+    $('section.content').on('keyup', 'form.fields input', {delay:true}, fieldmodify );
+    $('section.content').on('change', 'form.fields select', {delay:false}, fieldmodify );
+    $('section.content').on('change', 'form.fields input[type=hidden]', {delay:false}, fieldmodify );    
     
     
     // Klicks: Template Actions

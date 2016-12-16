@@ -57,13 +57,13 @@ section.content(data-path=base_path)
               table#rftable.table.table-bordered.table-striped.dataTable
                 thead
                   tr
-                    th.col-xs-1=translations['contrib_th_seq']
-                    th.col-xs-1=translations['contrib_th_id']
-                    th.col-xs-2=translations['contrib_th_autor']
-                    th.col-xs-2=translations['contrib_th_datum']
-                    th.col-xs-5=translations['contrib_th_name']
-                    th.col-xs-1=translations['contrib_th_status']
-                    th.col-xs-1=translations['contrib_th_lock']
+                    th=translations['contrib_th_seq']
+                    th=translations['contrib_th_id']
+                    th=translations['contrib_th_autor']
+                    th=translations['contrib_th_datum']
+                    th.col-xs-3=translations['contrib_th_name']
+                    th=translations['contrib_th_status']
+                    th.col-xs-2=translations['contrib_th_lock']
                 tbody
                   each contribution in contributions
                     :php

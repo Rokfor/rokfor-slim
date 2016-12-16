@@ -65,7 +65,10 @@
             template.push(data.newindex);
             template.push('<a class="rfimagetablepreview" href=' + data.relative + ' target="_blank"><img data-file="' + data.original + '" src="' + data.thumb + '"></a>');
             for (var i = 0; i < table.columns().nodes().length - 2; i++) {
-              template.push(data.caption);
+              if (typeof data.caption == "object" && data.caption[i])
+                template.push(data.caption[i]);
+              else
+                template.push(data.caption);                
             }
             supress_submission = true;
             if (data.growing) {
