@@ -494,7 +494,21 @@ $app->group('/api', function () {
    * 
    * {"Template": Int, "Name": String, "Chapter": Int, "Issue": Int, "Status": "Draft|Published|Open|Deleted", "Data":{field:value, field:value...}}
    * 
-   *
+   * 
+   * Binary File Handling:
+   * ---------------------
+   * 
+   * If the content type is multipart/form-data, the JSON Payload needs to be passed
+   * within a POST parameter named "body"
+   * Normally, files are appended to the already existing list of files in a field
+   * Uploads:
+   * "Field_Name": {"multipart_1":"Caption"|["Caption 1", "Caption 2" ...],"multipart_x":"Caption"|["Caption 1", "Caption 2" ...] ...}
+   * Delete all binaries:
+   * "Field_Name": {}
+   * Delete one binary:
+   * "Field_Name": {"filename.jpg":{}}
+   * Rename one binary:
+   * "Field_Name": {"filename.jpg":"New Caption"}
    */
 
   $this->post('/contribution/{id:[0-9]*}', 
@@ -502,9 +516,12 @@ $app->group('/api', function () {
       $r = $response->withHeader('Content-type', 'application/json');
       $_error = false;
 
-      // Check for Valid Payload
+      // Check for Valid Payload, either json body
+      // or a json string in the json post variable
       
-      if ($data = json_decode($request->getBody())) {
+      $_json = ($request->getParsedBody()['body'] ? $request->getParsedBody()['body'] : $request->getBody());
+      
+      if ($data = json_decode($_json)) {
 
         // Check if the contribution exists and the user has access to it
 
@@ -644,7 +661,76 @@ $app->group('/api', function () {
 
                     // Binary Uploads
                     case 'Bild':
-                      /*$file = $request->getUploadedFiles()['file'];
+                    
+                  
+                      // Clear Fields if empty data is passed
+
+                      if (empty((array) $fieldvalue)) {
+                         $_data_store[] = $this->db->FileModify($field->getId(),  []);
+                      }
+
+                      // Cycle thru uploads
+                      foreach ((array)$fieldvalue as $file_part_name => $captions) {
+                        
+                        // Add the file if a uploaded filed with the same key existts
+                        
+                        if ($file = $request->getUploadedFiles()[$file_part_name]) {
+                          $process = [];
+                          $_data_store[] = $this->db->FileStore(
+                            $field->getId(), 
+                            $file, 
+                            $process['original'], 
+                            $process['relative'], 
+                            $process['thumb'], 
+                            $process['caption'], 
+                            $process['newindex'],
+                            $captions);
+                        }
+
+                        // Otherwise cycle through the existing data and change captions
+
+                        else {
+                          $_old_data = json_decode($field->getContent(), true);
+                          $_to_delete = [];
+                          foreach ($_old_data as $_old_image_key =>&$_old_image) {
+                            if ($_old_image[1] == $file_part_name) {
+                              // Empty Captions - delete
+                              if (empty((array) $captions)) {
+                                $_to_delete[] = $_old_image_key;
+                                $this->db->DeleteFiles((array)$_old_image[1], (array)$_old_image[2]['thumbnail'], (array)$_old_image[2]['scaled'],  !$c->getTemplatenames()->getPublic());
+                              }
+                        
+                              // Rename
+                              else {
+                                if (is_array($_old_image[0])) {
+                                  foreach ($_old_image[0] as $_old_caption_key => &$_old_caption)  {
+                                    $_old_caption = $captions[$_old_caption_key] ? $captions[$_old_caption_key] : "";
+                                  }
+                                }
+                                else {
+                                  $_old_image[0] = $captions;
+                                }
+                              }
+                            }
+                          }
+                          // Delete all with empty captions
+//                        print_r($_old_data);
+//                          print_r($_to_delete);
+                          
+                          foreach ($_to_delete as $_delkey) {
+                            unset($_old_data[$_delkey]);
+                          }
+                          // Store
+                          $field->setContent(json_encode($_old_data))
+                            ->setIsjson(true)
+                            ->save();
+                        }
+                      }
+                    
+
+
+
+                      /*                      
                       $data = json_decode($request->getParsedBody()['data'], true);
                       if ((is_object($file) && $file->getError() == 0) && $data['action'] == 'add') {
                         $json['success'] = $this->db->FileStore($args['id'], $file, $json['original'], $json['relative'], $json['thumb'], $json['caption'], $json['newindex']);
