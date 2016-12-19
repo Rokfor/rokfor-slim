@@ -38,3 +38,16 @@
     a.btn.btn-default.btn-sm.fa.fa-undo(data-wysihtml-command="undo")
     a.btn.btn-default.btn-sm.fa.fa-repeat(data-wysihtml-command="redo")
 
+  .btn-group.open
+    a.btn.btn-default.btn-sm.fa.fa-tint(data-wysihtml-command="foreColorStyle")
+    ul.dropdown-menu(data-wysihtml-dialog="foreColorStyle", style="display: none; position: absolute;")
+      li
+        .margin Color
+      li
+        .margin
+          input(data-wysihtml-dialog-field="color", value="rgba(0,0,0,1)")
+      li.divider
+      li
+        .margin 
+          a.btn.btn-default.btn-sm.pull-left(data-wysihtml-dialog-action="cancel") Cancel
+          a.btn.btn-success.btn-sm.pull-right(data-wysihtml-dialog-action="save") OK      

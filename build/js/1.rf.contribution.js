@@ -450,6 +450,13 @@
         e.data('editor', new wysihtml.Editor(e[0], {
           toolbar: 'editor-toolbar_' + e.attr('id'),
           parserRules:  {
+            type_definitions: {
+                text_color_object: {
+                  styles: {
+                    color: true
+                  }
+                },
+            },
             tags: {
               strong: {},
               b:      {},
@@ -487,6 +494,15 @@
                   "set_attributes": {
                       "rel": "nofollow"
                   }
+              },
+              span: {
+                  one_of_type: {
+                      text_color_object: 1
+                  },
+                  keep_styles: {
+                      color: 1
+                  },
+                  remove_action: "unwrap"
               }
             }
           },
