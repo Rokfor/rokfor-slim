@@ -8,7 +8,7 @@ use Lcobucci\JWT\ValidationData;
 
 /**
  * Database Check Middleware
- * 
+ *
  * Checks if a database does exist and is initialized.
  *
  * @author Urs Hofer
@@ -20,7 +20,7 @@ $app->add(function ($request, $response, $next) {
   try {
     $_p = $this->db->PDO();
   } catch (Exception $e) {
-    return $this->settings['multiple_spaces'] === true 
+    return $this->settings['multiple_spaces'] === true
       ? $response->withRedirect($this->settings['unknow_space_redirect'])
       : $this->view->render($response->withStatus(404), 'error.jade', [
           "message" => $e->getMessage(),
@@ -31,14 +31,14 @@ $app->add(function ($request, $response, $next) {
   // Check for Correct Database Setup
   try {
     $stmt = $_p->prepare("SELECT * FROM users");
-    $stmt->execute(); 
+    $stmt->execute();
   } catch (Exception $e) {
 
     $_messages = [];
     if ($this->db->insertSql($_messages)) {
-      return $next($request, $response);      
+      return $next($request, $response);
     }
-    
+
     return $this->view->render($response->withStatus(404), 'error.jade', [
       "message" => join('<br>', $_messages),
       "help"    => "Your database exists but cannot be initialized. Run <i>$ propel sql:insert</i> manually from the command line."
@@ -49,7 +49,7 @@ $app->add(function ($request, $response, $next) {
 
 /**
  * Trailing Slash Middleware
- * 
+ *
  * Stores translations and paths in template accessible values
  *
  * @author Urs Hofer
@@ -71,7 +71,7 @@ $app->add(function ($request, $response, $next) {
 
 /**
  * IP Resolver Middleware
- * 
+ *
  * Stores translations and paths in template accessible values
  *
  * @author Urs Hofer
@@ -84,15 +84,15 @@ $app->add(new RKA\Middleware\IpAddress($checkProxyHeaders, $trustedProxies));
 
 /**
  * Settings Middleware
- * 
+ *
  * Stores translations and paths in template accessible values
  *
  * @author Urs Hofer
  */
 
 $app->add(function ($request, $response, $next) {
-  $this->view->offsetSet('translations', $this->translations);  
-  $this->view->offsetSet('paths', $this->paths);  
+  $this->view->offsetSet('translations', $this->translations);
+  $this->view->offsetSet('paths', $this->paths);
   $this->view->offsetSet('fieldtypes', $this->fieldtypes);
   $response = $next($request, $response);
   return $response;
@@ -100,7 +100,7 @@ $app->add(function ($request, $response, $next) {
 
 /**
  * Logging Middleware
- * 
+ *
  * writes the current route to logfile
  *
  * @author Urs Hofer
@@ -117,7 +117,7 @@ $app->add(function ($request, $response, $next) {
 
 /**
  * Ajax Check Middleware
- * 
+ *
  * compares the request mode and the settings.
  * throws a 404 page if a route is called via browser but not listed as browser route
  *
@@ -125,7 +125,7 @@ $app->add(function ($request, $response, $next) {
  */
 
 $ajaxcheck = function ($request, $response, $next) {
-  $settings = [        
+  $settings = [
     '/rf/login',
     '/rf/forgot',
     '/rf/proxy',
@@ -148,16 +148,16 @@ $ajaxcheck = function ($request, $response, $next) {
 /**
  * Authentification Middleware
  * If something failed, redirect to entry page
- * 
+ *
  * based on slim-auth
  *
  * @author Urs Hofer
  */
 try {
-  $authentification = $container->get('slimAuthRedirectMiddleware');  
+  $authentification = $container->get('slimAuthRedirectMiddleware');
 } catch (Exception $e) {
 /*  $authentification = function ($request, $response, $next) {
-    if ($this->settings['multiple_spaces'] === true) 
+    if ($this->settings['multiple_spaces'] === true)
       return $response->withRedirect($this->settings['unknow_space_redirect']);
     else
       throw new NotFoundException($request, $response);
@@ -167,7 +167,7 @@ try {
 
 /**
  * CSRF Protection
- * 
+ *
  * based on slim-csrf.
  * additionally, adds the csrf data to the view. which makes it
  * easy to include in a template.
@@ -179,16 +179,16 @@ $csrf = function ($request, $response, $next) {
     $this->view->offsetSet('csrf', [
       'nameKey'   => $this->csrf->getTokenNameKey(),
       'valueKey'  => $this->csrf->getTokenValueKey(),
-      'name'      => $request->getAttribute($this->csrf->getTokenNameKey()), 
+      'name'      => $request->getAttribute($this->csrf->getTokenNameKey()),
       'value'     => $request->getAttribute($this->csrf->getTokenValueKey())
-      ]);  
+      ]);
     $response = $next($request, $response);
     return $response;
 };
 
 /**
  * Set up Rokfor Database with correct user
- * 
+ *
  * based on the groups and fortemplate, forbooks and forissues n2n relations
  * stores the rights in $this->rights
  *
@@ -197,7 +197,7 @@ $csrf = function ($request, $response, $next) {
 
 $identificator = function ($request, $response, $next) {
   try {
-    $identity = $this->authenticator->getIdentity();    
+    $identity = $this->authenticator->getIdentity();
   } catch (Exception $e) {
     $identity = null;
   }
@@ -221,10 +221,10 @@ $identificator = function ($request, $response, $next) {
 
 /**
  * Check for read only key in header (Authorization: Bearer KEY) or as query param (?access_token=KEY)
- * 
- * Rokfor checks for read only keys in headers if somebody wants to access a 
+ *
+ * Rokfor checks for read only keys in headers if somebody wants to access a
  * resource via r/o api. In case of a public application like a website, r/o keys are public.
- * 
+ *
  * Never expose r/w keys to the public. Treat them like passwords. Only use them with a proxy server
  * if you need public write access to a Rokfor System.
  *
@@ -234,13 +234,13 @@ $identificator = function ($request, $response, $next) {
 $apiauth = function ($request, $response, $next) {
   try {
     // Option Requests
-  
+
     if ($request->isOptions()) {
       $response = $next($request, $response);
-      return $response;      
+      return $response;
     }
-  
-  
+
+
     $response = $response->withHeader('Content-type', 'application/json');
     $apikey = false;
     $msg = "No key supplied";
@@ -257,9 +257,9 @@ $apiauth = function ($request, $response, $next) {
         $apikey = $bearer[1];
       }
     }
-  
+
     // Actions if a key is supplied
-    
+
     if ($apikey !== false) {
 
       // Get Requests: R-O Keys required
@@ -273,13 +273,13 @@ $apiauth = function ($request, $response, $next) {
           $this->db->setUser($u->getId());
           $this->db->addLog('get_api', 'GET' , $request->getAttribute('ip_address'));
           $response = $next($request, $response);
-          return $response;  
+          return $response;
         }
         else $msg = "Wrong key supplied";
       }
 
       // Post Requests: JWT Token Required
-    
+
       if ($request->isPost() || $request->isPut() || $request->isDelete()) {
         $signer = new Sha256();
         $token  = (new Parser())->parse((string) $apikey); // Parses from a string
@@ -293,23 +293,23 @@ $apiauth = function ($request, $response, $next) {
           $this->db->setUser($u->getId());
           $this->db->addLog('post_api', 'POST' , $request->getAttribute('ip_address'));
           $response = $next($request, $response);
-          return $response;  
+          return $response;
         }
         else $msg = "Wrong key supplied";
-      }    
+      }
 
     }
-    
+
     // Post Login Route
     // Only called on POST with Pattern /api/login
-    
+
     else {
       if ($request->isPost() && $route->getPattern() == "/api/login") {
         $response = $next($request, $response);
-        return $response;  
-      }          
+        return $response;
+      }
     }
-        
+
     $r = $response->withHeader('Content-type', 'application/json')->withStatus(500);
     $r->getBody()->write(json_encode(["Error" => $msg]));
     return $r;
@@ -334,8 +334,8 @@ $apiauth = function ($request, $response, $next) {
 $redis = function ($request, $response, $next) {
   if ($this->redis['redis'] && ($request->isPost() || $request->isGet())) {
     $qt = microtime(true);
-    
-    $_calltype = substr($request->getUri()->getPath(), 0, 10) === "/api/proxy" 
+
+    $_calltype = substr($request->getUri()->getPath(), 0, 10) === "/api/proxy"
         ? "proxycall"
         : (
           substr($request->getUri()->getPath(), 0, 4) === "/api"
@@ -349,7 +349,7 @@ $redis = function ($request, $response, $next) {
       $hash = md5($request->getUri()->getPath().$request->getUri()->getQuery().serialize($request->getHeader('Authorization')));
       // Send Cache
       $redis_expiration = $this->redis['client']->get('expiration');
-      
+
       if ($this->redis['client']->exists($hash) === 1 && $this->redis['client']->exists($hash."-hash") === 1 && ($redis_expiration == false || time() < $redis_expiration)) {
         if ($request->getHeader('Hash')) {
           $response->getBody()->write($this->redis['client']->get($hash."-hash"));
@@ -402,7 +402,7 @@ $redis = function ($request, $response, $next) {
       $response = $next($request, $response);
       return $response;
     }
-    
+
   }
 
   // Continue not cached.
@@ -413,7 +413,7 @@ $redis = function ($request, $response, $next) {
 
 /**
  * Cors Options: Passed to all
- * 
+ *
  * Rokfor does not restrict the api to a certain domain. Probably this can be changed in the future
  * when the R/W api is ready
  *
@@ -434,7 +434,7 @@ $app->add(function ($request, $response, $next) {
       "origin"            => array_merge((array)$this->settings['cors']['rw'], (array)$this->settings['cors']['ro']),
       "maxAge"            => 1728000,
       "allowCredentials"  => true,
-      "allowMethods"      => array("GET", "OPTIONS", "POST")
+      "allowMethods"      => array("GET", "OPTIONS", "POST", "PUT", "DELETE")
     ];
   }
   if ($request->isPost() || $request->isPut() || $request->isDelete()) {
@@ -442,7 +442,7 @@ $app->add(function ($request, $response, $next) {
       "origin"            => $this->settings['cors']['rw'],
       "maxAge"            => 1728000,
       "allowCredentials"  => true,
-      "allowMethods"      => array("POST")
+      "allowMethods"      => array("POST", "PUT", "DELETE")
     ];
   }
   $cors = new \CorsSlim\CorsSlim($corsOptions);
