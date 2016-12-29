@@ -260,7 +260,7 @@ $apiauth = function ($request, $response, $next) {
 
     // Actions if a key is supplied
 
-    if ($apikey !== false) {
+    if ((string)$apikey !== "") {
 
       // Get Requests: R-O Keys required
 
