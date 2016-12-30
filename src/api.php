@@ -7,16 +7,16 @@ $app->group('/api', function () {
   /*
    * Pretty Print JSON
    */
-  
+
 //    define('JSON_CONSTANTS', JSON_PRETTY_PRINT);
     define('JSON_CONSTANTS', 0);
 
   /*  Contributions Access
-   * 
-   *  Issue and chapter is either an integer or a combination of values seperated 
+   *
+   *  Issue and chapter is either an integer or a combination of values seperated
    *  with a Hypen: i.e. x or x-x
-   * 
-   *  Additional query parameters: 
+   *
+   *  Additional query parameters:
    *  - query=string
    *  - sort=[id|date|name|sort or chapter or issue or fieldname]:[asc|desc]
    *  - limit=int
@@ -28,11 +28,11 @@ $app->group('/api', function () {
    *  - template=id                      (default: false)
    *  - status=draft|published|both      (default: published)
    */
-  $this->options('/contributions/{issue:[0-9-]*}/{chapter:[0-9-]*}', 
+  $this->options('/contributions/{issue:[0-9-]*}/{chapter:[0-9-]*}',
     function ($request, $response, $args) {}
   );
-  
-  $this->get('/contributions/{issue:[0-9-]*}/{chapter:[0-9-]*}', 
+
+  $this->get('/contributions/{issue:[0-9-]*}/{chapter:[0-9-]*}',
     function ($request, $response, $args) {
     $j = [];
     $_fids = [];
@@ -42,7 +42,7 @@ $app->group('/api', function () {
     }
     if (stristr($args['chapter'],'-')) {
       $args['chapter'] = explode('-', $args['chapter']);
-    }      
+    }
 
     $compact = $request->getQueryParams()['verbose'] == "true" ? false : true;
     $_limit    = isset($request->getQueryParams()['limit']) ? intval($request->getQueryParams()['limit']) : null;
@@ -50,7 +50,7 @@ $app->group('/api', function () {
     $_query    = isset($request->getQueryParams()['query']) ? $request->getQueryParams()['query'] : false;
     $_template = isset($request->getQueryParams()['template']) ? (int)$request->getQueryParams()['template'] : false;
     $_sort     = isset($request->getQueryParams()['sort']) ? $request->getQueryParams()['sort'] : 'asc';
-    
+
     // Translate $_status to Rokfor Standards
     $_status   = 'Close';
     switch (strtolower($request->getQueryParams()['status'])) {
@@ -69,7 +69,7 @@ $app->group('/api', function () {
     if ($_query == "date:now") {
       $_query = time();
     }
-    
+
     list($filterfields, $filterclause) = explode(':',$request->getQueryParams()['filter']);
     $qt = microtime(true);
     $c = $_query !== false
@@ -104,7 +104,7 @@ $app->group('/api', function () {
         }
         // Create new Entry and store in Cache
         else {
-          $_contribution["Contribution"]  = $this->helpers->prepareApiContribution($_c, $compact, $request, [], $recursion); 
+          $_contribution["Contribution"]  = $this->helpers->prepareApiContribution($_c, $compact, $request, [], $recursion);
           $_contribution["Data"]          = $this->helpers->prepareApiContributionData($_c, $compact, $request, $recursion);
           $this->db->NewContributionCache($_c, ["Contribution" => $_contribution["Contribution"], "Data" => $_contribution["Data"]], $signature);
         }
@@ -115,13 +115,13 @@ $app->group('/api', function () {
       }
       $response->getBody()->write(
         json_encode(
-                    array("Documents" => $j, 
-                          "NumFound"  => $_count, 
-                          "Limit"     => count($c), 
+                    array("Documents" => $j,
+                          "NumFound"  => $_count,
+                          "Limit"     => count($c),
                           "Offset"    =>  $_offset,
                           "QueryTime" => (microtime(true) - $qt),
                           "Hash"      => md5(json_encode($j))
-                    ), 
+                    ),
                     JSON_CONSTANTS
                    )
       );
@@ -135,14 +135,14 @@ $app->group('/api', function () {
   );
 
   /* Single Contribution
-   * 
+   *
    *  - verbose=true|false
    */
-  $this->options('/contribution/{id:[0-9]*}', 
+  $this->options('/contribution/{id:[0-9]*}',
     function ($request, $response, $args) {}
-  );  
-  
-  $this->get('/contribution/{id:[0-9]*}', 
+  );
+
+  $this->get('/contribution/{id:[0-9]*}',
     function ($request, $response, $args) {
       $j = [];
       $qt = microtime(true);
@@ -170,7 +170,7 @@ $app->group('/api', function () {
         $errcode = 500;
         $newResponse = $response->withHeader('Content-type', 'application/json')->withStatus($errcode);
         $newResponse->getBody()->write(json_encode(['Error'=>'No access to Element'], JSON_CONSTANTS));
-        return $newResponse;      
+        return $newResponse;
       }
       else {
         $errcode = 500;
@@ -182,21 +182,21 @@ $app->group('/api', function () {
   );
 
   /* Books
-   * 
+   *
    *  - populate=true|false              (default: false)
    *  - verbose=true|false               (default: false)
    *  - data=[Fieldname|...]             (default: empty)
    */
-  $this->options('/books[/{id:[0-9]*}]', 
+  $this->options('/books[/{id:[0-9]*}]',
     function ($request, $response, $args) {}
-  );  
-  
-  $this->get('/books[/{id:[0-9]*}]', 
-    function ($request, $response, $args) {  
+  );
+
+  $this->get('/books[/{id:[0-9]*}]',
+    function ($request, $response, $args) {
       $qt = microtime(true);
       $b = $this->db->getStructure("", $args['id']);
       $compact = $request->getQueryParams()['verbose'] == "true" ? false : true;
-      
+
       if ($b) {
         $j = [];
         foreach ($b as $_book) {
@@ -207,7 +207,7 @@ $app->group('/api', function () {
           }
           foreach ($_book["issues"] as $_issue) {
             $_issues[] = $this->helpers->prepareApiStructureInfo($_issue["issue"], true, $compact, $request);
-          }       
+          }
           $j[] = array_merge($this->helpers->prepareApiStructureInfo($_book["book"], true, $compact, $request), ["Chapters" => $_chapters, "Issues" => $_issues]);
         }
         $response->getBody()->write(json_encode([
@@ -220,7 +220,7 @@ $app->group('/api', function () {
         $errcode = 404;
         $newResponse = $response->withStatus($errcode);
         $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'No access to Book'], JSON_CONSTANTS));
-        return $newResponse;      
+        return $newResponse;
       }
       else {
         $errcode = 404;
@@ -232,25 +232,25 @@ $app->group('/api', function () {
   );
 
   /* Issues & Chapters
-   * 
+   *
    *  - populate=true|false              (default: false)
    *  - verbose=true|false               (default: false)
    *  - data=[Fieldname|...]             (default: empty)
    */
-  $this->options('/{action:issues|chapters}[/{id:[0-9]*}]', 
+  $this->options('/{action:issues|chapters}[/{id:[0-9]*}]',
     function ($request, $response, $args) {}
-  );  
-  
-  $this->get('/{action:issues|chapters}[/{id:[0-9]*}]', 
-    function ($request, $response, $args) {  
-      
+  );
+
+  $this->get('/{action:issues|chapters}[/{id:[0-9]*}]',
+    function ($request, $response, $args) {
+
       // Actions
       $funcname = 'getStructureBy'.ucfirst($args['action']);
-      
+
       $qt = microtime(true);
       $i = $this->db->$funcname($args['id']);
       $compact = $request->getQueryParams()['verbose'] == "true" ? false : true;
-      
+
       if ($i) {
         $j = [];
         foreach ($i as $_issue) {
@@ -266,7 +266,7 @@ $app->group('/api', function () {
         $errcode = 404;
         $newResponse = $response->withStatus($errcode);
         $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>'No access to '.ucfirst($args['action'])], JSON_CONSTANTS));
-        return $newResponse;      
+        return $newResponse;
       }
       else {
         $errcode = 404;
@@ -276,18 +276,18 @@ $app->group('/api', function () {
       }
     }
   );
-  
-  
+
+
   /* Binary Proxy
-   * 
-   * 
+   *
+   *
    */
-  $this->options('/proxy/{id:[0-9]*}/{file}', 
+  $this->options('/proxy/{id:[0-9]*}/{file}',
     function ($request, $response, $args) {}
-  );  
-  
-  $this->get('/proxy/{id:[0-9]*}/{file}', 
-    function ($request, $response, $args) {  
+  );
+
+  $this->get('/proxy/{id:[0-9]*}/{file}',
+    function ($request, $response, $args) {
       $c = $this->db->getContribution($args['id']);
       if ($c && ($c->getStatus()=="Close" || $c->getStatus()=="Draft")) {
         $url = base64_decode($args['file'], true);
@@ -306,40 +306,40 @@ $app->group('/api', function () {
         $errcode = 500;
         $newResponse = $response->withStatus($errcode);
         $newResponse->getBody()->write(json_encode(['Error'=>'No access to Contribution'], JSON_CONSTANTS));
-        return $newResponse;      
+        return $newResponse;
       }
       else {
         $errcode = 500;
         $newResponse = $response->withStatus($errcode);
         $newResponse->getBody()->write(json_encode(['Error'=>'Contribution not found'], JSON_CONSTANTS));
         return $newResponse;
-      }      
+      }
 
       $errcode = 500;
       $newResponse = $response->withStatus($errcode);
       $newResponse->getBody()->write(json_encode(['Error'=>'Unknown Error'], JSON_CONSTANTS));
       return $newResponse;
     }
-  );      
-    
+  );
+
   /* Login
    * Required for R/W Access. Login with username and R/W Key
-   * Returns a JWT Token for further usage 
+   * Returns a JWT Token for further usage
    *
    */
 
-  $this->options('/login', 
+  $this->options('/login',
     function ($request, $response, $args) {}
-  );  
-    
-  $this->post('/login', 
+  );
+
+  $this->post('/login',
     function ($request, $response, $args) {
-      
+
       $u = $this->db->getUsers()
             ->filterByRwapikey($request->getParsedBody()['apikey'])
             ->filterByUsername($request->getParsedBody()['username'])
             ->limit(1)
-            ->findOne();        
+            ->findOne();
       if ($u) {
         $this->db->setUser($u->getId());
         $this->db->addLog('post_api', 'POST' , $request->getAttribute('ip_address'));
@@ -356,7 +356,7 @@ $app->group('/api', function () {
         $r = $response->withHeader('Content-type', 'application/json');
         $r->getBody()->write(json_encode((string)$token));
         return $r;
-      }        
+      }
       else {
         $r = $response->withHeader('Content-type', 'application/json')->withStatus(500);
         $r->getBody()->write(json_encode(["Error" => "Wrong key supplied"]));
@@ -364,33 +364,33 @@ $app->group('/api', function () {
       }
     }
   );
-    
+
   /* Put Contribution
    * Adding a contribution
-   * 
+   *
    * The body of the put request must be a json string defining at least the following parameters:
-   * 
+   *
    * {"Template": Int, "Name": String, "Chapter": Int, "Issue": Int}
    *
    * Optional, the Status of the newly created contribution can be passed as well:
-   * 
+   *
    * {"Template": Int, "Name": String, "Chapter": Int, "Issue": Int, "Status": "Draft|Published|Open|Deleted"}
    *
    */
-  
-  $this->options('/contribution', 
+
+  $this->options('/contribution',
     function ($request, $response, $args) {}
-  );  
-  
-  $this->put('/contribution', 
+  );
+
+  $this->put('/contribution',
     function ($request, $response, $args) {
-      
+
       // Creating a Response
-      
+
       $r = $response->withHeader('Content-type', 'application/json');
 
       // Payload: Encoding JSON Body
-      
+
       if ($data = json_decode($request->getBody())) {
         $_error = false;  // Error Message
         $c = false;       // Contribution Return value
@@ -399,7 +399,7 @@ $app->group('/api', function () {
         $_status = "Open";
 
         // Check Payload Structure
-        
+
         if (!is_int($data->Template))
           $_error = 'Template Id missing or not an integer value.';
         if (!is_int($data->Chapter))
@@ -418,36 +418,36 @@ $app->group('/api', function () {
         if ($_error === false) {
 
           // Check Issue Access for the current User (determined in the JWT Token)
-          
+
           $i = $this->db->getStructureByIssues($data->Issue);
           if (is_array($i)) {
             $i = $i[0];
           }
-          
+
           // Check Chapter Access for the current User (determined in the JWT Token)
-                    
+
           $f = $this->db->getStructureByChapters($data->Chapter);
           if (is_array($f)) {
             $f = $f[0];
-          }          
+          }
 
           // Check for valid Issue
 
           if (!$i) {
             $_error = "Issue does not exist or user has no access.";
           }
-          
+
           // Check for valid Chapter
-          
+
           else if (!$f) {
             $_error = "Chapter does not exist or user has no access.";
-          }          
-          
+          }
+
           // Check for valid Book Association
-          
+
           else if ($i->getForbook() !== $f->getForbook()) {
             $_error = "Issue and chapter are not in the same book.";
-          }          
+          }
 
           // Check for Template permission within the given Chapter
 
@@ -462,15 +462,18 @@ $app->group('/api', function () {
               $_error = "Template id not valid or not allowed within this chapter or issue.";
             }
           }
-          
+
           // Continue if no error is raised
-          
+
           if ($_error === false) {
             $c = $this->db->NewContribution($i, $f, $data->Template, $data->Name, $_status);
 
-            // Store 
+            // Store
             if ($c !== false && gettype($c) == "object") {
-              $r->getBody()->write(json_encode(["Id" => $c->getId()]));
+              $r->getBody()->write(json_encode([
+                "Id" => $c->getId(),
+                "ModDate" => $c->getModdate()
+              ]));
             }
             else {
               $_error = "Error creating contribution.";
@@ -487,17 +490,17 @@ $app->group('/api', function () {
       }
       return $r;
     }
-  );   
-  
+  );
+
   /* Post Contribution
    * Storing Data in a contribution with id :id and changing the contribution itself. All parameters are optional
-   * 
+   *
    * {"Template": Int, "Name": String, "Chapter": Int, "Issue": Int, "Status": "Draft|Published|Open|Deleted", "Data":{field:value, field:value...}}
-   * 
-   * 
+   *
+   *
    * Binary File Handling:
    * ---------------------
-   * 
+   *
    * If the content type is multipart/form-data, the JSON Payload needs to be passed
    * within a POST parameter named "body"
    * Normally, files are appended to the already existing list of files in a field
@@ -511,16 +514,16 @@ $app->group('/api', function () {
    * "Field_Name": {"filename.jpg":"New Caption"}
    */
 
-  $this->post('/contribution/{id:[0-9]*}', 
+  $this->post('/contribution/{id:[0-9]*}',
     function ($request, $response, $args) {
       $r = $response->withHeader('Content-type', 'application/json');
       $_error = false;
 
       // Check for Valid Payload, either json body
       // or a json string in the json post variable
-      
+
       $_json = ($request->getParsedBody()['body'] ? $request->getParsedBody()['body'] : $request->getBody());
-      
+
       if ($data = json_decode($_json)) {
 
         // Check if the contribution exists and the user has access to it
@@ -530,18 +533,18 @@ $app->group('/api', function () {
           // Contribution Level Modification
 
           // 1 Change State - this can be done always.
-          
+
           if (is_string($data->Status)) {
             $_error = "Status must be Open, Draft, Deleted or Published.";
-            if ($data->Status == "Open"  || 
-                $data->Status == "Draft" || 
+            if ($data->Status == "Open"  ||
+                $data->Status == "Draft" ||
                 $data->Status == "Deleted") {
               $_status = $data->Status;
               $_error = false;
             }
             if ($data->Status == "Published") {
               $_status = "Close";
-              $_error = false;              
+              $_error = false;
             }
             if ($_error === false) {
               $c->setStatus($_status);
@@ -556,43 +559,43 @@ $app->group('/api', function () {
 
           // 4 Change Chapter
           $_chapter = is_int($data->Chapter) ? $data->Chapter : $c->getForchapter();
-          
-          
+
+
           // Exectute the changements: Only if one of the relevant paramters are
           // passed.
           if (is_int($data->Chapter) || is_int($data->Issue) || is_int($data->Template)) {
-            
+
             // Check Issue Access for the current User (determined in the JWT Token)
-          
+
             $i = $this->db->getStructureByIssues($_issue);
             if (is_array($i)) {
               $i = $i[0];
             }
-          
+
             // Check Chapter Access for the current User (determined in the JWT Token)
-                    
+
             $f = $this->db->getStructureByChapters($_chapter);
             if (is_array($f)) {
               $f = $f[0];
-            }          
+            }
 
             // Check for valid Issue
 
             if (!$i) {
               $_error = "Issue does not exist or user has no access.";
             }
-          
+
             // Check for valid Chapter
-          
+
             else if (!$f) {
               $_error = "Chapter does not exist or user has no access.";
-            }          
-          
+            }
+
             // Check for valid Book Association
-          
+
             else if ($i->getForbook() !== $f->getForbook()) {
               $_error = "Issue and chapter are not in the same book.";
-            }          
+            }
 
             // Check for Template permission within the given Chapter
 
@@ -607,34 +610,35 @@ $app->group('/api', function () {
                 $_error = "Template id not valid or not allowed within this chapter or issue.";
               }
             }
-            
+
             // Continue if no error is raised
-          
+
             if ($_error === false) {
 
               if ($_template != $c->getFortemplate()) {
                 $this->db->ChangeTemplateContribution($c->getId(), $_template);
               }
-              
+
               if ($_issue != $c->getForissue()) {
                 $c->setForissue($_issue);
               }
-                
+
               if ($_chapter != $c->getForchapter()) {
                 $c->setForchapter($_chapter);
               }
-            }            
+            }
           }
-          
+
           // 5 Rename if Name Parameter is set
           if (is_string($data->Name)) {
             if ($data->Name !== "")
               $c->setName($data->Name);
             else
               $_error = "Name must not be an empty string. Omit Name completely if it should be ignored.";
-          } 
+          }
 
           if ($_error === false) {
+            $c->setModdate(time());
             // Store Contribution
             $c->save();
             // Data Level Modification - Loop trough fields and store data
@@ -652,7 +656,7 @@ $app->group('/api', function () {
                   $_error = "Field $fieldname does not exist in this template.";
                 }
               }
-              if ($_error === false) {              
+              if ($_error === false) {
                 foreach ($data->Data as $fieldname => $fieldvalue) {
                   $field = $d[$fieldname];
                   $type     = $field->getTemplates()->getFieldtype();
@@ -661,8 +665,8 @@ $app->group('/api', function () {
 
                     // Binary Uploads
                     case 'Bild':
-                    
-                  
+
+
                       // Clear Fields if empty data is passed
 
                       if (empty((array) $fieldvalue)) {
@@ -671,18 +675,18 @@ $app->group('/api', function () {
 
                       // Cycle thru uploads
                       foreach ((array)$fieldvalue as $file_part_name => $captions) {
-                        
+
                         // Add the file if a uploaded filed with the same key existts
-                        
+
                         if ($file = $request->getUploadedFiles()[$file_part_name]) {
                           $process = [];
                           $_data_store[] = $this->db->FileStore(
-                            $field->getId(), 
-                            $file, 
-                            $process['original'], 
-                            $process['relative'], 
-                            $process['thumb'], 
-                            $process['caption'], 
+                            $field->getId(),
+                            $file,
+                            $process['original'],
+                            $process['relative'],
+                            $process['thumb'],
+                            $process['caption'],
                             $process['newindex'],
                             $captions);
                         }
@@ -699,7 +703,7 @@ $app->group('/api', function () {
                                 $_to_delete[] = $_old_image_key;
                                 $this->db->DeleteFiles((array)$_old_image[1], (array)$_old_image[2]['thumbnail'], (array)$_old_image[2]['scaled'],  !$c->getTemplatenames()->getPublic());
                               }
-                        
+
                               // Rename
                               else {
                                 if (is_array($_old_image[0])) {
@@ -716,7 +720,7 @@ $app->group('/api', function () {
                           // Delete all with empty captions
 //                        print_r($_old_data);
 //                          print_r($_to_delete);
-                          
+
                           foreach ($_to_delete as $_delkey) {
                             unset($_old_data[$_delkey]);
                           }
@@ -726,11 +730,11 @@ $app->group('/api', function () {
                             ->save();
                         }
                       }
-                    
 
 
 
-                      /*                      
+
+                      /*
                       $data = json_decode($request->getParsedBody()['data'], true);
                       if ((is_object($file) && $file->getError() == 0) && $data['action'] == 'add') {
                         $json['success'] = $this->db->FileStore($args['id'], $file, $json['original'], $json['relative'], $json['thumb'], $json['caption'], $json['newindex']);
@@ -745,15 +749,19 @@ $app->group('/api', function () {
                       # code...
                       $_data_store[] = $this->db->setField($field->getId(), $fieldvalue);
                       break;
-                  }                  
+                  }
                 }
               }
             }
             if ($_error === false) {
-              $r->getBody()->write(json_encode(["Id" => $c->getId(), "Data" => $_data_store]));
+              $r->getBody()->write(json_encode([
+                "Id" => $c->getId(),
+                "Data" => $_data_store,
+                "ModDate" => $c->getModdate()
+              ]));
             }
           }
-          
+
         }
         else {
           $_error = 'Contribution Id not known or User has no access to modify it.';
@@ -772,41 +780,41 @@ $app->group('/api', function () {
       return $r;
     }
   );
-  
+
   /* Delete Contribution
    *
    */
-  
-  $this->delete('/contribution/{id:[0-9]*}', 
+
+  $this->delete('/contribution/{id:[0-9]*}',
     function ($request, $response, $args) {
       $r = $response->withHeader('Content-type', 'application/json');
       $_error = false;
       $c = $this->db->getContribution($args['id']);
-      
-      if ($c === null) 
+
+      if ($c === null)
         $_error = "Contribution id does not exist.";
-      else if ($c === false) 
-        $_error = "No access for this contribution.";      
+      else if ($c === false)
+        $_error = "No access for this contribution.";
       else {
         $this->db->DeleteContributions([$args['id']]);
         $r->getBody()->write(json_encode(["Id" => $args['id']]));
         return $r;
       }
-      
+
       // Return error message
       $r->withStatus(500)->getBody()->write(json_encode(["Error" => $_error]));
       return $r;
     }
   );
-  
-  
+
+
 })->add($redis)->add($apiauth);
 
 /* Asset Rewriting - only running on nginx. all other servers are just redirecting to */
 
-$app->options('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', 
+$app->options('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}',
   function ($request, $response, $args) {}
-);  
+);
 
 $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $response, $args) {
 
@@ -816,20 +824,20 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
   $apikey    = false;
   $access    = false;
   $s3        = $this->get('settings')['paths']['s3'];
-  
+
   // Check for existing contribution. If logged in ignore state, otherwise just published or draft
   $c = $this->db->getContribution($args['id'], $logged_in ? false : true, true);
-  
+
   if (!($c && $c->getId() == $args['id'])) {
-    throw new \Slim\Exception\NotFoundException($request, $response);    
+    throw new \Slim\Exception\NotFoundException($request, $response);
   }
-  
+
   // Public
   $public = $c->getTemplatenames()->getPublic() === "1";
-  
+
   // Check for field
   $f = $this->db->getField($args['field']);
-  
+
   // Check for NGINX
   $_isnginx = (strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== false);
   // Check for Authentification if Public = 0
@@ -855,7 +863,7 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
       }
     }
   }
-  
+
   // Do the presigining if contribution
   if (($public || $access || $logged_in) && stristr($f->getContent(), $args['file'])) {
     ob_end_flush();
@@ -896,4 +904,4 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
     throw new \Slim\Exception\NotFoundException($request, $response);
   }
   return $response;
-}); 
+});
