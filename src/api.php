@@ -638,6 +638,7 @@ $app->group('/api', function () {
           }
 
           if ($_error === false) {
+            $c->updateCache();
             $c->setModdate(time());
             // Store Contribution
             $c->save();
