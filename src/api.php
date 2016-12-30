@@ -560,10 +560,13 @@ $app->group('/api', function () {
           // 4 Change Chapter
           $_chapter = is_int($data->Chapter) ? $data->Chapter : $c->getForchapter();
 
+          // 5 Change Sort Order
+          $_sort = is_int($data->Sort) ? $data->Sort : $c->getSort();
+
 
           // Exectute the changements: Only if one of the relevant paramters are
           // passed.
-          if (is_int($data->Chapter) || is_int($data->Issue) || is_int($data->Template)) {
+          if (is_int($data->Chapter) || is_int($data->Issue) || is_int($data->Template) || is_int($data->Sort)) {
 
             // Check Issue Access for the current User (determined in the JWT Token)
 
@@ -626,6 +629,11 @@ $app->group('/api', function () {
               if ($_chapter != $c->getForchapter()) {
                 $c->setForchapter($_chapter);
               }
+
+              if ($_sort != $c->getSort()) {
+                $c->setSort($_sort);
+              }
+
             }
           }
 
