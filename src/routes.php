@@ -4,37 +4,37 @@ if ($container->get('settings')['multiple_spaces'] === true)  {
   $app->get('/', function ($request, $response, $args) {
     return $response->withRedirect('/rf/login');
   });
-} 
+}
 
-/* Browser Call: 
- * 
+/* Browser Call:
+ *
  * Render Logout Page
  *
  */
 
-$app->get('/rf', function ($request, $response, $args) {return $response->withRedirect('/rf/dashboard');}); 
+$app->get('/rf', function ($request, $response, $args) {return $response->withRedirect('/rf/dashboard');});
 
 
 /* Rokfor Application Routes
- * 
+ *
  * Routes are all grouped within the /rf Group
- * 
+ *
  */
 
 $app->group('/rf', function () {
 
-  /* Browser Call: 
-   * 
+  /* Browser Call:
+   *
    * Dashboard
    *
-   */  
+   */
 
   $this->get('/dashboard', function ($request, $response, $args) {
-    
-    // Getting Remember State    
+
+    // Getting Remember State
     $messages = $this->flash->getMessages();
     $args['remember'] = $messages['Remember_Me'][0] === 'remember-me';
-    
+
     // Project Name
     $args['project'] = $this->get('settings')['projectname'];
     // Tree
@@ -58,32 +58,32 @@ $app->group('/rf', function () {
     $args['shortcuts'] = $this->db->getFavouriteLog('new_contribution', function($data){
       $data = json_decode($data, true);
       $_t = $this->db->getTemplatename($data[1]);
-      return $this->valid_paths[$data[0]] && $_t ? 
-              ["destination"=>$this->valid_paths[$data[0]],"template"=> ["name" => $_t->getName(), "id" => $_t->getId()]] : 
+      return $this->valid_paths[$data[0]] && $_t ?
+              ["destination"=>$this->valid_paths[$data[0]],"template"=> ["name" => $_t->getName(), "id" => $_t->getId()]] :
               false;
-    });    
+    });
     // Render
     $this->view->render($response, 'layout.jade', $args);
   });
 
-  /* Ajax Call: 
-   * 
+  /* Ajax Call:
+   *
    * Profile Page
    *
-   */   
+   */
 
   $this->get('/profile', function ($request, $response, $args) {
     // User drop down stuff
     $args['user']  = $this->db->getUser();
     $this->view->render($response, 'content-wrapper/profile.jade', $args);
-  });  
+  });
 
 
-  /* Ajax Call: 
-   * 
+  /* Ajax Call:
+   *
    * Profile Page - store settings
    *
-   */   
+   */
 
   $this->post('/profile', function ($request, $response, $args) {
     $form = $request->getParsedBody()['data'];
@@ -99,7 +99,7 @@ $app->group('/rf', function () {
         $errors =[];
         if ($this->db->updatePassword($form[0]['value'], $form[1]['value'], $form[2]['value'], $errors)) {
           $json['success'] = $this->translations['general_success'];
-          $json['message'] = $this->translations['profile_pw_updated'];          
+          $json['message'] = $this->translations['profile_pw_updated'];
         }
         else {
           $json['error']   = $this->translations['general_error'];
@@ -123,7 +123,7 @@ $app->group('/rf', function () {
           }
           $json['message'] = join('<br>', $errors);
         }
-        break;      
+        break;
       default:
         $json['error']   = $this->translations['general_error'];
         $json['message'] = $this->translations['profile_error_action'];
@@ -131,27 +131,27 @@ $app->group('/rf', function () {
     }
     $r->getBody()->write(json_encode($json));
     return $r;
-  });  
-  
-  /* Ajax Call: 
-   * 
+  });
+
+  /* Ajax Call:
+   *
    * Users Page (root only)
    *
-   */   
+   */
 
   $this->get('/users', function ($request, $response, $args) {
     // User drop down stuff
     $args['users']  = $this->db->getUsers();
-    $args['groups']  = $this->db->getRights();    
+    $args['groups']  = $this->db->getRights();
     $this->view->render($response, 'content-wrapper/users.jade', $args);
-  });  
+  });
 
-  /* Ajax Call: 
-   * 
+  /* Ajax Call:
+   *
    * Returns User Infos as Json
    * Stores new / Updates User Data
    *
-   */   
+   */
 
   $this->map(['GET','POST'], '/user[/{id:new|[0-9]*}]', function ($request, $response, $args) {
     if ($request->getParsedBody()['data']) {
@@ -191,7 +191,7 @@ $app->group('/rf', function () {
       if ($args['id'] == "new") {
         foreach ($this->db->getRights() as $_allright) {
           $rights[] = [id => $_allright->getId(),  name => $_allright->getGroup(), selected => false];
-        }      
+        }
         $json['user']  = [
           "group"     => $rights,
           "id"        => "new"
@@ -206,7 +206,7 @@ $app->group('/rf', function () {
         $rights = [];
         foreach ($this->db->getRights() as $_allright) {
           $rights[] = [id => $_allright->getId(),  name => $_allright->getGroup(), selected => in_array($_allright->getId(), $act_rights) ? true : false];
-        }      
+        }
         $json['user']  = [
           "username"  => $u->getUsername(),
           "email"     => $u->getEmail(),
@@ -217,35 +217,35 @@ $app->group('/rf', function () {
         ];
       }
       $r->getBody()->write(json_encode($json));
-      return $r;    
+      return $r;
     }
-  }); 
-  
-  /* Ajax Call: 
-   * 
+  });
+
+  /* Ajax Call:
+   *
    * Returns User Table as HTML
    * Deletes a User
    *
-   */   
-  
-  
+   */
+
+
   $this->get('/user/delete/{id:[0-9]*}', function ($request, $response, $args) {
     $u = $this->db->getUsers()->findPk($args['id']);
     $u->delete();
     $args['users']  = $this->db->getUsers();
     $args['updatecsrf'] = true;
     $this->view->render($response, 'parts/users.table.jade', $args);
-  });  
+  });
 
 
-  /* Ajax Call: 
-   * 
+  /* Ajax Call:
+   *
    * Returns Group Infos as Json (GET) or the User Table as HTML (POST)
    * Stores new / Updates Group Data
    *
-   */   
-  
-  
+   */
+
+
   $this->map(['GET','POST'], '/group[/{id:new|[0-9]*}]', function ($request, $response, $args) {
     if ($request->getParsedBody()['data']) {
       $data = [
@@ -281,7 +281,7 @@ $app->group('/rf', function () {
         }
       }
       $args['updatecsrf'] = true;
-      $args['groups']  = $this->db->getRights();    
+      $args['groups']  = $this->db->getRights();
       $this->view->render($response, 'parts/groups.table.jade', $args);
     }
     else {
@@ -298,7 +298,7 @@ $app->group('/rf', function () {
       $checkedissues    = [];
       $checkedtemplates = [];
       $checkedusers     = [];
-      
+
       if ($args['id'] == "new") {
         $json['groups']['id'] = "new";
       }
@@ -332,8 +332,8 @@ $app->group('/rf', function () {
           array_push($_formats, ['id' => $format->getId(), 'name' => $format->getName(), 'selected' => in_array($format->getId(), $checkedformats), 'templates' =>  $_templates]);
         }
         array_push($json['groups']['books'], [
-          'id' => $book->getId(), 
-          'name' => $book->getName(), 
+          'id' => $book->getId(),
+          'name' => $book->getName(),
           'selected' => in_array($book->getId(), $checkedbooks),
           'formats' => $_formats,
           'issues' => $_issues
@@ -342,47 +342,47 @@ $app->group('/rf', function () {
       }
       foreach ($this->db->getUsers() as $user)
         array_push($json['groups']['users'], ['id' => $user->getId(), 'name' => $user->getUsername(), 'selected' => in_array($user->getId(), $checkedusers)]);
-      
+
       $r->getBody()->write(json_encode($json));
-      return $r; 
-    }      
-  });  
-  
-  /* Ajax Call: 
-   * 
+      return $r;
+    }
+  });
+
+  /* Ajax Call:
+   *
    * Returns Group Table as HTML
    * Deletes a Group
    *
-   */   
-  
-  
+   */
+
+
   $this->get('/group/delete/{id:[0-9]*}', function ($request, $response, $args) {
     $u = $this->db->getRight($args['id']);
     $u->delete();
     $args['updatecsrf'] = true;
-    $args['groups']  = $this->db->getRights();    
+    $args['groups']  = $this->db->getRights();
     $this->view->render($response, 'parts/groups.table.jade', $args);
-  });  
-  
+  });
 
-  /* Ajax Call: 
-   * 
+
+  /* Ajax Call:
+   *
    * Menu Refresh
    *
-   */   
+   */
 
   $this->get('/menu', function ($request, $response, $args) {
     // Tree
-    $args['project'] = $this->get('settings')['projectname'];    
+    $args['project'] = $this->get('settings')['projectname'];
     $args['menu'] = $this->db->getStructure('/rf/contributions/');
     $this->view->render($response, 'parts/menu.structure.jade', $args);
-  });  
+  });
 
-  /* Browser Call: 
-   * 
+  /* Browser Call:
+   *
    * Render Login Page
    *
-   */  
+   */
 
   $this->map(['GET', 'POST'], '/login', function ($request, $response, $args) {
     $args["message"] = $this->translations['loginIntro'];
@@ -395,52 +395,52 @@ $app->group('/rf', function () {
             if ($result->isValid()) {
               $this->flash->addMessage('Remember_Me', $request->getParsedBody()['remember-me']);
               return $response->withRedirect('/rf/dashboard');
-            } 
+            }
             else {
               $args["message"] = $this->translations['loginFailed'];
             }
     }
     $this->view->render($response, 'login.jade', $args);
   });
-  
-  /* Browser Call: 
-   * 
+
+  /* Browser Call:
+   *
    * Render Logout Page
    *
    */
-  
+
   $this->get('/logout', function ($request, $response, $args) {
       $this->get('authenticator')->logout();
-      $args["message"] = $this->translations['logout'];      
+      $args["message"] = $this->translations['logout'];
       $this->view->render($response, 'login.jade', $args);
   });
-  
-  /* Browser Call: 
-   * 
+
+  /* Browser Call:
+   *
    * Render Logout Page
    *
    */
-  
+
   $this->map(['get','post'], '/forgot', function ($request, $response, $args) {
     $email = $request->getParsedBody()['email'];
     if ($email) {
       $q = $this->db->getUserByEmail($email);
       if ($q === false) {
-        $args["message"] = $this->translations['send_reminder_fail'];              
+        $args["message"] = $this->translations['send_reminder_fail'];
       }
       else {
-        $args["message"] = $this->translations['send_reminder_success'];      
+        $args["message"] = $this->translations['send_reminder_success'];
       }
     }
     else {
-      $args["message"] = $this->translations['send_reminder'];      
+      $args["message"] = $this->translations['send_reminder'];
     }
     $this->view->render($response, 'forgot.jade', $args);
-  });  
+  });
 
-  /* Ajax Call: 
-   * 
-   * List Contributions 
+  /* Ajax Call:
+   *
+   * List Contributions
    *
    */
 
@@ -483,9 +483,9 @@ $app->group('/rf', function () {
     }
   });
 
-  /* Ajax Call: 
-   * 
-   * List Contributions 
+  /* Ajax Call:
+   *
+   * List Contributions
    *
    */
 
@@ -518,8 +518,8 @@ $app->group('/rf', function () {
     $this->db->addLog('get_contributions', md5("/rf/contributions/".$args['book']."/".$args['issue']."/".$args['chapter']) , $request->getAttribute('ip_address'));
     $this->view->render($response, 'content-wrapper/contributions.jade', $args);
   });
-  
-  /* Ajax Call: 
+
+  /* Ajax Call:
    *
    * Bulk Actions on Contributions: set state, reorder, trash, new: todo: clone
    *
@@ -528,9 +528,9 @@ $app->group('/rf', function () {
   $this->post('/contributions/{book:[0-9]*}/{issue:[0-9]*}/{chapter:[0-9]*}', function ($request, $response, $args) {
     $format = $this->db->getFormat($args['chapter']);
     $book   = $this->db->getBook($args['book']);
-    $issue  = $this->db->getIssue($args['issue']);    
+    $issue  = $this->db->getIssue($args['issue']);
     $data   = $request->getParsedBody()['data'];
-    
+
     switch ($data['action']) {
       case 'Deleted':
       case 'Open':
@@ -546,18 +546,18 @@ $app->group('/rf', function () {
         foreach ($data['id'] as $value) 
           array_push($ids, $value['id']);
         $this->db->ReorderContributions($ids);
-      break;      
+      break;
       case 'new':
         $args['contribution'] = $this->db->NewContribution($issue, $format, $data['template'], $data['name']);
         $this->db->addLog(
-          'new_contribution', 
+          'new_contribution',
           json_encode([md5("/rf/contributions/".$args['book']."/".$args['issue']."/".$args['chapter']), $data['template']]) ,
           $request->getAttribute('ip_address')
         );
         $this->helpers->prepareContributionTemplate($args['contribution'], $args);
         $this->view->render($response, 'content-wrapper/contribution.jade', $args);
         return;
-      break;            
+      break;
       case 'clone':
         $this->db->CloneContributions($data['id'], $this->translations["copy"]);
       break;
@@ -570,10 +570,10 @@ $app->group('/rf', function () {
     $json['action']  = $data['action'];
     $r->getBody()->write(json_encode($json));
     return $r;
-  });  
-  
-  /* Ajax Call:  
-   * 
+  });
+
+  /* Ajax Call:
+   *
    * Edit Contribution (GET: id)
    *
    */
@@ -586,15 +586,15 @@ $app->group('/rf', function () {
     $this->view->render($response, 'content-wrapper/contribution.jade', $args);
   });
 
-  /* Ajax Call:  
-   * 
-   * Work on Single Contribution: rename, move to other contrib/issue reference, reload 
+  /* Ajax Call:
+   *
+   * Work on Single Contribution: rename, move to other contrib/issue reference, reload
    * data from other contribution, change template reference and delete/add fields.
    *
    */
 
   $this->get('/contribution/{action}/{id:[0-9]*}', function ($request, $response, $args) {
-    $_c = $this->db->getContribution($args['id']);   
+    $_c = $this->db->getContribution($args['id']);
     if ($this->db->DisableVersioning()) {
       switch ($args['action']) {
         case 'revertversion':
@@ -613,7 +613,7 @@ $app->group('/rf', function () {
           $this->db
             ->DataVersionQuery()
             ->filterByForcontribution($_c->getId())
-            ->delete();  
+            ->delete();
           foreach ($_c->getDatas() as $_data) {
             $_data->setVersion(1)->save();
           }
@@ -628,18 +628,18 @@ $app->group('/rf', function () {
   });
 
 
-  /* Ajax Call:  
-   * 
-   * Work on Single Contribution: rename, move to other contrib/issue reference, reload 
+  /* Ajax Call:
+   *
+   * Work on Single Contribution: rename, move to other contrib/issue reference, reload
    * data from other contribution, change template reference and delete/add fields.
    *
    */
 
   $this->post('/contribution/{action}/{id:[0-9]*}', function ($request, $response, $args) {
     $data   = $request->getParsedBody()['data'];
-    $_c = $this->db->getContribution($args['id']);   
+    $_c = $this->db->getContribution($args['id']);
     $_c->updateCache();
-     
+
     switch ($args['action']) {
       // Json Return (list mode)
       case 'releasedate':
@@ -671,7 +671,7 @@ $app->group('/rf', function () {
         list($chapter_id, $issue_id) = json_decode($data, true);
         if ($issue_id && $chapter_id) {
           $format = $this->db->getFormat($chapter_id);
-          $issue  = $this->db->getIssue($issue_id);  
+          $issue  = $this->db->getIssue($issue_id);
           $_c
             ->setForissue($issue_id)
             ->setForchapter($chapter_id)
@@ -685,24 +685,24 @@ $app->group('/rf', function () {
           $args["alert"] = [
             "success"  => false,
             "text" => $this->translations['alert_moved_error'],
-          ];          
+          ];
         }
 
-        break;      
+        break;
       // Complete Reload (template mode)
       case 'import':
         if ($_fromname = $this->db->ImportContribution($data, $args['id'])) {
           $args["alert"] = [
            "success"  => true,
            "text" => str_replace('[x]', $_fromname, $this->translations['alert_import_success'])
-          ]; 
+          ];
         }
         else {
           $args["alert"] = [
             "success"  => false,
             "text" => $this->translations['alert_import_error'],
           ];
-        } 
+        }
         break;
       // Complete Reload (template mode)
       case 'chtemp':
@@ -710,13 +710,13 @@ $app->group('/rf', function () {
           $args["alert"] = [
            "success"  => true,
            "text" => str_replace('[x]', $_templatename, $this->translations['alert_chtemp_success'])
-          ]; 
+          ];
         }
         else {
           $args["alert"] = [
             "success"  => false,
             "text" => $this->translations['alert_chtemp_error'],
-          ];          
+          ];
         }
         break;
     }
@@ -724,10 +724,10 @@ $app->group('/rf', function () {
     $this->helpers->prepareContributionTemplate($_c, $args);
     $this->view->render($response, 'content-wrapper/contribution.jade', $args);
   });
-  
-  /* Ajax Call: 
-   * 
-   * Post Field Data Contribution 
+
+  /* Ajax Call:
+   *
+   * Post Field Data Contribution
    *
    */
 
@@ -754,7 +754,7 @@ $app->group('/rf', function () {
         // Number Uploads: Determine if Date
         case 'Zahl':
           if ($settings['integer'] == true) {
-            $value = $request->getParsedBody()['data']; 
+            $value = $request->getParsedBody()['data'];
           }
           else {
             $parsed = date_parse_from_format($settings['dateformat'] ? $settings['dateformat'] : 'd/m/Y H:i', $request->getParsedBody()['data']);
@@ -765,7 +765,7 @@ $app->group('/rf', function () {
           }
           $json['success'] = $this->db->setField($args['id'], $value);
         break;
-        
+
         default:
           # code...
           $json['success'] = $this->db->setField($args['id'],  $request->getParsedBody()['data']);
@@ -788,11 +788,11 @@ $app->group('/rf', function () {
     $r = $response->withHeader('Content-type', 'application/json');
     $r->getBody()->write(json_encode($json));
     return $r;
-  });  
+  });
 
-  
-  /* Ajax Call:  
-   * 
+
+  /* Ajax Call:
+   *
    * Show Structure Template
    *
    */
@@ -801,16 +801,16 @@ $app->group('/rf', function () {
     $this->helpers->prepareStructureTemplate($args);
     $this->view->render($response, 'content-wrapper/structure.jade', $args);
   });
-  
-  /* Ajax Calls from Structure Settings:  
-   * 
+
+  /* Ajax Calls from Structure Settings:
+   *
    * SORTING
    *
    * POST /rf/structure/sort/book
    * POST /rf/structure/sort/chapter/9
    *
    * ADDING
-   * 
+   *
    * POST /rf/structure/add/book
    * POST /rf/structure/add/issue/9
    * POST /rf/structure/add/chapter/9
@@ -832,7 +832,7 @@ $app->group('/rf', function () {
         $r = $response->withHeader('Content-type', 'application/json');
         $json = $this->view->offsetGet('csrf');
         $r->getBody()->write(json_encode($json));
-        return $r;    
+        return $r;
         break;
       case 'add':
         // Render partial only
@@ -850,15 +850,15 @@ $app->group('/rf', function () {
         }
         break;
     }
-  });  
+  });
 
-  /* Ajax Calls from Structure Settings:  
-   * 
+  /* Ajax Calls from Structure Settings:
+   *
    * RENAMING
    *
    * POST /rf/structure/rename/book/9
    * POST /rf/structure/rename/issue/10
-   * POST /rf/structure/rename/chapter/10    
+   * POST /rf/structure/rename/chapter/10
    *
    */
 
@@ -870,39 +870,39 @@ $app->group('/rf', function () {
     $r = $response->withHeader('Content-type', 'application/json');
     $r->getBody()->write(json_encode($json));
     return $r;
-  });  
-    
-  /* Ajax Calls from Structure Settings:  
-   * 
+  });
+
+  /* Ajax Calls from Structure Settings:
+   *
    * DUPLICATING & DELETING
-   * 
+   *
    * GET /rf/structure/duplicate/book/9
    * GET /rf/structure/duplicate/chapter/33
-   *   
+   *
    * GET /rf/structure/delete/book/9
    * GET /rf/structure/delete/issue/10
-   * GET /rf/structure/delete/chapter/33    
-   * 
+   * GET /rf/structure/delete/chapter/33
+   *
    */
 
   $this->get('/structure/{action:duplicate|delete|open|close}/{type}/{id:[0-9]*}', function ($request, $response, $args) {
     // Determine Book id before deletion
     $bookid = false;
-   if ($args['type'] == 'chapter') 
+   if ($args['type'] == 'chapter')
      $bookid = $this->db->getFormat($args['id'])->getForbook();
-   if ($args['type'] == 'issue') 
+   if ($args['type'] == 'issue')
      $bookid = $this->db->getIssue($args['id'])->getForbook();
 
     // Actions
     $funcname = $args['action'].ucfirst($args['type']);
     $this->db->$funcname($args['id']);
-    
+
     // Render partial only
     if ($args['type'] == "book") {
       $this->helpers->prepareStructureTemplate($args);
       $this->view->render($response, 'content-wrapper/structure.jade', $args);
     }
-    
+
     // Render whole template: Assuming a book has been added
     else {
       if ($bookid) {
@@ -911,24 +911,24 @@ $app->group('/rf', function () {
       }
       $this->view->render($response, 'parts/structure.book.jade', $args);
     }
-  });  
-      
-  
-  /* Ajax Call:  
-   * 
+  });
+
+
+  /* Ajax Call:
+   *
    * Edit Templates
    *
    */
 
   $this->get('/templates', function ($request, $response, $args) {
-    $this->helpers->prepareTemplatesTemplate($args);    
+    $this->helpers->prepareTemplatesTemplate($args);
     $this->view->render($response, 'content-wrapper/templates.jade', $args);
-  });  
-  
-  /* Ajax Call:  
-   * 
+  });
+
+  /* Ajax Call:
+   *
    * Store Template Changes
-   * 
+   *
    * GET /rf/templates/delete/id
    * GET /rf/templates/duplicate/id
    * POST /rf/templates/add
@@ -937,22 +937,22 @@ $app->group('/rf', function () {
   $this->map(['GET', 'POST'], '/templates/{action:add|duplicate|delete}[/{id:[0-9]*}]', function ($request, $response, $args) {
     // Trigger Function
     $funcname = $args['action'].ucfirst('templates');
-    
+
     if ($args['id'] && $request->getParsedBody()['data'])
       $this->db->$funcname($args['id'], $request->getParsedBody()['data']);
     else
       $this->db->$funcname($args['id'] ? $args['id'] : $request->getParsedBody()['data']);
-        
+
     // Return complete page on template add / delete / duplicate
-    $this->helpers->prepareTemplatesTemplate($args);    
-    $this->view->render($response, 'content-wrapper/templates.jade', $args);      
+    $this->helpers->prepareTemplatesTemplate($args);
+    $this->view->render($response, 'content-wrapper/templates.jade', $args);
   });
-  
-  
-  /* Ajax Call:  
-   * 
+
+
+  /* Ajax Call:
+   *
    * Store Template Changes
-   * 
+   *
    * POST /rf/templates/rename/id
    * POST /rf/templates/update/id
    */
@@ -969,23 +969,23 @@ $app->group('/rf', function () {
     $json['template'] = $args['template'];
     $r->getBody()->write(json_encode($json));
     return $r;
-  });  
-  
-  /* Ajax Call:  
-   * 
+  });
+
+  /* Ajax Call:
+   *
    * Store Template Fields Changes
-   * 
+   *
    * GET /rf/templates/field/delete/id
    * GET /rf/templates/field/duplicate/id
    * POST /rf/templates/field/add
    *
    */
    $this->map(['GET', 'POST'], '/templates/field/{action:add|duplicate|delete}/{id:[0-9]*}', function ($request, $response, $args) {
-     // Get Template Id: Mostly it is the reference to forTemplate of Templatefield $args['id'], 
+     // Get Template Id: Mostly it is the reference to forTemplate of Templatefield $args['id'],
      // only when adding, it's directly a template reference
-     $templateId = $args['action'] == "add" ? $args['id'] 
+     $templateId = $args['action'] == "add" ? $args['id']
                                             : $this->db->getTemplatefields()->findPk($args['id'])->getFortemplate();
-    
+
      // Actions
      $funcname = $args['action'].ucfirst('templatefield');
      $request->getParsedBody()['data']
@@ -998,26 +998,26 @@ $app->group('/rf', function () {
     // Default Pane
     $args['type'] = 'fields';
     $this->view->render($response, 'parts/templates.field.jade', $args);
-  });    
-  
-  /* Ajax Call:  
-   * 
+  });
+
+  /* Ajax Call:
+   *
    * Store Template Fields Changes
-   * 
+   *
    * POST /rf/templates/field/rename/id
    * POST /rf/templates/field/update/id
    * POST /rf/templates/field/update/sort
-   * 
+   *
    *
    */
   $this->post('/templates/field/{action:rename|update|sort}/{id:[0-9]*}', function ($request, $response, $args) {
     // Actions
     $funcname = $args['action'].ucfirst('templatefield');
     $this->db->$funcname($args['id'], $request->getParsedBody()['data']);
-          
-    // Get Template Id: Mostly it is the reference to forTemplate of Templatefield $args['id'], 
+
+    // Get Template Id: Mostly it is the reference to forTemplate of Templatefield $args['id'],
     // only when adding, it's directly a template reference
-    $templateId = $args['action'] == "sort" ? $args['id'] 
+    $templateId = $args['action'] == "sort" ? $args['id']
                                            : $this->db->getTemplatefields()->findPk($args['id'])->getFortemplate();
     // Load Template
     $this->helpers->prepareTemplatesTemplate($args, $templateId);
@@ -1032,11 +1032,11 @@ $app->group('/rf', function () {
     $json['schema'] = json_decode($args['schema'], true);
     // Fields array to overrule the enums for lengthInfluence in the schema.
     // Done via javascript on load in rf.templates.js
-    $criteria = new \Propel\Runtime\ActiveQuery\Criteria(); 
-    $criteria->addAscendingOrderByColumn(__sort__); 
+    $criteria = new \Propel\Runtime\ActiveQuery\Criteria();
+    $criteria->addAscendingOrderByColumn(__sort__);
     $fields_in_template = [];
     foreach ($args['template']->getTemplatess($criteria) as $field) {
-      $fields_in_template["id"][] = $field->getId(); 
+      $fields_in_template["id"][] = $field->getId();
       $fields_in_template["label"][] = $field->getFieldname();
       if ($field->getId()==$args['id']) {
         $json['newconfig'] = $field->GetFilteredConfigsys();
@@ -1045,24 +1045,24 @@ $app->group('/rf', function () {
     $json['fieldinfo'] = $fields_in_template;
     $r->getBody()->write(json_encode($json));
     return $r;
-  });  
-  
-  
+  });
+
+
   /* Exporters
-   * 
+   *
    * Show List of registered exporters and trigger hooks on post
-   * 
+   *
    * GET /rf/exporters
    * POST /rf/exporters
    *
    */
   $this->map(['GET', 'POST'], '/exporters', function ($request, $response, $args) {
-    $this->view->render($response, 'content-wrapper/exporters.jade', $args);      
+    $this->view->render($response, 'content-wrapper/exporters.jade', $args);
   });
-    
+
   /* Proxy for private binary resources
-   * 
-   * 
+   *
+   *
    * GET /rf/proxy
    *
    */
@@ -1076,6 +1076,6 @@ $app->group('/rf', function () {
       $r->getBody()->write(json_encode(['error' => "404", 'message' => "File not found"]));
       return $r;
     }
-  });    
+  });
 
 })->add($redis)->add($identificator)->add($csrf)->add($authentification)->add($ajaxcheck);
