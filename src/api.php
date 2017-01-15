@@ -27,6 +27,7 @@ $app->group('/api', function () {
    *  - verbose=true|false               (default: false)
    *  - template=id                      (default: false)
    *  - status=draft|published|both      (default: published)
+   *  - references=true|false            (default: true)
    */
   $this->options('/contributions/{issue:[0-9-]*}/{chapter:[0-9-]*}',
     function ($request, $response, $args) {}
@@ -45,6 +46,7 @@ $app->group('/api', function () {
     }
 
     $compact = $request->getQueryParams()['verbose'] == "true" ? false : true;
+    $follow_references = $request->getQueryParams()['references'] == "false" ? false : true;    
     $_limit    = isset($request->getQueryParams()['limit']) ? intval($request->getQueryParams()['limit']) : null;
     $_offset   = isset($request->getQueryParams()['offset']) ? intval($request->getQueryParams()['offset']) : null;
     $_query    = isset($request->getQueryParams()['query']) ? $request->getQueryParams()['query'] : false;
@@ -96,7 +98,7 @@ $app->group('/api', function () {
         // Creating Cache Signature
         $signatur_fields = explode("|", strtolower($request->getQueryParams()['data']));
         sort($signatur_fields);
-        $signature = md5($compact."-".$recursion."-".$request->getQueryParams()['populate'].join(".",$signatur_fields));
+        $signature = md5($compact."-".$follow_references."-".$recursion."-".$request->getQueryParams()['populate'].join(".",$signatur_fields));
         // Asking Cache first
         if ($h = $_c->checkCache($signature)) {
           $_contribution["Contribution"] = $h->Contribution;
@@ -104,7 +106,7 @@ $app->group('/api', function () {
         }
         // Create new Entry and store in Cache
         else {
-          $_contribution["Contribution"]  = $this->helpers->prepareApiContribution($_c, $compact, $request, [], $recursion);
+          $_contribution["Contribution"]  = $this->helpers->prepareApiContribution($_c, $compact, $request, [], $recursion, $follow_references);
           $_contribution["Data"]          = $this->helpers->prepareApiContributionData($_c, $compact, $request, $recursion);
           $this->db->NewContributionCache($_c, ["Contribution" => $_contribution["Contribution"], "Data" => $_contribution["Data"]], $signature);
         }
