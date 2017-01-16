@@ -542,10 +542,19 @@ $app->group('/rf', function () {
         $this->db->DeleteContributions($data['id']);
       break;
       case 'reorder':
-        $ids = [];
+/*        $ids = [];
         foreach ($data['id'] as $value) 
           array_push($ids, $value['id']);
         $this->db->ReorderContributions($ids);
+*/        
+        foreach ($data['id'] as $value) {
+          $contribution = $this->db->getContribution($value['id']);
+          $contribution->setSort($value['sort']) 
+          ->updateCache()
+          ->save(); 
+        }
+        
+        
       break;
       case 'new':
         $args['contribution'] = $this->db->NewContribution($issue, $format, $data['template'], $data['name']);

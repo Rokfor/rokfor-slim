@@ -62,7 +62,10 @@
   
     timer: [],
     savecount: {},
-    stateInterval: false
+    stateInterval: false,
+    
+    // contributions order
+    ctorder: [[ 0, "asc" ]]
   
   
   };

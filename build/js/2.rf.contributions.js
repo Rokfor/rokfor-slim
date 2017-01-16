@@ -10,9 +10,11 @@
     
   
     // Activating List Table
+    
   
     var table = $('#rftable').DataTable({
       "paging": false,
+      "order": $.rokfor.ctorder,
       "lengthChange": false,
       "searching": true,
       "ordering": ($('#rftable').parents('section.content').attr('data-path') && $('#rftable').parents('section.content').attr('data-path').indexOf('search') == -1) ? true : false,
@@ -47,14 +49,25 @@
 
     table
       .on( 'order.dt', function ( e, diff, edit ) {
+        $.rokfor.ctorder = [[ edit[0].col, edit[0].dir ]]
+      })
+      .on( 'row-reordered', function ( e, diff, edit ) {
+        console.log(e, diff, edit);
         if (table.bulkaction == undefined) {
           var data = {
             action: "reorder",
             id: []
           };
+
+          for (var i = 0; i < diff.length; i++) {
+            data.id.push({id:diff[i].node.id, sort:diff[i].newData});
+          };
+          
+          /*
           table.column(0).nodes().each( function (d,x,y) {
             data.id.push({id:$(d).parents('tr').attr('id'), sort:$(d).text()});
           });
+          */
           if ($(this).parents('section.content').attr('data-path') && $(this).parents('section.content').attr('data-path').indexOf('search') == -1)
             $.rokfor.contributions.bulkaction($(this).parents('section.content').attr('data-path'), data);
         }
