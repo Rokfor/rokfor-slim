@@ -1,4 +1,5 @@
 <?php
+use Slim\CallableResolver;
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 
 /* To help the built-in PHP dev server, check if the request was actually for
@@ -13,7 +14,7 @@ if (PHP_SAPI == 'cli-server') {
     if (is_file($file)) {
         return false;
     }
-    /* 
+    /*
      * Clear the template cache on every call
      * to keep the output up to date on template changes.
      */
@@ -24,7 +25,14 @@ if (PHP_SAPI == 'cli-server') {
 
 require __DIR__ . '/../vendor/autoload.php';
 
-session_start();
+// Start Session for backend calls
+
+if (
+  stristr($_SERVER['REQUEST_URI'], '/rf/') ||
+  stristr($_SERVER['HTTP_REFERER'], '/rf/')
+) {
+  session_start();
+}
 
 // Instantiate the app
 $settings = require __DIR__ . '/../config/settings.php';
