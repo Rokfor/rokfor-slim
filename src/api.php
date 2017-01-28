@@ -46,7 +46,7 @@ $app->group('/api', function () {
     }
 
     $compact = $request->getQueryParams()['verbose'] == "true" ? false : true;
-    $follow_references = $request->getQueryParams()['references'] == "false" ? false : true;    
+    $follow_references = $request->getQueryParams()['references'] == "false" ? false : true;
     $_limit    = isset($request->getQueryParams()['limit']) ? intval($request->getQueryParams()['limit']) : null;
     $_offset   = isset($request->getQueryParams()['offset']) ? intval($request->getQueryParams()['offset']) : null;
     $_query    = isset($request->getQueryParams()['query']) ? $request->getQueryParams()['query'] : false;
@@ -880,10 +880,10 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
     ob_end_flush();
     if ($s3 === true) {
       if ($_isnginx === true) {
-        header('X-Accel-Redirect: /cdn/' . str_replace('https://', '', $this->db->presign_file($args['file'])));
+        die('X-Accel-Redirect: /cdn/' . str_replace('https://', '', $this->db->presign_file($args['file'])));
       }
       else {
-        header('Location: ' . $this->db->presign_file($args['file']));
+        die('Location: ' . $this->db->presign_file($args['file']));
       }
     }
     else {
@@ -897,6 +897,7 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
       }
       else {
         if ($_file = $this->db->presign_file($args['file'], $public)) {
+die($_file);
           header('Content-Type: '.mime_content_type($_file));
           header('Expires: 0');
           header('Cache-Control: must-revalidate');
