@@ -880,10 +880,10 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
     ob_end_flush();
     if ($s3 === true) {
       if ($_isnginx === true) {
-        die('X-Accel-Redirect: /cdn/' . str_replace('https://', '', $this->db->presign_file($args['file'])));
+        header('X-Accel-Redirect: /cdn/' . str_replace('https://', '', $this->db->presign_file($args['file'])));
       }
       else {
-        die('Location: ' . $this->db->presign_file($args['file']));
+        header('Location: ' . $this->db->presign_file($args['file']));
       }
     }
     else {
@@ -897,7 +897,6 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
       }
       else {
         if ($_file = $this->db->presign_file($args['file'], $public)) {
-die($_file);
           header('Content-Type: '.mime_content_type($_file));
           header('Expires: 0');
           header('Cache-Control: must-revalidate');
