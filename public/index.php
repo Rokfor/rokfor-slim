@@ -27,10 +27,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 // Start Session for backend calls
 
-if (
-  stristr($_SERVER['REQUEST_URI'], '/rf/') ||
-  stristr($_SERVER['HTTP_REFERER'], '/rf/')
-) {
+if (!stristr($_SERVER['REQUEST_URI'], '/api/')) {
   session_start();
 }
 
