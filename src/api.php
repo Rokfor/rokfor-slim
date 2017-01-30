@@ -830,8 +830,17 @@ $app->options('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}',
 $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $response, $args) {
 
   // Check if user is logged in
-  $auth      = new \Zend\Authentication\AuthenticationService();
-  $logged_in = $auth->getIdentity()['username'];
+  // only if the asset is called with the backend = True query param.
+
+  $backend = $request->getQueryParams()['backend'] == "true" ? true : false;
+  if ($backend === true) {
+    $auth      = new \Zend\Authentication\AuthenticationService();
+    $logged_in = $auth->getIdentity()['username'];
+  }
+  else {
+    $logged_in = false;
+  }
+
   $apikey    = false;
   $access    = false;
   $s3        = $this->get('settings')['paths']['s3'];

@@ -2,13 +2,13 @@
 
 (function ($) {
   $.rokfor.initContribution = function() {
-  
+
     // Location Picker
 
     $('.rfpicker').each(function(i,n) {
       var picker = $(this);
       picker.locationpicker({
-        location: {latitude: picker.attr('data-lat'), longitude: picker.attr('data-long')},	
+        location: {latitude: picker.attr('data-lat'), longitude: picker.attr('data-long')},
         radius: 10,
         enableReverseGeocode: true,
         enableAutocomplete: true,
@@ -63,12 +63,12 @@
             table.positions = false;
             var template = [];
             template.push(data.newindex);
-            template.push('<a class="rfimagetablepreview" href=' + data.relative + ' target="_blank"><img data-file="' + data.original + '" src="' + data.thumb + '"></a>');
+            template.push('<a class="rfimagetablepreview" href="' + data.relative + '?backend=true" target="_blank"><img data-file="' + data.original + '" src="' + data.thumb + '?backend=true"></a>');
             for (var i = 0; i < table.columns().nodes().length - 2; i++) {
               if (typeof data.caption == "object" && data.caption[i])
                 template.push(data.caption[i]);
               else
-                template.push(data.caption);                
+                template.push(data.caption);
             }
             supress_submission = true;
             if (data.growing) {
@@ -88,11 +88,11 @@
           console.log("Upload Error", id, 'error', message);
         }
       });
-      
 
-      
+
+
       var serialize = function(){};
-      
+
       var table = uploader.next('.box-footer').find('table').DataTable({
         "paging": false,
         "lengthChange": false,
@@ -113,7 +113,7 @@
         },
         "autoWidth": false,
         "dom": 'rtp',
-        "columnDefs": [ 
+        "columnDefs": [
                         {
                           "targets": 0,
                           "defaultContent": '',
@@ -142,7 +142,7 @@
                             return ('<textarea name="caption[][]" class="rowedit">' + data + '</textarea>');
                           }
                         }
-                      ]    
+                      ]
         })
         .on('click', 'a.btn-danger', function(e){
             e.stopPropagation();
@@ -152,7 +152,7 @@
         })
         .on('click', 'a.rfimagetablepreview', function(e){
           e.stopPropagation();
-        })        
+        })
         .on('mousedown', 'a.rfimagetablepreview', function(e){
           e.stopPropagation();
         })
@@ -175,7 +175,7 @@
           var d = [];
           var row_pointer;
           var oldrow;
-          
+
           table.cells().every( function ( rowIdx, cellIdx) {
             if (rowIdx !== oldrow) {
               row_pointer = row_pointer + 1 || 0;
@@ -199,14 +199,14 @@
                   else {
                     d[row_pointer][0] = v;
                   }
-                }        
+                }
               }
             }
             oldrow = rowIdx;
           });
-          
-          $.rokfor.contribution.store( 
-            uploader.attr('id'), 
+
+          $.rokfor.contribution.store(
+            uploader.attr('id'),
             JSON.stringify({
               action: "modify",
               data: d
@@ -215,7 +215,7 @@
             force ? 1 : 2000
           );
         }
-      
+
         /*
       var serialize = function(tbl, diff, force) {
         force = force || false;   // Force: Store without timeout
@@ -233,8 +233,8 @@
             tbl.positions[diff[i].oldPosition] = diff[i].newPosition;
           }
         }
-        
-        
+
+
         var d = [];
         var cols = $(tbl.row(0).node()).children('td').length;
 //        console.log(this.cols(0).data())
@@ -261,13 +261,13 @@
                 else {
                   d[rowIdx][0] = (v ? v : false);
                 }
-              }        
+              }
             }
           }
         });
-        
-        $.rokfor.contribution.store( 
-          uploader.attr('id'), 
+
+        $.rokfor.contribution.store(
+          uploader.attr('id'),
           JSON.stringify({
             action: "modify",
             data: d
@@ -280,14 +280,14 @@
     });
 
     // Slider
-  
+
     $(".rfslider").ionRangeSlider()
       .on("change", function () {
         $.rokfor.contribution.store($(this).attr('id'), $(this).prop("value"));
       });
-    
+
     // Matrix
-    
+
   	$('.rfmatrix').each(function() {
       var t = $(this);
       t.range2DSlider({
@@ -300,51 +300,51 @@
           $.rokfor.contribution.store(t.attr('id'), JSON.stringify(val[0]));
         }
   	  }).range2DSlider('value',JSON.parse(t.attr("value")));
-    });    
+    });
 
     // TypologySelect
     $(".modal2")
       .select2()
       .on("change", function(){
 
-      });  
-  
+      });
+
     // TypologySelect
     $(".rfselect")
       .select2()
       .on("change", function(){
         $.rokfor.contribution.store($(this).attr('id'), JSON.stringify($(this).val()));
       });
-    
+
     // Select 2
-    $(".rfkeyword")    
+    $(".rfkeyword")
       .select2Sortable()
       .on("change", function(){
         $.rokfor.contribution.store($(this).attr('id'), JSON.stringify($(this).val()));
-      });    
-    
+      });
+
     // Input Masks (date)
     $(".rfmask").inputmask()
       .on("keyup", function(){
         if ($(this).inputmask("isComplete")){
           $.rokfor.contribution.store($(this).attr('id'), $(this).val());
         }
-      });    
+      });
 
     // Input Masks (date)
     $(".rfnumeric").inputmask()
       .on("keyup", function(){
         $.rokfor.contribution.store($(this).attr('id'), $(this).val());
-      });    
+      });
 
     // Regular Textareas
     // Regular Inputs
-    
+
     $("textarea.rfeditor, input.rfeditor")
       .on("keyup", function(){
         $.rokfor.calcMaxInput(this);
         $.rokfor.contribution.store($(this).attr('id'), $(this).val());
-      });    
+      });
 
     // Multi Areas
 
@@ -356,11 +356,11 @@
           v.push($(x).val());
         });
         $.rokfor.contribution.store($(this).attr('id'), JSON.stringify(v));
-      });    
+      });
 
     $("textarea.rfeditor, input.rfeditor, textarea.rfmultieditor").each(function(i,x){
        $.rokfor.calcMaxInput(this);
-    });   
+    });
 
     // Summernote
 
@@ -408,7 +408,7 @@
           }
         }
       }
-    };      
+    };
     */
     var wysihtml5ParserRulesDefaults = {
         "blockLevelEl": {
@@ -442,9 +442,9 @@
             }
         }
     };
-    
+
     $.rokfor.clearAssets();
-      
+
     $(".rtftextarea").each(function(i,n) {
         var e = $(this);
         e.data('editor', new wysihtml.Editor(e[0], {
@@ -466,7 +466,7 @@
               p:      {},
               div:    {},
               ul:     {},
-              u:      {},              
+              u:      {},
               ol:     {},
               li:     {},
               blockquote: {
@@ -482,10 +482,10 @@
                       "id": "any"
                   }
               },
-              h1:     wysihtml5ParserRulesDefaults.blockLevelEl, 
-              h2:     wysihtml5ParserRulesDefaults.blockLevelEl, 
-              h3:     wysihtml5ParserRulesDefaults.blockLevelEl, 
-              h4:     wysihtml5ParserRulesDefaults.blockLevelEl, 
+              h1:     wysihtml5ParserRulesDefaults.blockLevelEl,
+              h2:     wysihtml5ParserRulesDefaults.blockLevelEl,
+              h3:     wysihtml5ParserRulesDefaults.blockLevelEl,
+              h4:     wysihtml5ParserRulesDefaults.blockLevelEl,
               a:      {
                   "check_attributes": {
                       "target": "any",
@@ -522,21 +522,21 @@
             $.rokfor.contribution.store(e.attr('data-fieldid'), JSON.stringify(v));
           }
           // Store directly
-          else { 
+          else {
             var _e = e.data('editor');
             $.rokfor.contribution.store(e.attr('id'), _e.getValue());
             $.rokfor.calcMaxInput(e, e);
           }
         }));
-      
+
         $.rokfor.addAssets(e.data('editor'));
         $.rokfor.calcMaxInput(e, e);
       });
-      
+
     // Markdown Editor
-      
+
     $(".mdtextarea").each(function(i,n) {
-      var e = $(this);      
+      var e = $(this);
 //      var editor = new Pen(e[0]);
       e.markdown({
         autofocus:false,
@@ -554,7 +554,7 @@
             $.rokfor.contribution.store(e.attr('id'), JSON.stringify(v));
           }
           // Store directly
-          else { 
+          else {
             $.rokfor.contribution.store(e.attr('id'), e.val());
           }
           $.rokfor.calcMaxInput(e);
@@ -562,10 +562,10 @@
       })
       $.rokfor.calcMaxInput(e);
     });
-    
+
 
     // Tables
-    
+
     $('.rftable').each(function(i,n) {
       var table = $(this);
       var addbutton = table.next('a');
@@ -581,7 +581,7 @@
         "info": false,
         "autoWidth": true,
         "dom": 'rt',
-        "columnDefs": [ 
+        "columnDefs": [
                         {
                           "targets": 0,
                           "data": function( data, type, full, meta) {if (meta) return meta.row;},
@@ -594,7 +594,7 @@
                         {
                           "targets": '_all',
                           "defaultContent": '<textarea class="rowedit"></textarea>',
-                        } 
+                        }
                       ]
       });
       dt.on('keyup', 'textarea', function(){
@@ -602,7 +602,7 @@
       });
       dt.on('click', 'a', function(e){
         e.stopPropagation();
-        dt.row($(this).parents('tr')).remove().draw();      
+        dt.row($(this).parents('tr')).remove().draw();
         serialize();
         return false;
       });
@@ -627,13 +627,13 @@
         $.rokfor.contribution.store( table.attr('id'), JSON.stringify(d));
       }
     });
-  
+
     $('.closebutton').click(function(e){
       e.stopPropagation();
       $.rokfor.contribution.close();
       return false;
     })
-  
+
     // Drop Down Actions
 
     $('#contributionaction a').each(function() {
@@ -643,14 +643,14 @@
         var m = $('#' + $(this).attr('data-modal')).modal({keyboard: true});
         return false;
       })
-  
+
       // Modal Continue Action
-  
+
       $('#' + $(this).attr('data-modal')).find('button.btn-default').on('click', function(e) {
         e.stopPropagation();
         var modal  = $(this).parents('.modal');
         var stored_path = $('.content-wrapper#detail').find('section.content').attr('data-path');
-        $.rokfor.contribution.modify( 
+        $.rokfor.contribution.modify(
           modal.attr('data-action'),
           modal.attr('data-contribution'),
           modal.find('select').select2('val'),
@@ -673,10 +673,10 @@
         return false;
       })
     })
-    
+
     // Tooltips
-    
-    $('[data-toggle="tooltip"]').tooltip(); 
-    
+
+    $('[data-toggle="tooltip"]').tooltip();
+
   }
 })(jQuery);

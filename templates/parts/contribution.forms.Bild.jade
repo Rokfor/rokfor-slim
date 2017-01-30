@@ -2,7 +2,7 @@
 
 .col-md-12
   .box.box-warning
-    .box-header 
+    .box-header
       h4.box-title=template->getFieldname()
         if (template->getHelpdescription())
           i.fa.fa-question-circle(data-toggle="tooltip", title=template->getHelpdescription())
@@ -29,16 +29,16 @@
             th
         tbody
           :php
-            $rows = json_decode($field->getContent(), true); 
-            $sortcount = 1; 
+            $rows = json_decode($field->getContent(), true);
+            $sortcount = 1;
             $db->sign_request($rows, $private, $contribution->getId(), $field->getId());
           if (is_array($rows))
             each row in $rows
               tr
                 td=$sortcount++
                 td
-                    a.rfimagetablepreview(href=$row[1], target="_blank")
-                      img(data-file=$row[1], src=$row[2]['thumbnail'])
+                    a.rfimagetablepreview(href=$row[1]."?backend=true", target="_blank")
+                      img(data-file=$row[1], src=$row[2]['thumbnail']."?backend=true")
                 if (count($config['caption_variants']) > 1)
                   :php
                     | $keyvariant = 0;
@@ -49,4 +49,3 @@
                 td
     .overlay(style="display:none;")
       i.fa.fa-refresh.fa-spin
-                
