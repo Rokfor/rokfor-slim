@@ -18,8 +18,24 @@ features:
     and many more.
 -   Read only api with a simple bearer-key authentification based on user
     rights.
+-   Read/Write Api based on JWT Tokens
 -   Fine grained roles and rights system.
 -   Installable via composer, using grunt and bower as build system.
+
+Rokfor is optimized for speed, although complex search queries over a large database
+can take quite a while. The problem lays in the nature of relational databases an the
+complexity of creating many-to-many relations between fields.
+Simple API calls are fast, since Rokfor implements caching methods on multiple levels:
+
+-   Optionally using Redis as key/value storage for repeating queries if no data changes
+    happened.
+-   Using MySQL Cache tables if to speed up relational queries.
+
+Binary uploads can either be stored locally on the server or pushed on a S3 compatible
+storage provider.
+
+Rokfor works best with Nginx and supports proxy caching and X-Accel-Headers for fast file
+downloads.
 
 ![Dashboard](<https://github.com/Rokfor/rokfor-slim/blob/gh-pages/rokfor-screenshots/rf-dashboard.png>)
 
