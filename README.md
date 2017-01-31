@@ -3,7 +3,7 @@
 rokfor-slim
 ===========
 
-Rokfor build based on [Slim Framework](<http://slimframework.com/>) for PHP. 
+Rokfor build based on [Slim Framework](<http://slimframework.com/>) for PHP.
 Rokfor is a api-first, data centristic content management. It currently
 features:
 
@@ -23,8 +23,8 @@ features:
 
 ![Dashboard](<https://github.com/Rokfor/rokfor-slim/blob/gh-pages/rokfor-screenshots/rf-dashboard.png>)
 
-Rokfor has already a longer history. The [old build](<https://github.com/Rokfor/rokfor-cms>) 
-was mainly used to create printed matter. In order to make it more useful for the public, we 
+Rokfor has already a longer history. The [old build](<https://github.com/Rokfor/rokfor-cms>)
+was mainly used to create printed matter. In order to make it more useful for the public, we
 decided to rewrite it completely applying a modern way of writing php applications:
 
 -   Composer install system
@@ -60,7 +60,7 @@ $ cp settings.local.php settings.php
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The options in the **settings.php** file don't need to be changed as long as you keep
-the directory structure. Talking about **directories**: Make sure, that the webserver 
+the directory structure. Talking about **directories**: Make sure, that the webserver
 has access to the _udb_ and _cache_ folder:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -127,7 +127,7 @@ user: USERNAME
 password: PASSWORD
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Now you are ready to run the **Propel CLI** utility with the **insert** parameter. 
+Now you are ready to run the **Propel CLI** utility with the **insert** parameter.
 The command below assumes that you are still in the directory where you checked out
 rokfor-slim:
 
@@ -222,12 +222,12 @@ Options:
     Special queries: date:now is transformed into the current time stamp
 -   Filter: Applies the search string passed in query to certain fields, to the creation
     date, the contribution id or sort number.
-    By default (if fields are omitted) the search query is applied to the name of the 
+    By default (if fields are omitted) the search query is applied to the name of the
     contribution and its content fields (full text search).
     Furthermore, the comparison can be defined with equal, less than, greater than
     or like (eq,lt,lte,gt,gte,like). Less and greater than does automatically cast
     a string to a number.
--   Sort: Sort the results by id, date, name or manual sort number (sort) either 
+-   Sort: Sort the results by id, date, name or manual sort number (sort) either
     ascending or descending. It is also possible to sort by a custom id of a template field.
     Contributions can also be sorted by chapter or issue.
     Please note: You need to choose between id, date, name and sort. You can add one
@@ -240,7 +240,7 @@ Options:
     result set to create a multilingual menu. Or you need all images for a
     slideshow over multiple contributions.
 -   Populate: Sends all data (true). Equals data=All|Available|Fields
--   Verbose: Send complete Information about a dataset. In most cases, this 
+-   Verbose: Send complete Information about a dataset. In most cases, this
     is too much and just slowing down the connection.
 -   Template: limit to a certain template id
 -   Status: Including draft contributions, published contributions or both. Open
@@ -291,7 +291,7 @@ Options:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--   Verbose: Send complete Information about a dataset. In most cases, this 
+-   Verbose: Send complete Information about a dataset. In most cases, this
     is too much and just slowing down the connection.
 
 Examples:
@@ -318,7 +318,7 @@ Options:
     result set to create a multilingual menu. Or you need all images for a
     slideshow over multiple contributions.
 -   Populate: Sends all data (true). Equals data=All|Available|Fields
--   Verbose: Send complete Information about a dataset. In most cases, this 
+-   Verbose: Send complete Information about a dataset. In most cases, this
     is too much and just slowing down the connection.
 
 Examples:
