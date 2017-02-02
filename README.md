@@ -119,43 +119,6 @@ return [
 ];
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-### 4. Populate Database
-
-**Normally, the database is initialized when you log in for the first time. If no
-error occured, you can skip this chapter.**
-
-Rokfor relies on [Propel](<http://propelorg.org>) as database object mapper.
-Propel is loaded via composer and installed like all other dependencies in the
-vendor subdirectory. The connection between rokfor and Propel is established with
-[rokfor-php-db](<https://github.com/rokfor/rokfor-php-db>).
-
-You need to run the **Propel CLI** tool to populate the database. Propel needs to
-know how to access your database. This is done in the configuration file.
-Edit the connection settings in the **propel.yaml** file similar to the
-configuration file above. Change server, database, user and password and save
-the file:
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-$ pico vendor/rokfor/db/config/propel.yaml
-
-dsn: mysql:host=SERVER;dbname=DBNAME;unix_socket=/tmp/mysql.sock;
-user: USERNAME
-password: PASSWORD
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Now you are ready to run the **Propel CLI** utility with the **insert** parameter.
-The command below assumes that you are still in the directory where you checked out
-rokfor-slim:
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-$ ./vendor/bin/propel sql:insert \
---config-dir ./vendor/rokfor/db/config \
---sql-dir ./vendor/rokfor/db/config/generated-sql/
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Now, the database should be populated with the correct strucuture and a default
-user is automatically added (Username: root, Password: 123).
-
 Running Rokfor
 --------------
 
@@ -168,7 +131,7 @@ $ php -S 0.0.0.0:8080 -t public public/index.php
 Now you should be able to browse to **http://localhost:8080/rf** and log in with
 the default user **root** and password **123**.
 
-### Behind Apache
+### Apache
 There are 3 important things to keep in mind when running Rokfor with Apache:
 1. Make sure that the webserver has read/write access to both **cache** und **udb** directory
 2. The server's document_root needs to point to the **public** directory. If you can not change this,
@@ -357,7 +320,6 @@ Roadmap
 In the current state, Rokfor is able to store and organize data. On the roadmap
 there are additional functions which will be implemented:
 
-- Read / write api with jwt authentification.  
 - Batch functions: Run custom actions over all contributions of a certain chapter.
 - Field processors: Run an action when storing data.  
 - Exporters: Convert data into other formats (i.e. PDF)
