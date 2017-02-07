@@ -299,7 +299,7 @@
         printValue:function( val ){
           $.rokfor.contribution.store(t.attr('id'), JSON.stringify(val[0]));
         }
-  	  }).range2DSlider('value',JSON.parse(t.attr("value")));
+  	  }).range2DSlider('value',t.attr("value") ? JSON.parse(t.attr("value")) : 0);
     });
 
     // TypologySelect

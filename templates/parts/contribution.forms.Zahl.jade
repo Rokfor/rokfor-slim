@@ -14,10 +14,10 @@
         if ($config['integer'])
           span.input-group-addon
             i.fa.fa-calculator
-          input.form-control.rfnumeric(id=field->getId(), type="text", data-inputmask='"alias": "decimal"', value=field->getContent())
+          input.form-control.rfnumeric(id=field->getId(), type="text", data-inputmask!='"alias": "decimal"', value=field->getContent())
         else
           span.input-group-addon
             i.fa.fa-calendar
           :php
             $d = helpers::timeFormatHelper($field->getContent(), $config['dateformat']);
-          input.form-control.rfmask(id=field->getId(), type="text", value=d.value, data-inputmask=d.mask, data-inputmask-placeholder=d.placeholder)
+          input.form-control.rfmask(id=field->getId(), type="text", value=d.value, data-inputmask!=d.mask, data-inputmask-placeholder=d.placeholder)
