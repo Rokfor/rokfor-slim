@@ -22,21 +22,21 @@ class Acl extends ZendAcl
         $_rf_routes['guest'][] = ['/rf',                                                                    'GET'];
         $_rf_routes['guest'][] = ['/rf/login',                                                              ['GET','POST']];
         $_rf_routes['guest'][] = ['/rf/forgot',                                                             ['GET','POST']];
-                                                                                                            
+
         // Regular Users: Backend functions, File Proxy, Profile and Exporters
         $_rf_routes['user'][] = ['/rf/logout',                                                              'GET'];
         $_rf_routes['user'][] = ['/rf/dashboard',                                                           'GET'];
         $_rf_routes['user'][] = ['/rf/menu',                                                                'GET'];
         $_rf_routes['user'][] = ['/rf/contributions/search',                                                ['GET','POST']];
         $_rf_routes['user'][] = ['/rf/contributions/{book:[0-9]*}/{issue:[0-9]*}/{chapter:[0-9]*}',         ['GET','POST']];
-        $_rf_routes['user'][] = ['/rf/contribution/{id:[0-9]*}',  'GET'];                                 
+        $_rf_routes['user'][] = ['/rf/contribution/{id:[0-9]*}',  'GET'];
         $_rf_routes['user'][] = ['/rf/contribution/{action}/{id:[0-9]*}',                                   ['GET','POST']];
         $_rf_routes['user'][] = ['/rf/field/{id:[0-9]*}',                                                   'POST'];
         $_rf_routes['user'][] = ['/rf/profile',                                                             ['GET','POST']];
         $_rf_routes['user'][] = ['/rf/exporters',                                                           ['GET','POST']];
         $_rf_routes['user'][] = ['/rf/proxy',                                                               'GET'];
 
-                                                                                                            
+
         // Administrators: Structure and template management
         $_rf_routes['admin'][] = ['/rf/structure',                                                          ['GET','POST']];
         $_rf_routes['admin'][] = ['/rf/structure/{action:rename|rights|settings}/{type}/{id:[0-9]*}',       'POST'];
@@ -54,8 +54,10 @@ class Acl extends ZendAcl
         $_rf_routes['root'][] = ['/rf/user/delete/{id:[0-9]*}',                                             'GET'];
         $_rf_routes['root'][] = ['/rf/group[/{id:new|[0-9]*}]',                                             ['GET','POST']];
         $_rf_routes['root'][] = ['/rf/group/delete/{id:[0-9]*}',                                            'GET'];
-        
-        // Routes for the JSON api. They are all guest routes since authentification 
+        $_rf_routes['root'][] = ['/rf/routehooks[/{id:[0-9]*}]',                                            ['GET','POST']];
+
+
+        // Routes for the JSON api. They are all guest routes since authentification
         // is handled per request to keep the api restful.
 
         $_api_routes = ['guest'=>[]];
@@ -66,13 +68,14 @@ class Acl extends ZendAcl
         $_api_routes['guest'][] = ['/api/contribution/{id:[0-9]*}',                                         ['GET', 'POST', 'DEL']];
         $_api_routes['guest'][] = ['/api/contributions/{issue:[0-9]*}/{chapter:[0-9]*}',                    'GET'];
         $_api_routes['guest'][] = ['/api/proxy/{id:[0-9]*}/{file}',                                         'GET'];
+        $_api_routes['guest'][] = ['/api/users',                                                            'GET'];
         $_api_routes['guest'][] = ['/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}',                           'GET'];
-        
+
         // Store Routes
         foreach ([$_api_routes, $_rf_routes] as $_routes) {
           foreach ($_routes as $_user=>$_rf_routes_per_user) {
             foreach ($_rf_routes_per_user as $_rf_route) {
-              $this->addResource($_rf_route[0]); 
+              $this->addResource($_rf_route[0]);
               $this->allow($_user,$_rf_route[0],$_rf_route[1]);
             }
           }

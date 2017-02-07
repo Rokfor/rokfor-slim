@@ -187,6 +187,35 @@ $csrf = function ($request, $response, $next) {
 };
 
 /**
+ * Route Hooks
+ *
+ * Route Hooks are configured in the backend and executed if a route matches...
+ */
+
+ $routeHook = function($request, $response, $next) {
+   $route = $request->getAttribute('route', null)->getPattern();
+   // Call Post Processor
+   if ($route <> "/rf/login") {
+     foreach (\FieldpostprocessorQuery::create() as $proc) {
+       # code...
+       if (stristr($route, $proc->getConfigSys()))
+         $this->helpers->apiCall(
+           $proc->getCode(),
+           $proc->getSplit(),
+           [
+             "Route" => $route,
+             "Data"  => $request->isPost()
+                        ? $request->getParsedBody()
+                        : []
+           ]
+         );
+     }
+   }
+   $response = $next($request, $response);
+   return $response;
+ };
+
+/**
  * Set up Rokfor Database with correct user
  *
  * based on the groups and fortemplate, forbooks and forissues n2n relations

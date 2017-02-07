@@ -41,7 +41,7 @@
                       img(data-file=$row[1], src=$row[2]['thumbnail']."?backend=true")
                 if (count($config['caption_variants']) > 1)
                   :php
-                    | $keyvariant = 0;
+                    $keyvariant = 0;
                   each caption_variant in config.caption_variants
                     td=(is_array($row[0])?$row[0][$keyvariant++]:$row[0])
                 else

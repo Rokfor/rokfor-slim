@@ -18,9 +18,9 @@ if ($__currentuser__['level'] > 1)
 
         h3.control-sidebar-heading=$translations['settings_hooks']
 
-        a.btn.btn-block.btn-sm.btn-warning.disabled(href='javascript::;')
+        a.btn.btn-block.btn-sm.btn-warning.ajaxload(href='/rf/routehooks', target=".content-wrapper#list", data-toggle="control-sidebar")
           i.fa.fa-rocket &nbsp;
-          span Field Hooks
+          span=$translations['settings_route_hooks']
         a.btn.btn-block.btn-sm.btn-warning.disabled(href='javascript::;')
           i.fa.fa-rocket &nbsp;
           span Batch Hooks

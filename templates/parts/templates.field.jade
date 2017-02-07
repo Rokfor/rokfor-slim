@@ -11,7 +11,7 @@
       li.pull-left(style="margin-top: 0.5em")
         small
           span.label.label-default='Id '.$template->getId()
-      
+
     .tab-content
       //- Fields Editor
       .tab-pane.fields(id="fields_".$template->getId(), class=($type=='fields'?'active':''))
@@ -20,21 +20,20 @@
           span.input-group-btn
             button.btn.btn-success.fieldaction.disabled(id="button_newfield_".$template->getId() data-input="#input_newfield_".$template->getId())=$translations['field_add']
         :php
-          | $criteria = new \Propel\Runtime\ActiveQuery\Criteria(); $criteria->addAscendingOrderByColumn(__sort__); 
-        :php
-          | $fields_in_template = [];
+          $criteria = new \Propel\Runtime\ActiveQuery\Criteria(); $criteria->addAscendingOrderByColumn(__sort__);
+          $fields_in_template = [];
         .sortable.margin
           each field in $template->getTemplatess($criteria)
             :php
-              | $fields_in_template["id"][] = $field->getId(); $fields_in_template["label"][] = $field->getFieldname();
+              $fields_in_template["id"][] = $field->getId(); $fields_in_template["label"][] = $field->getFieldname();
             .panel.box.box-default.box-solid.fieldtemplate(id=$field->getId())
-              .box-header(data-toggle="collapse", style="cursor:ns-resize;", data-parent="#fields_".$template->getId(), href="#f_".$field->getId()) 
+              .box-header(data-toggle="collapse", style="cursor:ns-resize;", data-parent="#fields_".$template->getId(), href="#f_".$field->getId())
                 .col-xs-2(style="padding-left: 0")
                   button.btn
                     i.fa.fa-bars
                   small
                     span.label.label-default!='&nbsp;Id&nbsp;'.$field->getId()
-                    
+
                 .input-group.has-warning.col-xs-10
                   input.form-control.onchange(name="Fieldname", type="text", value=$field->getFieldname())
                   span.input-group-btn
@@ -42,7 +41,7 @@
                     a.btn.btn-solid.btn-danger.fieldaction
                       i.fa.fa-danger &nbsp;
                       span=$translations['template_delete']
-              .panel-collapse.collapse(id="f_".$field->getId()) 
+              .panel-collapse.collapse(id="f_".$field->getId())
                 .box-body
                   form.fields
                     .col-md-6.form-horizontal
@@ -99,7 +98,7 @@
             .col-sm-6.form-horizontal
               .form-group
                 label.col-sm-2.control-label(for="forbook".$template->getId())=$translations['template_label_books']
-                .col-sm-10                    
+                .col-sm-10
                   select.form-control.books(name="Books", id="forbook".$template->getId(), multiple="multiple")
                     each book in template.books
                       if book.selected
@@ -138,6 +137,6 @@ script.
   $.rokfor.fieldspertemplate[<?=$template->getId()?>] = <?=json_encode($fields_in_template)?>;
 //- CSRF and Schema changes if called via ajax
 if action
-  include ../js/csrf.js.jade  
+  include ../js/csrf.js.jade
   script.
     $.rokfor.configschema = <?=$schema;?>;

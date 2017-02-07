@@ -1,4 +1,5 @@
 <?php
+use Monolog\Processor\GitProcessor;
 
 if ($container->get('settings')['multiple_spaces'] === true)  {
   $app->get('/', function ($request, $response, $args) {
@@ -543,18 +544,18 @@ $app->group('/rf', function () {
       break;
       case 'reorder':
 /*        $ids = [];
-        foreach ($data['id'] as $value) 
+        foreach ($data['id'] as $value)
           array_push($ids, $value['id']);
         $this->db->ReorderContributions($ids);
-*/        
+*/
         foreach ($data['id'] as $value) {
           $contribution = $this->db->getContribution($value['id']);
-          $contribution->setSort($value['sort']) 
+          $contribution->setSort($value['sort'])
           ->updateCache()
-          ->save(); 
+          ->save();
         }
-        
-        
+
+
       break;
       case 'new':
         $args['contribution'] = $this->db->NewContribution($issue, $format, $data['template'], $data['name']);
@@ -745,8 +746,9 @@ $app->group('/rf', function () {
     $json['success']  = false;
     $field = $this->db->getField($args['id']);
     if ($field) {
-      $type     = $field->getTemplates()->getFieldtype();
-      $settings = json_decode($field->getTemplates()->getConfigSys(), true);
+      $template = $field->getTemplates();
+      $type     = $template->getFieldtype();
+      $settings = json_decode($template->getConfigSys(), true);
       switch ($type) {
         // Binary Uploads
         case 'Bild':
@@ -780,6 +782,20 @@ $app->group('/rf', function () {
           $json['success'] = $this->db->setField($args['id'],  $request->getParsedBody()['data']);
           break;
       }
+      // Call Post Processor
+      foreach (\FieldpostprocessorQuery::create()->filterByTemplates($template) as $proc) {
+        # code...
+        $this->helpers->apiCall(
+          $proc->getCode(),
+          $proc->getSplit(),
+          [
+            "Contribution" => $this->db->getField($args['id'])->getForcontribution(),
+            "Field"        => (int)$args['id'],
+            "Data"         => $this->db->getField($args['id'])->getContent()
+          ]
+        );
+      }
+
       // Update Store Time & Updating Contribution Cache via callback function
       $_t = time();
       $field->getContributions()
@@ -1069,6 +1085,53 @@ $app->group('/rf', function () {
     $this->view->render($response, 'content-wrapper/exporters.jade', $args);
   });
 
+  /* Route Hooks
+   *
+   * Call an Url on a certain action
+   *
+   * GET /rf/routehooks[/{id:[0-9]*}]
+   * POST /rf/routehooks[/{id:[0-9]*}]
+   *
+   */
+  $this->map(['GET', 'POST'], '/routehooks[/{id:[0-9]*}]', function ($request, $response, $args) {
+    $args['processors'] = \FieldpostprocessorQuery::create();
+    $args['fields']      = $this->db->getTemplatefields();
+    $args['post']       = $request->isPost();
+
+    if ($args['post']) {
+      if ($request->getParsedBody()['data'] === "Delete") {
+        $u = $args['processors']->findPk($args['id']);
+        $u->delete();
+      }
+      else {
+        /*
+        Array (
+        [0] => Array ( name] => id [value] => )
+        [1] => Array ( [name] => setCode [value] => )
+        [2] => Array ( [name] => setConfigSys [value] => )
+        [3] => Array ( [name] => setSplit [value] => )
+        [4] => Array ( [name] => setField [value] => 2 )
+        )
+        */
+        $u = new \Fieldpostprocessor();
+
+        foreach ($request->getParsedBody()['data'] as $value) {
+          if ($value['name'] === "addTemplates" && $value['value'] !== -1) {
+            $value['value'] = $this->db->getTemplatefields()->findPk($value['value']);
+          }
+          if (method_exists($u, $value['name']) && $value['value']) {
+            $u->{$value['name']}($value['value']);
+          }
+        }
+        $u->save();
+      }
+    }
+
+
+    $this->view->render($response, 'content-wrapper/hooks.route.jade', $args);
+  });
+
+
   /* Proxy for private binary resources
    *
    *
@@ -1087,4 +1150,4 @@ $app->group('/rf', function () {
     }
   });
 
-})->add($redis)->add($identificator)->add($csrf)->add($authentification)->add($ajaxcheck);
+})->add($redis)->add($identificator)->add($csrf)->add($authentification)->add($ajaxcheck)->add($routeHook);

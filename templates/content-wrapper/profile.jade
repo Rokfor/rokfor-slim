@@ -17,10 +17,10 @@ section.content
                   label.col-sm-4.control-label=$translations['profile_groups']
                   .col-sm-8
                     :php
-                      | $concat = [];
+                      $concat = [];
                     each group in user.group
                       :php
-                        | $concat[] = $group['Group'];
+                        $concat[] = $group['Group'];
                     input.form-control.disabled(value=join(",", $concat), disabled)
                 .form-group
                   label.col-sm-4.control-label(for="username")=$translations['profile_name']

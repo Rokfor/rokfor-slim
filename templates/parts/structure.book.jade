@@ -29,7 +29,7 @@
                     .input-group.col-xs-12
                       span.input-group-btn
                         :php
-                          | $r = []; foreach($chapter['chapter']->getRightss() as $b) $r[] = $b->getId();
+                          $r = []; foreach($chapter['chapter']->getRightss() as $b) $r[] = $b->getId();
                         a.btn.btn-solid.btn-default.btn-sm.rights(href="rights", data-rights=json_encode($r))
                           span=$translations['structure_chapter_rights']
                         a.btn.btn-solid.btn-default.btn-sm.settingschapter(href="settings", data-rights=$chapter['chapter']->getConfigSys())
@@ -71,7 +71,7 @@
                               if ($issue['issue']->getStatus() == 'closed')
                                 span.fa.fa-check
                         :php
-                          | $r = []; foreach($issue['issue']->getRightss() as $b) $r[] = $b->getId();
+                          $r = []; foreach($issue['issue']->getRightss() as $b) $r[] = $b->getId();
                         a.btn.btn-solid.btn-default.btn-sm.rights(href="rights", data-rights=json_encode($r))
                           span=$translations['structure_issue_rights']
                         a.btn.btn-solid.btn-default.btn-sm.settingsissue(href="settings", data-rights=$issue['issue']->getConfigSys())
@@ -90,7 +90,7 @@
         .input-group.idcontainer(id=$book['book']->getId())
           span.input-group-btn
             :php
-              | $r = []; foreach($book['book']->getRightss() as $b) $r[] = $b->getId();
+              $r = []; foreach($book['book']->getRightss() as $b) $r[] = $b->getId();
             a.btn.btn-solid.btn-default.rights(href="rights", data-rights=json_encode($r))
               span=$translations['structure_book_rights']
             a.btn.btn-solid.btn-default.settingsbook(href="settings", data-rights=$book['book']->getConfigSys())

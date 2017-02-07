@@ -8,10 +8,10 @@
           i.fa.fa-question-circle(data-toggle="tooltip", title=template->getHelpdescription())
       .box-tools.pull-right
         button.btn.btn-default.btn-sm(data-widget="collapse")
-         i.fa.fa-minus      
-    .box-body          
+         i.fa.fa-minus
+    .box-body
       :php
-        | $_data = json_decode($field->getContent(), true);
+        $_data = json_decode($field->getContent(), true);
       .form-group
         label.col-sm-2.control-label=$translations['picker_address']
         .col-sm-6

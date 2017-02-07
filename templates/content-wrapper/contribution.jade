@@ -16,9 +16,9 @@ section.content-header
       class=(
         $contribution->getStatus()=='Open'?
           "label-primary":
-          ($contribution->getStatus()=='Draft' ? 
+          ($contribution->getStatus()=='Draft' ?
             'label-warning':
-            ($contribution->getStatus()=='Deleted' ? 
+            ($contribution->getStatus()=='Deleted' ?
               'label-danger':
               'label-success')
           )
@@ -37,13 +37,13 @@ section.content-header
     span &nbsp;
     small
       span.label.label-default
-        a(href="/api/contribution/".$contribution->getId()."?access_token=".$apikey target="_blank") API GET    
+        a(href="/api/contribution/".$contribution->getId()."?access_token=".$apikey target="_blank") API GET
   ol.breadcrumb
     each crumb in breadcrumb
       li
         a(href='#')
           i.fa(class=crumb.class)
-          span=crumb.name 
+          span=crumb.name
 
 // Main content
 section.content(data-path=base_path)
@@ -77,13 +77,13 @@ section.content(data-path=base_path)
         else
           a.btn.btn-default.col-xs-3.disabled
             span.fa.fa-arrow-right
-        
+
     .box-body
       :php
-        | $criteria = new \Propel\Runtime\ActiveQuery\Criteria(); $criteria->addAscendingOrderByColumn(__sort__); 
+        $criteria = new \Propel\Runtime\ActiveQuery\Criteria(); $criteria->addAscendingOrderByColumn(__sort__);
       each field in $contribution->getDatas($criteria)
         :php
-          | $template = $field->getTemplates(); $config = json_decode($template->getConfigSys(), true);
+          $template = $field->getTemplates(); $config = json_decode($template->getConfigSys(), true);
         case template->getFieldtype()
           // TODO: "TypologyCloud",
           when 'TypologySelect'
@@ -136,8 +136,8 @@ section.content(data-path=base_path)
       .modal-footer
         button.btn.btn-primary.pull-left(type="button", data-dismiss="modal")=$translations['rfmodal_close']
         button.btn.btn-default(type="button")=$translations['rfmodal_continue']
-        
-        
+
+
 .modal.modal-primary.fade#rfaction_importdata(tabindex="-1",role="dialog", data-action="import", data-contribution=$contribution->getId())
   .modal-dialog(role="document")
     .modal-content

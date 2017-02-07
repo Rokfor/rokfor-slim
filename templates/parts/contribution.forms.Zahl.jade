@@ -8,8 +8,8 @@
           i.fa.fa-question-circle(data-toggle="tooltip", title=template->getHelpdescription())
       .box-tools.pull-right
         button.btn.btn-default.btn-sm(data-widget="collapse")
-         i.fa.fa-minus      
-    .box-body                  
+         i.fa.fa-minus
+    .box-body
       .input-group
         if ($config['integer'])
           span.input-group-addon
@@ -19,6 +19,5 @@
           span.input-group-addon
             i.fa.fa-calendar
           :php
-            | $d = helpers::timeFormatHelper($field->getContent(), $config['dateformat']);
+            $d = helpers::timeFormatHelper($field->getContent(), $config['dateformat']);
           input.form-control.rfmask(id=field->getId(), type="text", value=d.value, data-inputmask=d.mask, data-inputmask-placeholder=d.placeholder)
-        

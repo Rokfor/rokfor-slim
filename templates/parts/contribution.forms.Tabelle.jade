@@ -8,8 +8,8 @@
           i.fa.fa-question-circle(data-toggle="tooltip", title=template->getHelpdescription())
       .box-tools.pull-right
         button.btn.btn-default.btn-sm(data-widget="collapse")
-          i.fa.fa-minus      
-    .box-body                  
+          i.fa.fa-minus
+    .box-body
       table.table.table-bordered.table-striped.dataTable.rftable(id=field->getId())
         thead
           tr
@@ -22,24 +22,24 @@
               th(style="display:none")
         tbody
           :php
-            | $rows = json_decode($field->getContent(), true); if ($rows == null) {if (!is_array($rows[0]) && is_array($rows)) $rows = [$rows]; else if (!is_array($rows)) $rows = [[$field->getContent()]];}
+            $rows = json_decode($field->getContent(), true); if ($rows == null) {if (!is_array($rows[0]) && is_array($rows)) $rows = [$rows]; else if (!is_array($rows)) $rows = [[$field->getContent()]];}
           each row in $rows
             tr
               td
               :php
-                | $c = 0;
+                $c = 0;
               each col in $config['colnames']
                 td
                   textarea.rowedit=($row[$c]?$row[$c]:"")
                   :php
-                    | $c++;
+                    $c++;
               if ($config['growing']==true)
                 td
-                  a.btn.btn-xs.btn-danger 
+                  a.btn.btn-xs.btn-danger
                     i.fa.fa-minus
               else
                 td(style="display:none")
-                  a.btn.btn-xs.btn-danger 
+                  a.btn.btn-xs.btn-danger
                     i.fa.fa-minus
 
       if ($config['growing']==true)

@@ -818,6 +818,36 @@ $app->group('/api', function () {
     }
   );
 
+  $this->options('/users',
+    function ($request, $response, $args) {}
+  );
+
+  $this->get('/users',
+    function ($request, $response, $args) {
+      $r = $response->withHeader('Content-type', 'application/json');
+
+      /* Only Root User is allowed to call this... */
+      $u = $this->db->getUser();
+      if ($u['role'] === "root") {
+        $j = [];
+        foreach ($this->db->getUsers() as $user) {
+          if ($user->getUsergroup() !== "root") {
+            $j[] = [
+              "Name"         => $user->getUsername(),
+              "Key"          => $user->getRoapikey(),
+              "Role"         => $user->getUsergroup(),
+            ];
+          }
+        }
+        $r->getBody()->write(json_encode($j));
+      }
+      else {
+        $r->withStatus(500)->getBody()->write(json_encode(["Error" => "Not allowed"]));
+      }
+      return $r;
+    }
+  );
+
 
 })->add($redis)->add($apiauth);
 

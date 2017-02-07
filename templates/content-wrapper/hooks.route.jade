@@ -1,0 +1,90 @@
+if (!$post)
+  section.content-header
+    h1 Route Hooks
+
+mixin list
+  .row
+    .col-md-12
+      .box.box-success
+        .box-header.with-border
+          h4 Files
+        .box-body
+          table.table.table-striped
+            thead
+              th Id
+              th Api Call
+              th Route
+              th Field
+              th Method
+              th Action
+
+            tbody
+              if (count($processors->find()) == 0)
+                tr
+                  td(colspan=6, style="text-align: center;") No Hooks stored
+              each processor in processors
+                tr
+                  td=$processor->getId()
+                  td=$processor->getCode()
+                  td=$processor->getConfigSys()
+                  td
+                    each field in $processor->getTemplatess()
+                      span=$field->getFieldname()
+                  td=$processor->getSplit()
+                  td
+                    a.btn.btn-xs.btn-danger(
+                      href="/rf/routehooks/".$processor->getId()
+                      ) Delete
+        .box-footer
+          button.btn.btn-success#routeadd
+            i.fa.fa-plus &nbsp;
+            span Add Hook
+
+if (!$post)
+  section.content
+    +list
+if ($post)
+  +list
+
+
+if (!$post)
+  .modal.fade#addmodal(tabindex="-1",role="dialog")
+    .modal-dialog(role="document")
+      .modal-content
+        .modal-header
+          button.close(type="button", data-dismiss="modal",  aria-label="Close")
+            span(aria-hidden="true") &times;
+          h4.modal-title Add Route Hook
+        .modal-body
+          form.user
+            input#groupid(name="id", type="hidden")
+            .form-horizontal
+                .form-group
+                  label.col-sm-2.control-label(for="setCode") Api Call
+                  .col-sm-10
+                    input.form-control#setCode(name="setCode", type="text")
+                .form-group
+                  label.col-sm-2.control-label(for="setConfigSys") Route
+                  .col-sm-10
+                    input.form-control#setConfigSys(name="setConfigSys", type="text")
+                .form-group
+                  label.col-sm-2.control-label(for="setSplit") Method
+                  .col-sm-10
+                    select.form-control#setSplit(name="setSplit")
+                      option(value="GET") GET
+                      option(value="POST") POST
+
+                .form-group
+                  label.col-sm-2.control-label(for="addTemplates") Field
+                  .col-sm-10
+                    select.form-control#addTemplates(name="addTemplates")
+                      option(value=-1) - Disabled -
+                      each field in fields
+                        option(value=$field->getId())=$field->getFieldname()
+        .modal-footer
+          button.btn.pull-left(type="button", data-dismiss="modal")=$translations['rfmodal_close']
+          button.btn.btn-primary.rfmodal_continue(type="button")=$translations['rfmodal_continue']
+
+  include ../js/csrf.js.jade
+  script.
+    $.rokfor.initRouteHooks();

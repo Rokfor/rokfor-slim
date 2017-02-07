@@ -1,6 +1,12 @@
 doctype html
 html
-  include parts/layout.meta.jade
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    title="Rokfor CMS"
+    meta(content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no', name='viewport')
+    link(rel='stylesheet', href='/assets/css/assets.min.css?v='.$commit)
+    link(rel='stylesheet', href='/assets/css/rf.min.css?v='.$commit)
   body.hold-transition.skin-rokfor.fixed
     section.content
       .container

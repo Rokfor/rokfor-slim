@@ -17,11 +17,11 @@ class helpers
         $this->container = $_container;
         $this->Parsedown = new Parsedown();
     }
-    
+
     /**
      * adds copyright notices and version info to args array for template rendering
      *
-     * @param string $args 
+     * @param string $args
      * @return void
      * @author Urs Hofer
      */
@@ -37,14 +37,14 @@ class helpers
         date('Y').
         ". All rights reserved.";
     }
-    
+
   /**
    * return the previous and next contribution id of a specified contribution
    * within a certain chapter and issue.
    *
-   * @param \Childobject\Issue $issue 
-   * @param \Childobject\Format $format 
-   * @param \Childobject\Contribution $contribution 
+   * @param \Childobject\Issue $issue
+   * @param \Childobject\Format $format
+   * @param \Childobject\Contribution $contribution
    *
    * @return array
    *
@@ -78,12 +78,12 @@ class helpers
   }
 
   /**
-   * return an array with infos about 
+   * return an array with infos about
    * - chapters, where the passed contribution fits in
    * - contributions with the same template
    * - templates within the same chapter.
    *
-   * @param string $contribution 
+   * @param string $contribution
    *
    * @author Urs Hofer
    */
@@ -115,7 +115,7 @@ class helpers
   /**
    * pretty prints a time interval based on translations
    *
-   * @param string $interval_in_seconds 
+   * @param string $interval_in_seconds
    * @return string
    * @author Urs Hofer
    */
@@ -139,18 +139,18 @@ class helpers
       $format = 'd/m/Y H:i';
     }
     $placeholders = [
-      'd/m/Y H:i:s' => 'dd/mm/yyyy hh:mm:ss', 
-      'd/m/Y H:i'   => 'dd/mm/yyyy hh:mm', 
-      'd/m/Y'       => 'dd/mm/yyyy', 
-      'm/Y'         => 'mm/yyyy', 
+      'd/m/Y H:i:s' => 'dd/mm/yyyy hh:mm:ss',
+      'd/m/Y H:i'   => 'dd/mm/yyyy hh:mm',
+      'd/m/Y'       => 'dd/mm/yyyy',
+      'm/Y'         => 'mm/yyyy',
       'Y'           => 'yyyy',
     ];
     $mask = [
-      'd/m/Y H:i:s' => 'd/m/y h:s:s', 
-      'd/m/Y H:i'   => 'd/m/y h:s', 
-      'd/m/Y'       => 'd/m/y', 
-      'm/Y'         => 'm/y', 
-      'Y'           => 'y', 
+      'd/m/Y H:i:s' => 'd/m/y h:s:s',
+      'd/m/Y H:i'   => 'd/m/y h:s',
+      'd/m/Y'       => 'd/m/y',
+      'm/Y'         => 'm/y',
+      'Y'           => 'y',
     ];
     return [
       'placeholder' => $placeholders[$format],
@@ -163,8 +163,8 @@ class helpers
    * prepares the args for the contribution template
    * populates the args array which is passed as a reference.
    *
-   * @param \Childobject\Contributions &$_c 
-   * @param array &$args 
+   * @param \Childobject\Contributions &$_c
+   * @param array &$args
    *
    * @author Urs Hofer
    */
@@ -240,7 +240,7 @@ class helpers
       array_push($fromchapter['idbybook'][$f->getForbook()], $f->getId());
       $fromchapter['bookbyid'][$f->getId()] = $f->getForbook();
     }
-    
+
     $schema = [
     'title' => 'Field Configuration',
     'type' => 'object',
@@ -258,7 +258,7 @@ class helpers
               "key" => [
                 'type' => 'string',
                 'title'  => $this->container->translations['chapter_config'.'keyvaluepairs'.'key'],
-              ], 
+              ],
               "value" => [
                 'type' => 'string',
                 'title'  => $this->container->translations['chapter_config'.'keyvaluepairs'.'value'],
@@ -279,14 +279,14 @@ class helpers
               "language" => [
                 'type' => 'string',
                 'title'  => $this->container->translations['chapter_config'.'locale'.'language'],
-              ], 
+              ],
               "translation" => [
                 'type' => 'string',
                 'title'  => $this->container->translations['chapter_config'.'locale'.'translation'],
               ]
             ]
           ]
-        ],        
+        ],
         'parentnode' => [
           'title'  => $this->container->translations['chapter_config'.'parentnode'],
           'format' => 'select',
@@ -301,17 +301,17 @@ class helpers
           'options' => [
             'enum_titles' => [],
             'grid_columns' => 12,
-          ]                    
+          ]
         ],
         'referenced' => [
           'type' => 'object',
           'options' => [
             'hidden' => 'true'
           ]
-        ]                 
+        ]
       ]
     ];
-    
+
     return json_encode($schema);
   }
 
@@ -340,7 +340,7 @@ class helpers
               "key" => [
                 'type' => 'string',
                 'title'  => $this->container->translations['chapter_config'.'keyvaluepairs'.'key'],
-              ], 
+              ],
               "value" => [
                 'type' => 'string',
                 'title'  => $this->container->translations['chapter_config'.'keyvaluepairs'.'value'],
@@ -361,7 +361,7 @@ class helpers
               "language" => [
                 'type' => 'string',
                 'title'  => $this->container->translations['chapter_config'.'locale'.'language'],
-              ], 
+              ],
               "translation" => [
                 'type' => 'string',
                 'title'  => $this->container->translations['chapter_config'.'locale'.'translation'],
@@ -377,10 +377,10 @@ class helpers
         ]
       ]
     ];
-    
+
     return json_encode($schema);
   }
-  
+
   /**
    * returns the schema for the json field config editor.
    *
@@ -399,32 +399,32 @@ class helpers
       $fromissue = ['labels' => [],'id' => []];
       foreach ($this->container->db->getIssues() as $i) {
         array_push($fromissue['labels'], $i->getName());
-        array_push($fromissue['id'], $i->getId());        
+        array_push($fromissue['id'], $i->getId());
       }
 
       // Store Books
       $frombook = ['labels' => [],'id' => []];
       foreach ($this->container->db->getBooks() as $b) {
         array_push($frombook['labels'], $b->getName());
-        array_push($frombook['id'], $b->getId());        
+        array_push($frombook['id'], $b->getId());
       }
-      
+
       // Store Templates
       $fromtemplate = ['labels' => [],'id' => []];
       foreach ($this->container->db->getTemplatenames() as $t) {
         array_push($fromtemplate['labels'], $t->getName());
-        array_push($fromtemplate['id'], $t->getId());        
+        array_push($fromtemplate['id'], $t->getId());
       }
 
       // Store Templates
       $fromfield = ['labels' => [],'id' => []];
       foreach ($this->container->db->getTemplatefields() as $t) {
         array_push($fromfield['labels'], $t->getFieldname());
-        array_push($fromfield['id'], $t->getId());        
+        array_push($fromfield['id'], $t->getId());
       }
-      
+
       // Store Historytypes
-      
+
       foreach (['books', 'issues', 'chapters', 'cloud', 'other', 'self', 'contributional', 'structural', 'fixed'] as $_ht) {
         $historytypes['id'][] = $_ht;
         $historytypes['labels'][] = $this->container->translations['field_historytype_'.$_ht];
@@ -435,7 +435,7 @@ class helpers
         'labels' => ['fielda', 'fieldb','fieldc'],
         'id' => [1,2,3]
       ];
-      
+
       $lengthinfluence = [
         'title'  => $this->container->translations['field_config'.'lengthinfluence'],
         'options' => [
@@ -454,7 +454,7 @@ class helpers
               'type' => 'integer',
               'format' => 'number',
               'title' => $this->container->translations['field_config'.'lengthinfluence'.'factor'],
-            ], 
+            ],
             'fieldname' => [
               'type'   => 'string',
               'uniqueItems' => true,
@@ -489,7 +489,7 @@ class helpers
                     'type' => 'integer',
                     'format' => 'number',
                     'title' => $this->container->translations['field_config'.'imagesize'.'width'],
-                  ], 
+                  ],
                   'height' => [
                     'type' => 'integer',
                     'format' => 'number',
@@ -510,7 +510,7 @@ class helpers
                 'type' => 'string',
                 'title' => $this->container->translations['field_config'.'imagecaption'],
               ]
-            ],            
+            ],
             'history' => [
               'title'  => $this->container->translations['field_config'.'history'],
               'type' => 'boolean',
@@ -526,7 +526,7 @@ class helpers
                 'hist' => 'history'
               ],
               'hidden' => '!history'
-            ],            
+            ],
             'growing' => [
               'title'  => $this->container->translations['field_config'.'growing'],
               'type' => 'boolean',
@@ -555,7 +555,7 @@ class helpers
               'type' => 'boolean',
               'propertyOrder' => 0,
               'format' => 'checkbox'
-            ],            
+            ],
             'codeeditor' => [
               'title'  => $this->container->translations['field_config'.'codeeditor'],
               'type' => 'boolean',
@@ -578,7 +578,7 @@ class helpers
                   "lines" => [
                     'type' => 'integer',
                     'title'  => $this->container->translations['field_config'.'editorcolumns'.'lines'],
-                  ], 
+                  ],
                   "label" => [
                     'type' => 'string',
                     'title'  => $this->container->translations['field_config'.'editorcolumns'.'label'],
@@ -603,7 +603,7 @@ class helpers
                 'collapsed' => true
               ],
               'propertyOrder' => 100,
-              'type' => 'array', 
+              'type' => 'array',
               'format' => 'table',
               'items' => [
                 'type' => 'string',
@@ -659,7 +659,7 @@ class helpers
               'type' => 'boolean',
               'propertyOrder' => 0,
               'format' => 'checkbox'
-            ],                                       
+            ],
             'history_command' => [
               'title'  => $this->container->translations['field_config'.'history_command'],
               'format' => 'select',
@@ -679,33 +679,33 @@ class helpers
               ],
               'title'  => $this->container->translations['field_config'.'legends'],
               'propertyOrder' => 100,
-              'type' => 'array', 
+              'type' => 'array',
               'format' => 'table',
               'items' => [
                 'type' => 'string'
               ]
             ],
-            //fixed            
+            //fixed
             'fixedvalues' => [
               'options' => [
                 'grid_columns' => 12,
               ],
               'title'  => $this->container->translations['field_config'.'fixedvalues'],
               'propertyOrder' => 100,
-              'type' => 'array', 
+              'type' => 'array',
               'format' => 'table',
               'items' => [
                 'type' => 'string',
                 'title'  => $this->container->translations['field_config'.'fixedvalues'.'row'],
               ]
-            ],                                       
-            //issues, cloud, self, contributional            
+            ],
+            //issues, cloud, self, contributional
             'restrict_to_open' => [
               'title'  => $this->container->translations['field_config'.'restrict_to_open'],
               'type' => 'boolean',
               'propertyOrder' => 0,
               'format' => 'checkbox'
-            ],                                       
+            ],
             // not implemented so far
             'restrict_to_book' => [
               'title'  => $this->container->translations['field_config'.'restrict_to_book'],
@@ -713,7 +713,7 @@ class helpers
               'propertyOrder' => 2,
               'format' => 'checkbox'
             ],
-            //issues, chapters            
+            //issues, chapters
             'frombook' => [
               'title'  => $this->container->translations['field_config'.'frombook'],
               'format' => 'select',
@@ -724,15 +724,15 @@ class helpers
               'options' => [
                 'enum_titles' => $frombook['labels'],
                 'grid_columns' => 12,
-              ]                
-            ],            
-            //cloud, other, self, contributional            
+              ]
+            ],
+            //cloud, other, self, contributional
             'restrict_to_issue' => [
               'title'  => $this->container->translations['field_config'.'restrict_to_issue'],
               'type' => 'boolean',
               'propertyOrder' => 4,
               'format' => 'checkbox'
-            ],                                       
+            ],
             //cloud, other, self, contributional
             'fromissue' => [
               'title'  => $this->container->translations['field_config'.'fromissue'],
@@ -744,9 +744,9 @@ class helpers
               'options' => [
                 'enum_titles' => $fromissue['labels'],
                 'grid_columns' => 12,
-              ]                    
-            ],   
-            
+              ]
+            ],
+
            //contributional,
             'restrict_to_chapter' => [
               'title'  => $this->container->translations['field_config'.'restrict_to_chapter'],
@@ -754,7 +754,7 @@ class helpers
               'propertyOrder' => 6,
               'format' => 'checkbox'
             ],
-            //contributional 
+            //contributional
             'fromchapter' => [
               'title'  => $this->container->translations['field_config'.'fromchapter'],
               'format' => 'select',
@@ -765,15 +765,15 @@ class helpers
               'options' => [
                 'enum_titles' => $fromchapter['labels'],
                 'grid_columns' => 12,
-              ]                    
-            ],            
+              ]
+            ],
             // not implemented so far
             'restrict_to_template' => [
               'title'  => $this->container->translations['field_config'.'restrict_to_template'],
               'type' => 'boolean',
               'propertyOrder' => 9,
               'format' => 'checkbox'
-            ],            
+            ],
             //contributional, structural
             'fromtemplate' => [
               'title'  => $this->container->translations['field_config'.'fromtemplate'],
@@ -785,8 +785,8 @@ class helpers
               'options' => [
                 'enum_titles' => $fromtemplate['labels'],
                 'grid_columns' => 12,
-              ]                                    
-            ],                                       
+              ]
+            ],
             //cloud, other
             'fromfield' => [
               'title'  => $this->container->translations['field_config'.'fromfield'],
@@ -798,8 +798,8 @@ class helpers
               'options' => [
                 'enum_titles' => $fromfield['labels'],
                 'grid_columns' => 12,
-              ]                 
-            ],                                       
+              ]
+            ],
           ],
       ];
       return json_encode($schema);
@@ -849,12 +849,12 @@ class helpers
 
       foreach ($template->getRightss() as $checkedright) {
           array_push($checkedrights, $checkedright->getId());
-      }      
+      }
       foreach ($availablerights as $right) {
           $selected = in_array($right->getId(), $checkedrights);
           array_push($template->rights, ['id' => $right->getId(), 'name' => $right->getGroup(), 'selected' => $selected]);
       }
-            
+
       if ($templateid) {
         $args['template'] = $template;
         break;
@@ -872,14 +872,14 @@ class helpers
       ]
     ];
   }
-  
+
   /**
    * prepares the data for chapters, books or issues
    *
-   * @param string $object 
-   * @param string $followrefs 
-   * @param string $compact 
-   * @param string $request 
+   * @param string $object
+   * @param string $followrefs
+   * @param string $compact
+   * @param string $request
    * @return void
    * @author Urs Hofer
    */
@@ -910,24 +910,24 @@ class helpers
     }
     else return false;
   }
-  
+
   // Scanning for {{fieldname:counter}} Elements
   // Currently, __vimeo__, __youtube__ and Upload Fields are supported.
-  // 
+  //
   // {{__vimeo__:VIMEOID}}
   // {{__youtube__:VIMEOID}}
   // {{FIELDNAME:index}}
-  
+
   private function parse_tags($template, $contribid) {
-    
+
     // Prefixing, unless it is not private and s3 has public pages
     $_protocol = ($this->container->paths['enforce_https'] ? 'https://' : '//' ).$_SERVER['HTTP_HOST'];
-      
-    
+
+
     if (preg_match_all("/{{(.*?)}}/", $template, $m)) {
       foreach ($m[1] as $i => $varname) {
         list($fieldname,$id) = explode(":", $varname);
-        
+
         switch ($fieldname) {
           case '__vimeo__':
             $_imgstring = '<iframe class="rf-embedded rf-vimeo" src="//player.vimeo.com/video/'.$id.'?title=0&byline=0&portrait=0" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>';
@@ -936,11 +936,11 @@ class helpers
           case '__youtube__':
             $_imgstring = '<iframe class="rf-embedded rf-youtube" src="//www.youtube.com/embed/'.$id.'" frameborder="0" allowfullscreen></iframe>';
             $template = str_replace($m[0][$i], $_imgstring, $template);
-            break;            
+            break;
           default:
             // Resolve Image Field
             $_imagefield = $this->container->db->getData()
-              ->filterByForcontribution($contribid) 
+              ->filterByForcontribution($contribid)
               ->useTemplatesQuery()
                 ->filterByFieldname($fieldname)
               ->endUse()
@@ -957,11 +957,11 @@ class helpers
                     $_imgstring .= $_protocol.$this->container->db->_add_proxy_single_file($_scaled, $private, $contribid, $_imageid);
                     $_imgstring .= '">';
                   }
-            
+
                   foreach ((array)$_row[0] as $_key=>$caption) {
                     $_imgstring .= '<figcaption rf-caption class="caption_'.$_key.'">'.$caption.'</figcaption>';
                   }
-                  $_imgstring .= '</div></figure>';              
+                  $_imgstring .= '</div></figure>';
                   $template = str_replace($m[0][$i], $_imgstring, $template);
                 }
               }
@@ -988,10 +988,10 @@ class helpers
     /* Recursion Check */
     if (in_array($field_id, $_recursion_check)) return false;
     $_recursion_check[] = $field_id;
-    
+
     $t = $field->getTemplates();
     $private = $t->getTemplatenames()->getPublic() == 1 ? false : true;
-    
+
     // Parse Json if it is a json field
     $_content = $field->getIsjson() ? json_decode($field->getContent()) : $field->getContent();
 
@@ -1000,10 +1000,10 @@ class helpers
 
     $_nc = false;
     $_parsed = false;
-    
+
     if ($t->getFieldtype() == "Bild") {
       if (is_array($_content)) {
-        
+
         $this->container->db->sign_request($_content, $private, $field->getForcontribution(), $field_id);
         $_protocol = ($this->container->paths['enforce_https'] ? 'https://' : '//' ).$_SERVER['HTTP_HOST'];
         foreach ($_content as &$_row) {
@@ -1021,8 +1021,8 @@ class helpers
             foreach ($_row[0] as $_cap) $_caps_parsed[] = nl2br($_cap);
           }
           else $_caps_parsed = nl2br($_row[0]);
-          
-          
+
+
           $_row = [
             "Files"    => $_versions,
             "Captions" => $_row[0],
@@ -1031,7 +1031,7 @@ class helpers
         }
       }
     }
-    
+
     // Recursively resolve foreign Data
 
     if ($t->getFieldtype() == "TypologySelect" || $t->getFieldtype() == "TypologyKeyword") {
@@ -1073,7 +1073,7 @@ class helpers
             if ($_c) {
               $_temp = [];
               foreach ($_c->getDatas() as $_f) {
-                if ($_follow_references && $_f->getId() && ($_fieldlist == false || (is_array($_fieldlist) && (in_array($_f->getTemplates()->getFieldname(), $_fieldlist))))) 
+                if ($_follow_references && $_f->getId() && ($_fieldlist == false || (is_array($_fieldlist) && (in_array($_f->getTemplates()->getFieldname(), $_fieldlist)))))
                   $_temp[$_f->getTemplates()->getFieldname()] = $this->prepareApiData($_f, $compact, $_recursion_check, $_fieldlist, $_recursion, $_recursion == true ? true : false);
               }
               $_nc[$_c->getId()] = $_temp;
@@ -1083,20 +1083,20 @@ class helpers
           break;
       }
     }
-    
+
     // Prepare Text Editors
     // echo $Parsedown->text('Hello _Parsedown_!'); # prints: <p>Hello <em>Parsedown</em>!</p>
 
     if ($t->getFieldtype() == "Text") {
       if (is_array($_content)) {
-        $_parsed = [];        
+        $_parsed = [];
         foreach ($_content as $__c) {
           if ($_fieldsettings->rtfeditor)
             $_parsed[] = $this->parse_tags($__c, $field->getForcontribution());
           else if ($_fieldsettings->markdowneditor)
             $_parsed[] = $this->Parsedown->text($__c);
           else
-            $_parsed[] = nl2br($__c);       
+            $_parsed[] = nl2br($__c);
         }
       }
       else {
@@ -1108,13 +1108,13 @@ class helpers
           $_parsed = nl2br($_content);
       }
     }
-          
+
     if ($compact) {
      $r = [
        "Id"               => $field->getId(),
 //       "Fieldname"        => $t->getFieldname(),
        "Content"          => $_content
-     ]; 
+     ];
     }
     else {
       $r = [
@@ -1140,15 +1140,15 @@ class helpers
     }
     if ($_parsed !== false) {
       $r['Parsed'] = $_parsed;
-    }    
+    }
     return $r;
   }
-  
+
   /**
    * cycles thru all fields of a contribution and prepares the field data
    *
-   * @param string $c 
-   * @param string $compact 
+   * @param string $c
+   * @param string $compact
    * @return void
    * @author Urs Hofer
    */
@@ -1156,14 +1156,14 @@ class helpers
     /* Checks */
     if (!$c) return false;
     if (!$c->getId()) return false;
-    
+
     $d = [];
     $_fids = [];
     $criteria = null;
     static $_oldtemplate = false;
-    
+
     // Prepare Criteria if a selection of fields needs to be processed
-    
+
     if ($request !== null && $request->getQueryParams()['data']) {
       // Reset fids on template change
       if ($c->getFortemplate() <> $_oldtemplate) {
@@ -1180,7 +1180,7 @@ class helpers
         }
       }
       $criteria = new \Propel\Runtime\ActiveQuery\Criteria();
-      $criteria->add('_fortemplatefield', $_fids, \Propel\Runtime\ActiveQuery\Criteria::IN);  
+      $criteria->add('_fortemplatefield', $_fids, \Propel\Runtime\ActiveQuery\Criteria::IN);
     }
 
     // Populate Data if called with populate true, if requests are omitted or a criteria is not null
@@ -1204,9 +1204,9 @@ class helpers
     }
 
 
-    return $d;    
+    return $d;
   }
-  
+
   /**
    * prepares the return array for a contribution if accessed over the json api
    *
@@ -1218,14 +1218,14 @@ class helpers
     /* Checks */
     if (!$c) return false;
     if (!$c->getId()) return false;
-    
+
     /* Books */
     static $__book = [];
-    
+
     /* Recursion Check */
     if (in_array($c->getId(), $_recursion_check)) return false;
     $_recursion_check[] = $c->getId();
-    
+
     if (!$__book[$c->getFormats()->getForbook()]) {
       $__book[$c->getFormats()->getForbook()] = $this->container->db->getBook($c->getFormats()->getForbook());
     }
@@ -1236,21 +1236,21 @@ class helpers
 //      $__c->getRData();
     //      print_r(($__c->getContributionid()));
     //}
-   // print_r(get_class_methods($c->getRDataContributions())); 
+   // print_r(get_class_methods($c->getRDataContributions()));
 
     // Referenced Contributions
     if ($_follow_references === true) {
       foreach ($c->getRDataContributions() as $_referencedContribution) {
         $_f = $_referencedContribution->getRData();
-        $_c = $_f->getContributions(); 
+        $_c = $_f->getContributions();
         array_push($_references, [
-          "ByField"       => $_f->getId(), 
+          "ByField"       => $_f->getId(),
           "Contribution"  => $this->prepareApiContribution($_c, $compact, $request, $_recursion_check, $_recursion, $_recursion == true ? true : false),
           "Data"          => $this->prepareApiContributionData($_c, $compact, $request)
         ]);
       }
     }
-//    die(print_r($_references,true));    
+//    die(print_r($_references,true));
 
     if ($compact) {
       return [
@@ -1283,11 +1283,35 @@ class helpers
         "ForchapterName"          => $c->getFormats()->getName(),
         "FortemplateName"         => $c->getTemplatenames()->getName(),
         "ForbookName"             => $_book->getName(),
-        "Sort"                    => $c->getSort(),        
-        "ReferencedFrom"          => $_references,        
+        "Sort"                    => $c->getSort(),
+        "ReferencedFrom"          => $_references,
       ];
     }
   }
+
+  public function apiCall($url, $method, $data) {
+    $json = json_encode($data);
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => $url,
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_TIMEOUT_MS => 1000,
+      CURLOPT_NOSIGNAL => 1,
+      CURLOPT_CUSTOMREQUEST => $method,
+      CURLOPT_HTTPHEADER => array(
+        "cache-control: no-cache",
+        "content-type: application/json"
+      ),
+    ));
+    if ($method === "POST") {
+      curl_setopt($curl, CURLOPT_POSTFIELDS, $json);
+    }
+    $response = curl_exec($curl);
+    $err = curl_error($curl);
+    curl_close($curl);
+  }
+
 }
 
 

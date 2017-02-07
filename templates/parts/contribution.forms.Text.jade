@@ -12,7 +12,7 @@ if (($config[rtfeditor] || $config[markdowneditor]) && !$config[arrayeditor])
             span.label.label-default(id="counter_".$field->getId())
         .box-tools.pull-right
           button.btn.btn-default.btn-sm(data-widget="collapse")
-           i.fa.fa-minus        
+           i.fa.fa-minus
       .box-body
         if ($config[rtfeditor])
           include rtfeditor.toolbar.jade
@@ -24,7 +24,7 @@ else if config.arrayeditor
 
   // ARRAY EDITOR
   :php
-    | $rows = json_decode($field->getContent(), true); $row = 0; if (is_array($rows[0])) {foreach ($rows as &$r) { $r = join(',',$r); } }; if(!is_array($rows)) {$rows = [$rows];}
+    $rows = json_decode($field->getContent(), true); $row = 0; if (is_array($rows[0])) {foreach ($rows as &$r) { $r = join(',',$r); } }; if(!is_array($rows)) {$rows = [$rows];}
   .form-horizontal.col-md-12
     .box.box-success
       .box-header
@@ -33,15 +33,15 @@ else if config.arrayeditor
             i.fa.fa-question-circle(data-toggle="tooltip", title=template->getHelpdescription())
         .box-tools.pull-right
           button.btn.btn-default.btn-sm(data-widget="collapse")
-           i.fa.fa-minus        
-      .box-body                  
+           i.fa.fa-minus
+      .box-body
         each column in $config['editorcolumns']
           .form-group
             label.col-sm-2.control-label=$column['label']
             .col-sm-10
               span.label.label-default.rfmultieditorcounter(id="counter_".$row."_".$field->getId())
               if config.rtfeditor
-                include rtfeditor.toolbar.jade              
+                include rtfeditor.toolbar.jade
                 .rtftextarea.rtfmultieditor.form-control(data-counter="#counter_".$row."_".$field->getId(), data-maxlength=config.textlength, style="min-height:".(str_replace(',', '.', $column['lines']*1.5))."em;", id=$row."_".$field->getId(), data-fieldid=$field->getId())!=$rows[$row++]
               else
                 if config.markdowneditor
