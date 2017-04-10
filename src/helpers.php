@@ -930,11 +930,11 @@ class helpers
 
         switch ($fieldname) {
           case '__vimeo__':
-            $_imgstring = '<iframe class="rf-embedded rf-vimeo" src="//player.vimeo.com/video/'.$id.'?title=0&byline=0&portrait=0" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>';
+            $_imgstring = '<div class="rf-embedded rf-wrapper"><iframe class="rf-embedded rf-vimeo" src="//player.vimeo.com/video/'.$id.'?title=0&byline=0&portrait=0" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>';
             $template = str_replace($m[0][$i], $_imgstring, $template);
             break;
           case '__youtube__':
-            $_imgstring = '<iframe class="rf-embedded rf-youtube" src="//www.youtube.com/embed/'.$id.'" frameborder="0" allowfullscreen></iframe>';
+            $_imgstring = '<div class="rf-embedded rf-wrapper"><iframe class="rf-embedded rf-youtube" src="//www.youtube.com/embed/'.$id.'" frameborder="0" allowfullscreen></iframe></div>';
             $template = str_replace($m[0][$i], $_imgstring, $template);
             break;
           default:
