@@ -903,6 +903,7 @@ class helpers
         "Name"            => method_exists($object, "getName") ? $object->getName() : $object->getFieldName(),
         "ReferencedFrom"  => $_refs,
         "Localization"    => $_cfg->locale,
+        "Status"          => method_exists($object, "getStatus") ? $object->getStatus() : null,
         "Options"         => method_exists($object, "getFieldType") ? $_cfg : $_cfg->editorcolumns,
         "Type"            => method_exists($object, "getFieldType") ? $object->getFieldType() : null,
         "Parent"          => $object->getParentNode()
