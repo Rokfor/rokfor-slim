@@ -10,4 +10,4 @@
         button.btn.btn-default.btn-sm(data-widget="collapse")
          i.fa.fa-minus      
     .box-body          
-      input.rfmatrix(id=field->getId(), type="text", value=field->getContent())
+      input.rfmatrix(id=field->getId(), type="text", value=($field->getContent()?$field->getContent():"[0,0]"))
