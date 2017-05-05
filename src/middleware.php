@@ -20,6 +20,7 @@ $app->add(function ($request, $response, $next) {
   try {
     $_p = $this->db->PDO();
   } catch (Exception $e) {
+    _mailer($this, "MYSQL:\n". $e->getMessage());
     return $this->settings['multiple_spaces'] === true
       ? $response->withRedirect($this->settings['unknow_space_redirect'])
       : $this->view->render($response->withStatus(404), 'error.jade', [
@@ -39,9 +40,11 @@ $app->add(function ($request, $response, $next) {
       return $next($request, $response);
     }
 
+    $_help = "Your database exists but cannot be initialized. Run <i>$ propel sql:insert</i> manually from the command line.";
+    _mailer($this, "MYSQL:\n". $_help);
     return $this->view->render($response->withStatus(404), 'error.jade', [
       "message" => join('<br>', $_messages),
-      "help"    => "Your database exists but cannot be initialized. Run <i>$ propel sql:insert</i> manually from the command line."
+      "help"    => $_help
     ]);
   }
   return $next($request, $response);
@@ -419,13 +422,32 @@ $redis = function ($request, $response, $next) {
     // Clear Cache on Post or Backend Calls
     if ($request->isPost() || $_calltype != "apicall") {
       $prefix = $this->redis['client']->getOptions()->__get('prefix')->getPrefix();
-      $keys = $this->redis['client']->keys("*");
-      $removed = 0;
-      foreach ($keys as $key) {
-        if (substr($key, 0, strlen($prefix)) == $prefix) {
-          $key = substr($key, strlen($prefix));
+      if ($this->redis['cluster']) {
+        $cmdKeys = $this->redis['client']->createCommand('keys', ['*']);
+        $mailk = [];
+        foreach ($this->redis['client']->getConnection() as $nodeConnection) {
+          $keys = $nodeConnection->executeCommand($cmdKeys);
+          foreach ($keys as $key) {
+            if (substr($key, 0, strlen($prefix)) == $prefix) {
+              $key = substr($key, strlen($prefix));
+              $mailk[] = $key;
+              $mailk[] = $key."-hash";
+            }
+          }
+        }
+        foreach ($mailk as $key) {
           $this->redis['client']->del($key);
-          $this->redis['client']->del($key."-hash");
+        }
+      }
+      else {
+        $keys = $this->redis['client']->keys("*");
+        $removed = 0;
+        foreach ($keys as $key) {
+          if (substr($key, 0, strlen($prefix)) == $prefix) {
+            $key = substr($key, strlen($prefix));
+            $this->redis['client']->del($key);
+            $this->redis['client']->del($key."-hash");
+          }
         }
       }
       $response = $next($request, $response);
