@@ -35,6 +35,10 @@ function _mailer($c, $message, $die = false) {
                         "\n" .
                         "----------------------------------------\n" .
                         "\n" .
+                        "Server Info\n" .
+                        "\n" .
+                        print_r($_SERVER, true).
+                        "\n" .
                         "Best wishes,\n" .
                         "Rokfor";
       $mail->send();
