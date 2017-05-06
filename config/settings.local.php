@@ -49,7 +49,7 @@ return [
           's3_aws_secret'   => "",                                // Amazon S3 Secret Key
           's3_aws_region'   => "",                                // Amazon S3 Region - necessary for AWS
           's3_aws_bucket'   => "",                                // Amazon S3 Bucket Name
-          's3_aws_endpoint' => false                              // Not neccesary for Amazon AWS
+          's3_aws_endpoint' => false,                              // Not neccesary for Amazon AWS
           's3_aws_public_pages' => true,                          // Support for public Pages, if not, assets are redirected
                                                                   // Amazon supports public pages.
 
@@ -104,7 +104,9 @@ return [
           'password'  => 'password',
           'tls'       => true,
           'port'      => 587,
-          'smtpauth'  => true
+          'smtpauth'  => true,
+          'locktime'  => 600,                             // Locktime between mail sends
+          'lockfile'  => __DIR__. '/../cache/.mail.lock'     // Lock File: The Mailer sends Mails every 5 Minutes
         ],
 
         /*

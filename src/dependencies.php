@@ -9,32 +9,37 @@ $container = $app->getContainer();
 function _mailer($c, $message, $die = false) {
   $settings = $c->get('settings')['mail'];
   if ($settings['active']) {
-    $mail = new PHPMailer\PHPMailer;
+    $lasttime = file_get_contents($settings['lockfile']);
+    $delta = time() - $lasttime;
+    if ($delta > $settings['locktime']) {
 
-    $mail->isSMTP();
-    $mail->Host = $settings['smtphost'];
-    $mail->SMTPAuth = $settings['smtpauth'];
-    if ($settings['username'])
-      $mail->Username = $settings['username'];
-    if ($settings['password'])
-      $mail->Password = $settings['password'];
-    if ($settings['tls'] === true)
-      $mail->SMTPSecure = 'tls';
-    $mail->Port = $settings['port'];
+      $mail = new PHPMailer\PHPMailer;
+      $mail->isSMTP();
+      $mail->Host = $settings['smtphost'];
+      $mail->SMTPAuth = $settings['smtpauth'];
+      if ($settings['username'])
+        $mail->Username = $settings['username'];
+      if ($settings['password'])
+        $mail->Password = $settings['password'];
+      if ($settings['tls'] === true)
+        $mail->SMTPSecure = 'tls';
+      $mail->Port = $settings['port'];
 
-    $mail->setFrom($settings['from']);
-    $mail->addAddress($settings['to']);
-    $mail->Subject = '[ROKFOR SLIM]: Crucial Error';
-    $mail->Body    =  "ROKFOR Slim reported an important error:\n" .
-                      "----------------------------------------\n" .
-                      "\n" .
-                      "$message\n" .
-                      "\n" .
-                      "----------------------------------------\n" .
-                      "\n" .
-                      "Best wishes,\n" .
-                      "Rokfor";
-    $mail->send();
+      $mail->setFrom($settings['from']);
+      $mail->addAddress($settings['to']);
+      $mail->Subject = '[ROKFOR SLIM]: Crucial Error';
+      $mail->Body    =  "ROKFOR Slim reported an important error:\n" .
+                        "----------------------------------------\n" .
+                        "\n" .
+                        "$message\n" .
+                        "\n" .
+                        "----------------------------------------\n" .
+                        "\n" .
+                        "Best wishes,\n" .
+                        "Rokfor";
+      $mail->send();
+      file_put_contents($settings['lockfile'], time());
+    }
   }
   if ($die) die();
 };
