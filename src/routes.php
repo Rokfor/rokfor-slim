@@ -63,6 +63,10 @@ $app->group('/rf', function () {
               ["destination"=>$this->valid_paths[$data[0]],"template"=> ["name" => $_t->getName(), "id" => $_t->getId()]] :
               false;
     });
+
+    // Google Api key
+    $args['google_api_key'] = $this->get('settings')['google_maps_api'];
+    
     // Render
     $this->view->render($response, 'layout.jade', $args);
   });
