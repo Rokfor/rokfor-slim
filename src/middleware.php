@@ -364,6 +364,17 @@ $apiauth = function ($request, $response, $next) {
  */
 
 $redis = function ($request, $response, $next) {
+
+  $cluster_iterate = function ($callback)
+  {
+      $clientClass = get_class($this->redis['client']);
+
+      foreach ($this->redis['client']->getConnection() as $nodeConnection) {
+          $nodeClient = new $clientClass($nodeConnection, $this->redis['client']->getOptions());
+          $callback($nodeClient);
+      }
+  };
+
   if ($this->redis['redis'] && ($request->isPost() || $request->isGet())) {
     $qt = microtime(true);
 
@@ -423,21 +434,15 @@ $redis = function ($request, $response, $next) {
     if ($request->isPost() || $_calltype != "apicall") {
       $prefix = $this->redis['client']->getOptions()->__get('prefix')->getPrefix();
       if ($this->redis['cluster']) {
-        $cmdKeys = $this->redis['client']->createCommand('keys', ['*']);
-        $mailk = [];
-        foreach ($this->redis['client']->getConnection() as $nodeConnection) {
-          $keys = $nodeConnection->executeCommand($cmdKeys);
-          foreach ($keys as $key) {
-            if (substr($key, 0, strlen($prefix)) == $prefix) {
+        $cluster_iterate(function ($nodeClient) {
+            $prefix = $nodeClient->getOptions()->__get('prefix')->getPrefix();
+            $keyspace = new \Predis\Collection\Iterator\Keyspace($nodeClient, "$prefix*");
+            foreach ($keyspace as $key) {
               $key = substr($key, strlen($prefix));
-              $mailk[] = $key;
-              $mailk[] = $key."-hash";
+              $nodeClient->del($key);
+              $nodeClient->del($key."-hash");
             }
-          }
-        }
-        foreach ($mailk as $key) {
-          $this->redis['client']->del($key);
-        }
+        });
       }
       else {
         $keys = $this->redis['client']->keys("*");
