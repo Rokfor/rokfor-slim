@@ -66,7 +66,7 @@ $app->group('/rf', function () {
 
     // Google Api key
     $args['google_api_key'] = $this->get('settings')['google_maps_api'];
-    
+
     // Render
     $this->view->render($response, 'layout.jade', $args);
   });
@@ -552,13 +552,14 @@ $app->group('/rf', function () {
           array_push($ids, $value['id']);
         $this->db->ReorderContributions($ids);
 */
-        foreach ($data['id'] as $value) {
-          $contribution = $this->db->getContribution($value['id']);
-          $contribution->setSort($value['sort'])
-          ->updateCache()
-          ->save();
+        if (is_array($data['id'])) {
+          foreach ($data['id'] as $value) {
+            $contribution = $this->db->getContribution($value['id']);
+            $contribution->setSort($value['sort'])
+            ->updateCache()
+            ->save();
+          }
         }
-
 
       break;
       case 'new':
