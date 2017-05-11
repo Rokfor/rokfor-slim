@@ -1266,6 +1266,7 @@ class helpers
         "FortemplateName"         => $c->getTemplatenames()->getName(),
         "ForbookName"             => $_book->getName(),
         "Sort"                    => $c->getSort(),
+        "Status"                  => $c->getStatus(),
         "ReferencedFrom"          => $_references,
       ];
     }
