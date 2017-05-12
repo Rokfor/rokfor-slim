@@ -5,6 +5,7 @@ vendor
 .tmp/rf.css
 cache/*.php
 cache/.mail.lock
+cache/.otc.lock
 public/udb/*
 public/udb/thumbs/*
 !public/udb/thumbs/thumb.jpg

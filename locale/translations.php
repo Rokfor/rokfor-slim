@@ -6,7 +6,7 @@ return [
         'loginFailed'                             => "Benutzername oder Passwort fehlerhaft",
         'send_reminder'                           => "Bitte tippen Sie ihre E-Mail Adresse ein und wir schicken einen Link, um das Passwort zurückzusetzen.",
         'send_reminder_success'                   => "E-Mail wurde erfolgreich versendet.",
-        'send_reminder_fail'                      => "E-Mail Adresse ist unbekannt oder fehlerhaft. Bitte erneut e",
+        'send_reminder_fail'                      => "E-Mail Adresse ist unbekannt oder fehlerhaft. Bitte erneut eintippen.",
         'header_favourites'                       => "Favoriten",
         'header_direct'                           => "Neues Dokument erstellen",
         'general_error'                           => "Fehler",
@@ -269,9 +269,33 @@ return [
         'user_modal_grouprissue'                  => "Ausgaben",
         'user_modal_groupruser'                   => "Mitglieder",
         'user_modal_grouprtemplate'               => "Templates",
+
+        'remember-me'                             => "Login Daten auf diesem Rechner merken.",
+        'login'                                   => "Anmelden",
+        'forgot-password'                         => "Passwort vergessen?",
+        'mail-referer-not-valid'                  => 'Der Link ist nicht mehr gültig.',
+        'remember_pw_updated'                     => "Passwort erfolgreich geändert. Sie können sich nun am System anmelden.",
+        'remember_pw_newset'                      => 'Bitte geben sie ein neues Passwort ein. Das Passwort muss mindestens 8 Zeichen lang sein und eine Ziffer enthalten.',
+
+        'remember-mail'                           => '<h2>Passwort vergessen?</h2>
+                                                      <p>Keine Sorge. Das kann immer mal passieren.</p>
+                                                      <p>Falls sie kein neues Passwort angefordert haben, können sie diese E-Mail ignorieren. Das alte Passwort wird nicht geändert.</p>',
+        'remember-mail-send'                      => 'Password zurücksetzen',
     ],
 
     'en_EN.utf8' => [
+
+        'remember-me'                             => "Remember login on this computer.",
+        'login'                                   => "Sign in",
+        'forgot-password'                         => "Forgot the password?",
+        'mail-referer-not-valid'                  => 'This link is not valid anymore.',
+        'remember_pw_updated'                     => "Password successfully changed. You can now log in.",
+        'remember_pw_newset'                      => 'Please Provide a new set of passwords. The legth of the password must be at least 8 characters and it must contain at least one number.',
+        'remember-mail'                           => '<h2>Forgot your password?</h2>
+                                                      <p>Don\'t worry, it happens to the best of us. Let\'s get you a new password!</p>
+                                                      <p>If you didn\'t request a reset please ignore this email. Your password won\'t change unless you click the button below.</p>',
+        'remember-mail-send'                      => 'Reset my password',
+
         'loginIntro'                              => "Please sign in",
         'logout'                                  => "You logged of successfully",
         'loginFailed'                             => "Username or password incorrect",

@@ -1,5 +1,10 @@
 <?php
 use Monolog\Processor\GitProcessor;
+use Lcobucci\JWT\Builder;
+use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Lcobucci\JWT\Parser;
+use Lcobucci\JWT\ValidationData;
+
 
 if ($container->get('settings')['multiple_spaces'] === true)  {
   $app->get('/', function ($request, $response, $args) {
@@ -428,19 +433,92 @@ $app->group('/rf', function () {
 
   $this->map(['get','post'], '/forgot', function ($request, $response, $args) {
     $email = $request->getParsedBody()['email'];
+    $args["showform"] = true;
+    $template = 'forgot.jade';
     if ($email) {
       $q = $this->db->getUserByEmail($email);
       if ($q === false) {
         $args["message"] = $this->translations['send_reminder_fail'];
       }
       else {
+        $user = $q->findOne();
+        if (is_file(__DIR__. '/../cache/.otc.lock'))
+          $otcstack = json_decode(file_get_contents(__DIR__. '/../cache/.otc.lock'));
+        else
+          $otcstack = new stdClass;
+        $otcstack->{$user->getId()} = uniqid('otc-', true);
+        file_put_contents(__DIR__. '/../cache/.otc.lock',json_encode($otcstack));
+
+
+        $signer = new Sha256();
+        $token = (new Builder())->setIssuer($_SERVER['HTTP_HOST'])    // Configures the issuer (iss claim)
+                                ->setAudience($_SERVER['HTTP_HOST'])  // Configures the audience (aud claim)
+                                ->setId(uniqid('rf', true), true)     // Configures the id (jti claim), replicating as a header item
+                                ->setIssuedAt(time())                 // Configures the time that the token was issue (iat claim)
+                                ->setNotBefore(time())                // Configures the time that the token can be used (nbf claim)
+                                ->setExpiration(time() + 3600)        // Configures the expiration time of the token (nbf claim)
+                                ->set('uid', $user->getId())             // Configures a new claim, called "uid"
+                                ->sign($signer,  $otcstack->{$user->getId()})   // creates a signature using "testing" as key
+                                ->getToken();                         // Retrieves the generated token
+
+        $_mailtext = $this->translations['remember-mail'].'<br><br><a href="'.$_SERVER[HTTP_REFERER].'?otc='.$token.'">'.$this->translations['remember-mail-send'].'</a>';
+        $this->get('sendmail')->sendmail($email, '[ROKFOR CMS] - Password Reminder', $_mailtext);
         $args["message"] = $this->translations['send_reminder_success'];
+        $args["showform"] = false;
       }
     }
     else {
-      $args["message"] = $this->translations['send_reminder'];
+      $otc = $request->getQueryParams()['otc'] ? $request->getQueryParams()['otc'] : $request->getParsedBody()['otc'];
+      if ($otc) {
+        if (is_file(__DIR__. '/../cache/.otc.lock'))
+          $otcstack = json_decode(file_get_contents(__DIR__. '/../cache/.otc.lock'));
+        else
+          $otcstack = [];
+        try {
+          $signer = new Sha256();
+          $token  = (new Parser())->parse((string) $otc); // Parses from a string
+          $u      = $this->db->getUsers()->findPk((int)$token->getClaim('uid'));
+          $data   = new ValidationData(); // It will use the current time to validate (iat, nbf and exp)
+          $data->setIssuer($_SERVER['HTTP_HOST']);
+          $data->setAudience($_SERVER['HTTP_HOST']);
+        } catch (Exception $e) {
+          $args["message"]  = 'Link is not valid';
+          $args["showform"] = false;
+        }
+
+        if ($u && $token->verify($signer, $otcstack->{(int)$token->getClaim('uid')} ? $otcstack->{(int)$token->getClaim('uid')} : "-") && $token->validate($data)) {
+          $args["otc"] = $otc;
+          $template = 'newpw.jade';
+          $errors = [];
+          if ($request->getParsedBody()['password1'] && $request->getParsedBody()['password2']) {
+            if ($this->db->updateRemindedPassword($u, $request->getParsedBody()['password1'], $request->getParsedBody()['password2'], $errors)) {
+              $args["message"]  = $this->translations['remember_pw_updated'];
+              $otcstack->{(int)$token->getClaim('uid')} = null;
+              file_put_contents(__DIR__. '/../cache/.otc.lock',json_encode($otcstack));
+              $args["showform"] = false;
+            }
+            else {
+              $args["message"] = '<ul style="color: red; text-align: left; display: block;">';
+              foreach ($errors as $_ekey) {
+                $args["message"]  .= "<li>".$this->translations[$_ekey].'</li>';
+              }
+              $args["message"] .= '</ul>';
+            }
+          }
+          else {
+            $args["message"]  = $this->translations['remember_pw_newset'];
+          }
+        }
+        else {
+          $args["message"]  = $this->translations['mail-referer-not-valid'];
+          $args["showform"] = false;
+        }
+      }
+      else {
+        $args["message"] = $this->translations['send_reminder'];
+      }
     }
-    $this->view->render($response, 'forgot.jade', $args);
+    $this->view->render($response, $template, $args);
   });
 
   /* Ajax Call:

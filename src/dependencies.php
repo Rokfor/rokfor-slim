@@ -49,6 +49,89 @@ function _mailer($c, $message, $die = false) {
 };
 
 
+/**
+ *
+ */
+class Mailer
+{
+
+  function __construct($c)
+  {
+    $this->settings = $c->get('settings')['mail'];
+  }
+
+  function sendmail($to, $subject, $message) {
+    $mail = new PHPMailer\PHPMailer;
+    $mail->isSMTP();
+    $mail->Host = $this->settings['smtphost'];
+    $mail->SMTPAuth = $this->settings['smtpauth'];
+    if ($this->settings['username'])
+      $mail->Username = $this->settings['username'];
+    if ($this->settings['password'])
+      $mail->Password = $this->settings['password'];
+    if ($this->settings['tls'] === true)
+      $mail->SMTPSecure = 'tls';
+    $mail->Port = $this->settings['port'];
+    $mail->setFrom($this->settings['from']);
+    $mail->addAddress($to);
+    $mail->isHtml(true);
+    $mail->Subject = $subject;
+    $mail->CharSet = 'UTF-8';
+    $mail->Body    = '<!DOCTYPE html>
+    <html>
+    <head>
+    <meta content="width=device-width" name="viewport">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <title>'.$subject.'</title>
+    <style>
+      @media screen and (max-width: 600px) {
+        .h--1 {
+          font-size: 22px !important;
+        }
+      }
+      @media screen and (max-width: 600px) {
+        .wrapper {
+          width: 100% !important;
+        }
+      }
+      .logo {
+      background-color: rgb(54, 127, 169);
+      border-bottom-color: rgba(0, 0, 0, 0);
+      border-bottom-style: solid;
+      border-bottom-width: 0px;
+      box-sizing: border-box;
+      color: rgb(255, 255, 255);
+      display: block;
+      font-size: 20px;
+      height: 50px;
+      line-height: 50px;
+      text-align: center;
+      width: 100%;
+      }
+      header {
+        margin-bottom: 2em;
+      }
+    </style>
+    </head>
+    <body style="font-family: Arial, sans-serif; text-align: left; margin: 0; padding: 0;">
+    <header class="main-header"><span style="width: 100%" class="logo"><img src="http://'.$_SERVER['HTTP_HOST'].'/assets/img/logo-w.svg"></span></header>
+    <table border="0" cellpadding="0" cellspacing="0" class="wrapper" style="margin: auto; max-width: 100%; width: 600px;" width="600">
+    <tr>
+    <td>
+    '.$message.'
+    </td>
+    </tr>
+    </table>
+    ';
+    $mail->send();
+  }
+}
+
+$container['sendmail'] = function ($c) {
+  return (new Mailer($c));
+};
+
+
 // translation settings
 $container['translations'] = function ($c) {
   $locale = $c->get('settings')['locale'];

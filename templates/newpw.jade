@@ -3,13 +3,19 @@ include parts/login.header.jade
   .card.card-container
     img.profile-img-card#profile-img(src="/assets/img/logo-small-w-border-01.svg")
     p.profile-name-card
-    p.login-box-msg=$message
+    p.login-box-msg!=$message
     if showform
       form.form-signin(action='/rf/forgot', method='post')
         input(type="hidden", name=csrf['nameKey'], value=csrf['name'])
         input(type="hidden", name=csrf['valueKey'], value=csrf['value'])
+        input(type="hidden", name='otc', value=otc)
         .form-group
-          input.form-control#inputEmail(type='email', name='email', placeholder='E-Mail')
+          input.form-control#inputPassword1(type='password', name='password1', placeholder=$translations['profile_newpw'])
+        .form-group
+          input.form-control#inputPassword2(type='password', name='password2', placeholder=$translations['profile_newpwrepeat'])
         .row
           .col-xs-12
             button.btn.btn-primary(type='submit') Send
+    else
+      a.btn.btn-primary(href='/rf/login')=$translations['login']
+      

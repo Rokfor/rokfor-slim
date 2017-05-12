@@ -16,13 +16,13 @@ include parts/login.header.jade
         .checkbox#remember
           label
             input(type="checkbox" value="remember-me", name='remember-me')
-            span Remember me
+            span=$translations['remember-me']
       .row
         .col-xs-12
-          button.btn.btn-primary(type='submit') Sign In
+          button.btn.btn-primary(type='submit')=$translations['login']
       .row
         .col-xs-6
-          a.forgot-password(href="/rf/forgot") Forgot the password?
+          a.forgot-password(href="/rf/forgot")=$translations['forgot-password']
         .col-xs-6
           a.not-user(href="#")
 
