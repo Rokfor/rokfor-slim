@@ -1,3 +1,10 @@
+if alert
+  .alert.alert-dismissible.margin.alert-danger(style="position: absolute; z-index: 20000; right: 0;")
+    button.close(type="button", data-dismiss="alert", aria-hidden="true") ×
+    h4
+      i.icon.fa.fa-warning
+      span=$translations['alert_danger']
+    span!=alert
 table#userstable.table.table-bordered.table-striped.dataTable
   thead
     tr

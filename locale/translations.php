@@ -272,6 +272,8 @@ return [
         'user_modal_grouprissue'                  => "Ausgaben",
         'user_modal_groupruser'                   => "Mitglieder",
         'user_modal_grouprtemplate'               => "Templates",
+        'user_not_found'                          => "Benutzer nicht gefunden",
+        'user_email_exists'                       => "Benutzername oder E-Mail bereits vorhanden",
 
         'remember-me'                             => "Login Daten auf diesem Rechner merken.",
         'login'                                   => "Anmelden",
@@ -578,6 +580,9 @@ return [
         'user_modal_grouprissue'                  => "Issues",
         'user_modal_groupruser'                   => "Members",
         'user_modal_grouprtemplate'               => "Templates",
+        'user_not_found'                          => "User not found",
+        'user_email_exists'                       => "Username or email already existing.",
+
     ],
 
 ];

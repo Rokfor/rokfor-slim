@@ -182,12 +182,38 @@ $app->group('/rf', function () {
           $data[$key['name']] = $key['value'];
       }
       if ($data["id"] == $args['id']) {
+        // Edit an existing user
         if ($args['id'] <> "new") {
           $u = $this->db->getUsers()->findPk($args['id']);
+          if (!$u) {
+            $args['alert'] = $this->translations['user_not_found'];
+          }
+          else {
+            $errors = [];
+            if ($this->db->checkUser($data["username"], $data["email"], $data["password"], $args['id'], $errors)) {
+              $args['alert'] = $this->translations['user_email_exists'];
+              foreach ($errors as $_ekey) {
+                $args["alert"]  .= "<br>".$this->translations[$_ekey];
+              }
+              $u = false;
+            }
+          }
         }
+        // Add a new one. NewUser returns a new user object unless username or email already
+        // exists.
         else if ($data["password"]) {
-          $u = $this->db->newUser();
+          $errors = [];
+          if ($this->db->checkUser($data["username"], $data["email"], $data["password"], false, $errors)) {
+            $args['alert'] = $this->translations['user_email_exists'];
+            foreach ($errors as $_ekey) {
+              $args["alert"]  .= "<br>".$this->translations[$_ekey];
+            }
+          }
+          else {
+            $u = $this->db->newUser();
+          }
         }
+
         if ($u) {
           $u->setUsergroup($data["role"])
             ->setUsername($data["username"])
