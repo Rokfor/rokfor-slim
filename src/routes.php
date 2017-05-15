@@ -121,7 +121,15 @@ $app->group('/rf', function () {
         break;
       case 'profile':
         $errors =[];
-        if ($this->db->updateProfile($form[0]['value'], $form[1]['value'], $form[2]['value'], $errors, $form[3]['value'])) {
+
+        $config = $this->db->getUser()['config'];
+        if (!$config)
+          $config = new stdClass;
+        $config->cors = [
+          get => $form[5]['value'],
+          postputdel => $form[6]['value'],
+        ];
+        if ($this->db->updateProfile($form[0]['value'], $form[1]['value'], $form[2]['value'], $errors, $form[3]['value'], $form[4]['value'], json_encode($config))) {
           $json['success'] = $this->translations['general_success'];
           $json['message'] = $this->translations['profile_updated'];
           $json['trigger']['username'] = $this->db->getUser()['username'];
@@ -442,12 +450,11 @@ $app->group('/rf', function () {
       }
       else {
         $user = $q->findOne();
-        if (is_file(__DIR__. '/../cache/.otc.lock'))
-          $otcstack = json_decode(file_get_contents(__DIR__. '/../cache/.otc.lock'));
-        else
+        $otcstack = json_decode($user->getConfigSys());
+        if (!$otcstack)
           $otcstack = new stdClass;
-        $otcstack->{$user->getId()} = uniqid('otc-', true);
-        file_put_contents(__DIR__. '/../cache/.otc.lock',json_encode($otcstack));
+        $otcstack->otc = uniqid('otc-', true);
+        $user->setConfigSys(json_encode($otcstack))->save();
 
 
         $signer = new Sha256();
@@ -458,7 +465,7 @@ $app->group('/rf', function () {
                                 ->setNotBefore(time())                // Configures the time that the token can be used (nbf claim)
                                 ->setExpiration(time() + 3600)        // Configures the expiration time of the token (nbf claim)
                                 ->set('uid', $user->getId())             // Configures a new claim, called "uid"
-                                ->sign($signer,  $otcstack->{$user->getId()})   // creates a signature using "testing" as key
+                                ->sign($signer,  $otcstack->otc)   // creates a signature using "testing" as key
                                 ->getToken();                         // Retrieves the generated token
 
         $_mailtext = $this->translations['remember-mail'].'<br><br><a href="'.$_SERVER[HTTP_REFERER].'?otc='.$token.'">'.$this->translations['remember-mail-send'].'</a>';
@@ -470,10 +477,6 @@ $app->group('/rf', function () {
     else {
       $otc = $request->getQueryParams()['otc'] ? $request->getQueryParams()['otc'] : $request->getParsedBody()['otc'];
       if ($otc) {
-        if (is_file(__DIR__. '/../cache/.otc.lock'))
-          $otcstack = json_decode(file_get_contents(__DIR__. '/../cache/.otc.lock'));
-        else
-          $otcstack = [];
         try {
           $signer = new Sha256();
           $token  = (new Parser())->parse((string) $otc); // Parses from a string
@@ -485,28 +488,34 @@ $app->group('/rf', function () {
           $args["message"]  = 'Link is not valid';
           $args["showform"] = false;
         }
-
-        if ($u && $token->verify($signer, $otcstack->{(int)$token->getClaim('uid')} ? $otcstack->{(int)$token->getClaim('uid')} : "-") && $token->validate($data)) {
-          $args["otc"] = $otc;
-          $template = 'newpw.jade';
-          $errors = [];
-          if ($request->getParsedBody()['password1'] && $request->getParsedBody()['password2']) {
-            if ($this->db->updateRemindedPassword($u, $request->getParsedBody()['password1'], $request->getParsedBody()['password2'], $errors)) {
-              $args["message"]  = $this->translations['remember_pw_updated'];
-              $otcstack->{(int)$token->getClaim('uid')} = null;
-              file_put_contents(__DIR__. '/../cache/.otc.lock',json_encode($otcstack));
-              $args["showform"] = false;
+        if ($u) {
+          $otcstack = json_decode($u->getConfigSys());
+          if ($token->verify($signer, $otcstack->otc) && $token->validate($data)) {
+            $args["otc"] = $otc;
+            $template = 'newpw.jade';
+            $errors = [];
+            if ($request->getParsedBody()['password1'] && $request->getParsedBody()['password2']) {
+              if ($this->db->updateRemindedPassword($u, $request->getParsedBody()['password1'], $request->getParsedBody()['password2'], $errors)) {
+                $args["message"]  = $this->translations['remember_pw_updated'];
+                $otcstack->otc = null;
+                $u->setConfigSys(json_encode($otcstack))->save();
+                $args["showform"] = false;
+              }
+              else {
+                $args["message"] = '<ul style="color: red; text-align: left; display: block;">';
+                foreach ($errors as $_ekey) {
+                  $args["message"]  .= "<li>".$this->translations[$_ekey].'</li>';
+                }
+                $args["message"] .= '</ul>';
+              }
             }
             else {
-              $args["message"] = '<ul style="color: red; text-align: left; display: block;">';
-              foreach ($errors as $_ekey) {
-                $args["message"]  .= "<li>".$this->translations[$_ekey].'</li>';
-              }
-              $args["message"] .= '</ul>';
+              $args["message"]  = $this->translations['remember_pw_newset'];
             }
           }
           else {
-            $args["message"]  = $this->translations['remember_pw_newset'];
+            $args["message"]  = $this->translations['mail-referer-not-valid'];
+            $args["showform"] = false;
           }
         }
         else {

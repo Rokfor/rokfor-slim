@@ -38,6 +38,9 @@ return [
         'role_member'                             => "Mitglied",
         'role_profile'                            => "Profil",
         'role_signout'                            => "Abmelden",
+        'profile_acl'                             => "IP",
+        'profile_acl_title'                       => "Zugangsbeschränkung",
+        'profile_acl_text'                        => "Einschränkung nach Ip-Adressen: Mehrere Einträge mit Komma trennen, leer lassen für keine Beschränkung.",
         'profile_title'                           => "Profil bearbeiten",
         'profile_role'                            => "Rolle",
         'profile_groups'                          => "Gruppe",
@@ -281,9 +284,17 @@ return [
                                                       <p>Keine Sorge. Das kann immer mal passieren.</p>
                                                       <p>Falls sie kein neues Passwort angefordert haben, können sie diese E-Mail ignorieren. Das alte Passwort wird nicht geändert.</p>',
         'remember-mail-send'                      => 'Password zurücksetzen',
+        'CORS_title'                              => 'CORS',
+        'CORS_get'                                => 'Get',
+        'CORS_postputdel'                         => 'Post/Del/Put',
+        'CORS_infotext'                           => 'CORS Settings des Api Zugangs. Kommaseparierte Liste mit Domains. Leer oder * für keine Beschränkung.',
     ],
 
     'en_EN.utf8' => [
+        'CORS_title'                              => 'CORS',
+        'CORS_get'                                => 'Get',
+        'CORS_postputdel'                         => 'Post/Del/Put',
+        'CORS_infotext'                           => 'CORS settings for the api access. Comma separated list of domains. Leave empty or use the wildcard (*) to enable cors access for everybody.',
 
         'remember-me'                             => "Remember login on this computer.",
         'login'                                   => "Sign in",
@@ -333,6 +344,9 @@ return [
         'role_member'                             => "Member",
         'role_profile'                            => "Profile",
         'role_signout'                            => "Sign out",
+        'profile_acl_title'                       => "Restriction",
+        'profile_acl'                             => "IP",
+        'profile_acl_text'                        => "* Leave empty for no restriction. Comma separated list for multiple entries.",
         'profile_title'                           => "Edit profile",
         'profile_role'                            => "Role",
         'profile_groups'                          => "Group",

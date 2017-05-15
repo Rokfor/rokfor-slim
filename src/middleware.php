@@ -303,9 +303,18 @@ $apiauth = function ($request, $response, $next) {
               ->findOne();
         if ($u) {
           $this->db->setUser($u->getId());
-          $this->db->addLog('get_api', 'GET' , $request->getAttribute('ip_address'));
-          $response = $next($request, $response);
-          return $response;
+          $access = true;
+          if (trim($this->db->getUser()['ip'])) {
+            if (!stristr($this->db->getUser()['ip'], $request->getAttribute('ip_address'))) {
+              $msg = "IP not allowed";
+              $access = false;
+            }
+          }
+          if ($access === true) {
+            $this->db->addLog('get_api', 'GET' , $request->getAttribute('ip_address'));
+            $response = $next($request, $response);
+            return $response;
+          }
         }
         else $msg = "Wrong key supplied";
       }
@@ -323,9 +332,18 @@ $apiauth = function ($request, $response, $next) {
 
         if ($u && $token->verify($signer, $u->GetRwapikey()) && $token->validate($data)) {
           $this->db->setUser($u->getId());
-          $this->db->addLog('post_api', 'POST' , $request->getAttribute('ip_address'));
-          $response = $next($request, $response);
-          return $response;
+          $access = true;
+          if ($this->db->getUser()['ip']) {
+            if (!stristr($this->db->getUser()['ip'], $request->getAttribute('ip_address'))) {
+              $msg = "IP not allowed";
+              $access = false;
+            }
+          }
+          if ($access === true) {
+            $this->db->addLog('post_api', 'POST' , $request->getAttribute('ip_address'));
+            $response = $next($request, $response);
+            return $response;
+          }
         }
         else $msg = "Wrong key supplied";
       }
@@ -475,11 +493,24 @@ $redis = function ($request, $response, $next) {
  *
  * @author Urs Hofer
  */
-$app->add(function ($request, $response, $next) {
+$cors = function ($request, $response, $next) {
   $corsOptions = [];
+  if (trim($this->db->getUser()['config']->cors->get) == "") {
+    $cors_get = (array)$this->settings['cors']['ro'];
+  }
+  else {
+    $cors_get = explode(',', trim($this->db->getUser()['config']->cors->get));
+  }
+  if (trim($this->db->getUser()['config']->cors->postputdel) == "") {
+    $cors_ppd = (array)$this->settings['cors']['rw'];
+  }
+  else {
+    $cors_ppd = explode(',', trim($this->db->getUser()['config']->cors->postputdel));
+  }
+
   if ($request->isGet()) {
     $corsOptions = [
-      "origin"            => $this->settings['cors']['ro'],
+      "origin"            => join(',', $cors_get),
       "maxAge"            => 1728000,
       "allowCredentials"  => true,
       "allowMethods"      => array("GET", "OPTIONS")
@@ -487,7 +518,7 @@ $app->add(function ($request, $response, $next) {
   }
   if ($request->isOptions()) {
     $corsOptions = [
-      "origin"            => array_merge((array)$this->settings['cors']['rw'], (array)$this->settings['cors']['ro']),
+      "origin"            => join(',', array_merge((array)$cors_get, (array)$cors_ppd)),
       "maxAge"            => 1728000,
       "allowCredentials"  => true,
       "allowMethods"      => array("GET", "OPTIONS", "POST", "PUT", "DELETE")
@@ -495,7 +526,7 @@ $app->add(function ($request, $response, $next) {
   }
   if ($request->isPost() || $request->isPut() || $request->isDelete()) {
     $corsOptions = [
-      "origin"            => $this->settings['cors']['rw'],
+      "origin"            => join(',', $cors_ppd),
       "maxAge"            => 1728000,
       "allowCredentials"  => true,
       "allowMethods"      => array("POST", "PUT", "DELETE")
@@ -503,4 +534,4 @@ $app->add(function ($request, $response, $next) {
   }
   $cors = new \CorsSlim\CorsSlim($corsOptions);
   return $cors->__invoke($request, $response, $next);
-});
+};
