@@ -2,9 +2,9 @@
 
 (function ($) {
   $.rokfor.initStructure = function() {
-  
+
     // Sorting: Books
-  
+
     $('div.sortable').sortable({
       forcePlaceholderSize: false,
       items       : '.bookedit',
@@ -17,7 +17,7 @@
               var top = event.pageY - $target.offsetParent().offset().top - (ui.helper.outerHeight(true) / 2);
               ui.helper.css({'top' : top + 'px'});
           }
-      },      
+      },
       stop: function() {
         var data = [];
         var sort = 0;
@@ -31,9 +31,9 @@
         });
       }
     })
-  
+
     // Sorting: Chapters and Issues
-  
+
     var tabbedsortable = function(e) {
       e.sortable({
         forcePlaceholderSize: false,
@@ -47,14 +47,14 @@
                 var top = event.pageY - $target.offsetParent().offset().top - (ui.helper.outerHeight(true) / 2);
                 ui.helper.css({'top' : top + 'px'});
             }
-        },        
+        },
         stop: function() {
           var data = [];
           var sort = 0;
           $(this).find('tr').each(function(e){
             data.push($(this).attr('id'));
             sort++;
-          });      
+          });
           var type = $(this).parents('.tab-pane').hasClass('chapter') ? 'chapter'
                                                                          : ($(this).parents('.tab-pane').hasClass('issue') ? 'issue'
                                                                                                                            : 'book')
@@ -66,10 +66,10 @@
       })
     }
     tabbedsortable($('tbody.sortable'));
-  
-  
+
+
     // Keyup: Either Add or Rename
-  
+
     $('section.content').on('keyup', 'input', function(e) {
       // Add: Control Button
       if ($(this).attr('data-button')) {
@@ -101,7 +101,7 @@
         }
       }
     })
-  
+
     // Klicks
 
     $('section.content').on('click', 'a.changestate, a.btn, button.btn:not(.dropdown-toggle)', function(e) {
@@ -132,7 +132,7 @@
       }
       else if (bt.hasClass('btn-warning')) {
         action = "duplicate";
-      }    
+      }
       else if (bt.hasClass('btn-success')) {
         id = bt.parents('div.bookedit').attr('id');
         action = "add";
@@ -144,9 +144,9 @@
       else if (bt.hasClass('rights')) {
         action = bt.attr("href");
         var data = JSON.parse(bt.attr("data-rights"));
-        $('#rfaction_rights').find('option').attr('selected', false);
+        $('#rfaction_rights').find('option').prop('selected', false);
         $(data).each(function(e,v) {
-          $('#rfaction_rights').find('option#select_' + v).attr('selected', true);
+          $('#rfaction_rights').find('option#select_' + v).prop('selected', true);
         })
         var m = $('#rfaction_rights').modal({keyboard: true});
         m.modal.data = {
@@ -172,8 +172,8 @@
         }
         else if (bt.hasClass('settingsbook')) {
           schema = $.rokfor.configschema_book;
-        }        
-        
+        }
+
         var value = bt.attr("data-rights") ? JSON.parse(bt.attr("data-rights")) : {};
         var m = $('#rfaction_jsonedit_chapter').modal({keyboard: true});
         action = bt.attr("href");
@@ -195,7 +195,7 @@
         m.modal.editor.setValue(value);
         return false;
       }
-      
+
 
       var url = "/rf/structure/"+action+(type ? "/"+ type : '')+(id ? "/"+ id : '');
 
@@ -207,7 +207,7 @@
             tabbedsortable(target.find('tbody.sortable'));
             $('#rfmenu').load('/rf/menu');
           }
-        });      
+        });
       }
       // Is Get
       else {
@@ -217,11 +217,11 @@
             tabbedsortable(target.find('tbody.sortable'));
             $('#rfmenu').load('/rf/menu');
           }
-        });      
+        });
       }
       return false;
     });
-    
+
     // Close Modal - store JSON
     $('#rfaction_jsonedit_chapter').find('button.rfmodal_continue').on('click', function(e) {
       e.stopPropagation();
@@ -239,9 +239,9 @@
       console.log("destroy", m.modal)
       m.modal.editor.destroy();
     });
-    
-    
-    
+
+
+
     // Close Modal - store JSON
     $('#rfaction_rights').find('button.rfmodal_continue').on('click', function(e) {
       e.stopPropagation();
@@ -260,8 +260,6 @@
       });
       m.modal('hide');
     })
-    
+
   }
 })(jQuery);
-
-

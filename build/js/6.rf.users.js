@@ -5,9 +5,9 @@
 
 
     // Modals
-    
+
     var usermodal = $('#usermodal');
-    var groupmodal = $('#groupmodal');    
+    var groupmodal = $('#groupmodal');
     var tablestandards = {
         "paging": true,
         "lengthChange": false,
@@ -18,10 +18,10 @@
         "select": false,
         "dom": '',
       };
-      
+
     var initUsersTable = function(t) {
       var table = $(t).DataTable(tablestandards);
-    
+
       $(t).parents('.box').find('input.search').keyup(function(){
         table.search($(this).val()).draw() ;
       });
@@ -46,17 +46,16 @@
               $('table#groupstable').parent('.box-body').html(data);
               initUsersTable('table#groupstable');
           });
-        }        
+        }
         return false;
       })
       $(t).find('a.btn-warning').click(function(e) {
         e.stopPropagation();
         if ($(this).attr('data-modal') == '#usermodal') {
           $.rokfor.get("/rf/user/" + $(this).parents('tr').find('td:first-child').text(), function(data){
-            usermodal.populate(data.user);
             usermodal.checkpw = false;
             usermodal.password = true;
-            usermodal.modal({keyboard: true});
+            usermodal.populate(data.user, function(){usermodal.modal({keyboard: true})});
           });
         }
         if ($(this).attr('data-modal') == '#groupmodal') {
@@ -64,23 +63,20 @@
             groupmodal.populate(data.groups);
             groupmodal.modal({keyboard: true});
           });
-        }        
+        }
         return false;
       })
     }
-      
+
     // Populate functions
-    
-    usermodal.populate = function(data) {
+
+    usermodal.populate = function(data, callback) {
       $(this).find('#userid').val(data.id || "");
       $(this).find('#user').val(data.username || "");
       $(this).find('#nemail').val(data.email || "");
       $(this).find('#npassword').val(data.password || "");
       $(this).find('#role option').each(function() {
-        if (data.role && (data.role == $(this).attr('value'))) 
-          $(this).attr('selected', true);
-        else
-          $(this).attr('selected', false);
+        $(this).prop('selected', data.role && (data.role == $(this).attr('value')));
       })
       var groups = $(this).find('#group');
       groups.find('option').remove();
@@ -88,8 +84,11 @@
         groups.append( $('<option></option>').val(s.id).html(s.name).attr('selected', s.selected))
       });
       $('.select2').select2();
+      if (callback) {
+        callback()
+      }
     }
-    
+
     groupmodal.populate = function(data, callback) {
       callback = callback || function(){};
       var rbooks = $(this).find('#rbook');
@@ -134,7 +133,9 @@
       if (typeof data == "object") {
         $('.select2').select2();
       }
-      callback()
+      if (callback) {
+        callback()
+      }
     }
 
     // Reload Modal Settings after Book Change
@@ -144,7 +145,7 @@
       var bookselector = $('#rbook').serializeArray();
       var formatselector = $('#rformat').serializeArray();
       console.log(bookselector,formatselector);
-      
+
       $(groupmodal.data.books).each(function(i,s) {
         var book = this
         book.selected = false;
@@ -156,7 +157,7 @@
           format.selected = false;
           $(formatselector).each(function(){
             if (format.id == this.value) format.selected = true;
-          })          
+          })
         })
       });
       // Repopulate Selectors if book has changed
@@ -167,17 +168,16 @@
 
     // Sorting: Chapters and Issues
     // Activating List Table
-    
+
     $('table#userstable, table#groupstable').each(function(e){
       initUsersTable(this)
     })
-  
+
     $('section.content').on('click', '#useradd', function(e) {
       e.stopPropagation();
       $.rokfor.get("/rf/user/new", function(data){
-        usermodal.populate(data.user);
         usermodal.checkpw = true;
-        usermodal.modal({keyboard: true});
+        usermodal.populate(data.user, function(){usermodal.modal({keyboard: true})});
       });
       return false;
     });
@@ -190,7 +190,7 @@
       });
       return false;
     });
-    
+
     // Close User Modal - store JSON
     usermodal.find('button.rfmodal_continue').on('click', function(e) {
       e.stopPropagation();
@@ -215,9 +215,7 @@
         $('table#groupstable').parent('.box-body').html(data);
         initUsersTable('table#groupstable')
       });
-    })    
+    })
 
   }
 })(jQuery);
-
-
