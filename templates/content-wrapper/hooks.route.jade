@@ -64,15 +64,29 @@ if (!$post)
                   .col-sm-10
                     input.form-control#setCode(name="setCode", type="text")
                 .form-group
-                  label.col-sm-2.control-label(for="setConfigSys") Route
-                  .col-sm-10
-                    input.form-control#setConfigSys(name="setConfigSys", type="text")
-                .form-group
-                  label.col-sm-2.control-label(for="setSplit") Method
+                  label.col-sm-2.control-label(for="setSplit") Api Method
                   .col-sm-10
                     select.form-control#setSplit(name="setSplit")
                       option(value="GET") GET
                       option(value="POST") POST
+
+                .form-group
+                  .col-sm-2
+                  .col-sm-10 
+                    h4 Route Hooks
+                    p Backend Hooks rufen "Api Call" bei einer spezifischen Aktion im Backendbereich auf.
+
+                .form-group
+                  label.col-sm-2.control-label(for="setConfigSys") Route
+                  .col-sm-10
+                    input.form-control#setConfigSys(name="setConfigSys", type="text")
+
+
+                .form-group
+                  .col-sm-2
+                  .col-sm-10
+                    h4 Field Hooks
+                    p Field Hooks rufen "Api Call" beim Speichern eines Datenfeldes auf.
 
                 .form-group
                   label.col-sm-2.control-label(for="addTemplates") Field
