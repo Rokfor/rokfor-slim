@@ -490,7 +490,7 @@ $app->group('/rf', function () {
         }
         if ($u) {
           $otcstack = json_decode($u->getConfigSys());
-          if ($token->verify($signer, $otcstack->otc) && $token->validate($data)) {
+          if ($token->verify($signer, $otcstack->otc ? $otcstack->otc : "-") && $token->validate($data)) {
             $args["otc"] = $otc;
             $template = 'newpw.jade';
             $errors = [];
