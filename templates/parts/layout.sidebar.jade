@@ -21,10 +21,10 @@ if ($__currentuser__['level'] > 1)
         a.btn.btn-block.btn-sm.btn-warning.ajaxload(href='/rf/routehooks', target=".content-wrapper#list", data-toggle="control-sidebar")
           i.fa.fa-rocket &nbsp;
           span=$translations['settings_route_hooks']
-        a.btn.btn-block.btn-sm.btn-warning.disabled(href='javascript::;')
+        a.btn.btn-block.btn-sm.btn-warning.disabled(href='javascript::;', style="opacity: 0.25;")
           i.fa.fa-rocket &nbsp;
           span Batch Hooks
-        a.btn.btn-block.btn-sm.btn-warning.disabled(href='javascript::;')
+        a.btn.btn-block.btn-sm.btn-warning.disabled(href='javascript::;', style="opacity: 0.25;")
           i.fa.fa-plug &nbsp;
           span Exporter Hooks
 
