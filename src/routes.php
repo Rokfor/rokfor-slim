@@ -1217,8 +1217,65 @@ $app->group('/rf', function () {
    * POST /rf/exporters
    *
    */
-  $this->map(['GET', 'POST'], '/exporters', function ($request, $response, $args) {
+  $this->map(['GET', 'POST'], '/exporters[/{id:[0-9]*}]', function ($request, $response, $args) {
+    $args['processors'] = \PluginsQuery::create();
+    $args['post']       = $request->isPost();
+    if ($args['id']) {
+      $u = new \Pdf();
+      $u->setDate(time())
+        ->setPlugin($args['id'])
+        ->setPages(0)
+        ->setFile('–')
+        ->setConfigSys("Processing");
+      $u->save();
+    }
+    $args['exports'] = \PdfQuery::create()->orderByDate('desc')->limit(20);
     $this->view->render($response, 'content-wrapper/exporters.jade', $args);
+  });
+
+  /* Batch Hooks
+   *
+   * Call an Url on a certain action
+   *
+   * GET /rf/batchhooks[/{id:[0-9]*}]
+   * POST /rf/batchhooks[/{id:[0-9]*}]
+   *
+   */
+  $this->map(['GET', 'POST'], '/batchhooks[/{id:[0-9]*}]', function ($request, $response, $args) {
+    $args['processors'] = \PluginsQuery::create();
+    $args['post']       = $request->isPost();
+
+    if ($args['post']) {
+      if ($request->getParsedBody()['data'] === "Delete") {
+        $u = $args['processors']->findPk($args['id']);
+        $u->delete();
+      }
+      else {
+        /*
+        Array (
+        [0] => Array ( name] => id [value] => )
+        [1] => Array ( [name] => setCode [value] => )
+        [2] => Array ( [name] => setConfigSys [value] => )
+        [3] => Array ( [name] => setSplit [value] => )
+        [4] => Array ( [name] => setField [value] => 2 )
+        )
+        */
+        $u = new \Plugins();
+
+        foreach ($request->getParsedBody()['data'] as $value) {
+          if ($value['name'] === "addTemplates" && $value['value'] !== -1) {
+            $value['value'] = $this->db->getTemplatefields()->findPk($value['value']);
+          }
+          if (method_exists($u, $value['name']) && $value['value']) {
+            $u->{$value['name']}($value['value']);
+          }
+        }
+        $u->save();
+      }
+    }
+
+
+    $this->view->render($response, 'content-wrapper/hooks.batch.jade', $args);
   });
 
   /* Route Hooks

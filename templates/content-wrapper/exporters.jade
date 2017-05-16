@@ -1,30 +1,43 @@
 section.content-header
-  h1 Exported Documents
+  h1 Exporter Actions
+  
 section.content
+  .row
+    each exporter in processors
+      .col-md-4.col-sm-6.col-xs-12
+        a.info-box.ajaxload(href='/rf/exporters/'.$exporter->getId(), target=".content-wrapper#detail")
+          span.info-box-icon.bg-green
+            i.fa.fa-external-link
+          .info-box-content
+            span.info-box-text.text-muted
+              b=$exporter->getName()
+            span.info-box-text.text-muted=$exporter->getConfigSys()
+            
+                
   .row
     .col-md-12
       .box.box-success
         .box-header.with-border
-          h4 Files
+          h4 Exporter Results
         .box-body
           table.table.table-striped
             thead
               th Datum
-              th Datei
+              th Zeit
               th Status
               th Hook
+              th Pages
+              th Datei
             tbody
-              tr
-                td 1.
-                td File.pdf
-                td
-                  span.badge.bg-red Failed
-                td a4-readinglist
-              tr
-                td 1.
-                td File.pdf
-                td
-                  span.badge.bg-green Ok
-                td a4-readinglist
+              each export in exports
+                tr
+                  td=date('d.m.Y', $export->getDate())
+                  td=date('H:i:s', $export->getDate())
+                  td
+                    span.badge.bg-red=$export->getConfigSys()
+                  td=$export->getPlugins()->getName()
+                  td=$export->getPages()
+                  td=$export->getFile()
+
 
         .box-footer

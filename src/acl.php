@@ -33,7 +33,7 @@ class Acl extends ZendAcl
         $_rf_routes['user'][] = ['/rf/contribution/{action}/{id:[0-9]*}',                                   ['GET','POST']];
         $_rf_routes['user'][] = ['/rf/field/{id:[0-9]*}',                                                   'POST'];
         $_rf_routes['user'][] = ['/rf/profile',                                                             ['GET','POST']];
-        $_rf_routes['user'][] = ['/rf/exporters',                                                           ['GET','POST']];
+        $_rf_routes['user'][] = ['/rf/exporters[/{id:[0-9]*}]',                                             ['GET','POST']];
         $_rf_routes['user'][] = ['/rf/proxy',                                                               'GET'];
 
 
@@ -55,6 +55,7 @@ class Acl extends ZendAcl
         $_rf_routes['root'][] = ['/rf/group[/{id:new|[0-9]*}]',                                             ['GET','POST']];
         $_rf_routes['root'][] = ['/rf/group/delete/{id:[0-9]*}',                                            'GET'];
         $_rf_routes['root'][] = ['/rf/routehooks[/{id:[0-9]*}]',                                            ['GET','POST']];
+        $_rf_routes['root'][] = ['/rf/batchhooks[/{id:[0-9]*}]',                                            ['GET','POST']];
 
 
         // Routes for the JSON api. They are all guest routes since authentification

@@ -1,0 +1,70 @@
+if (!$post)
+  section.content-header
+    h1 Exporters: Asynchronous Callback Actions
+
+mixin list
+  .row
+    .col-md-12
+      .box.box-success
+        .box-header.with-border
+          h4 Actions
+        .box-body
+          table.table.table-striped
+            thead
+              th Id
+              th Name
+              th Api Call
+              th Action
+
+            tbody
+              if (count($processors->find()) == 0)
+                tr
+                  td(colspan=6, style="text-align: center;") No Hooks stored
+              each processor in processors
+                tr
+                  td=$processor->getId()
+                  td=$processor->getName()
+                  td=$processor->getConfigSys()
+                  td
+                    a.btn.btn-xs.btn-danger(
+                      href="/rf/batchhooks/".$processor->getId()
+                      ) Delete
+        .box-footer
+          button.btn.btn-success#batchadd
+            i.fa.fa-plus &nbsp;
+            span Add Hook
+
+if (!$post)
+  section.content
+    +list
+if ($post)
+  +list
+
+
+if (!$post)
+  .modal.fade#addmodal(tabindex="-1",role="dialog")
+    .modal-dialog(role="document")
+      .modal-content
+        .modal-header
+          button.close(type="button", data-dismiss="modal",  aria-label="Close")
+            span(aria-hidden="true") &times;
+          h4.modal-title Add Exporter Hook
+        .modal-body
+          form.user
+            input#groupid(name="id", type="hidden")
+            .form-horizontal
+                .form-group
+                  label.col-sm-2.control-label(for="setName") Name
+                  .col-sm-10
+                    input.form-control#setCode(name="setName", type="text")
+                .form-group
+                  label.col-sm-2.control-label(for="setConfigSys") Api Call
+                  .col-sm-10
+                    input.form-control#setCode(name="setConfigSys", type="text")                      
+        .modal-footer
+          button.btn.pull-left(type="button", data-dismiss="modal")=$translations['rfmodal_close']
+          button.btn.btn-primary.rfmodal_continue(type="button")=$translations['rfmodal_continue']
+
+  include ../js/csrf.js.jade
+  script.
+    $.rokfor.initBatchHooks();
