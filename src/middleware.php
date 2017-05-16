@@ -80,7 +80,7 @@ $app->add(function ($request, $response, $next) {
  * @author Urs Hofer
  */
 
-$checkProxyHeaders = true;
+$checkProxyHeaders = false;
 $trustedProxies = ['10.0.0.1', '10.0.0.2'];
 $app->add(new RKA\Middleware\IpAddress($checkProxyHeaders, $trustedProxies));
 
@@ -335,7 +335,7 @@ $apiauth = function ($request, $response, $next) {
           $access = true;
           if ($this->db->getUser()['ip']) {
             if (!stristr($this->db->getUser()['ip'], $request->getAttribute('ip_address'))) {
-              $msg = "IP not allowed";
+              $msg = "IP not allowed: ".$request->getAttribute('ip_address');
               $access = false;
             }
           }
