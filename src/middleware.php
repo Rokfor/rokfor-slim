@@ -80,9 +80,8 @@ $app->add(function ($request, $response, $next) {
  * @author Urs Hofer
  */
 
-$checkProxyHeaders = false;
-$trustedProxies = ['10.0.0.1', '10.0.0.2'];
-$app->add(new RKA\Middleware\IpAddress($checkProxyHeaders, $trustedProxies));
+
+$app->add(new RKA\Middleware\IpAddress(false, false));
 
 
 /**
