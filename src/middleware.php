@@ -90,8 +90,16 @@ $app->add(function ($request, $response, $next) {
   die();*/
 
   $checkProxyHeaders = true;
+  $headersToInspect = [
+    'X-Real-Ip',
+    'Forwarded',
+    'X-Forwarded-For',
+    'X-Forwarded',
+    'X-Cluster-Client-Ip',
+    'Client-Ip'
+  ];
   $trustedProxies = (array)$this->settings['trusted_proxies'];
-  $ip = new RKA\Middleware\IpAddress($checkProxyHeaders, $trustedProxies);
+  $ip = new RKA\Middleware\IpAddress($checkProxyHeaders, $trustedProxies, null, $headersToInspect);
   return $ip->__invoke($request, $response, $next);
 });
 
