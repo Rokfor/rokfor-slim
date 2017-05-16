@@ -70,6 +70,14 @@ return [
         ],
 
         /*
+         * Trusted Proxies
+         *
+         * Needed to resolve true ip behind proxies
+         */
+
+         'trusted_proxies' => [],
+
+        /*
          * Paths and Error Handling
          *
          * Unless you change something in the directory structure, there's

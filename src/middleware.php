@@ -80,9 +80,14 @@ $app->add(function ($request, $response, $next) {
  * @author Urs Hofer
  */
 
-$checkProxyHeaders = true;
-$trustedProxies = ['172.17.0.1'];
-$app->add(new RKA\Middleware\IpAddress($checkProxyHeaders, $trustedProxies));
+
+$app->add(function ($request, $response, $next) {
+  $checkProxyHeaders = true;
+  $trustedProxies = (array)$this->settings['trusted_proxies'];
+  $ip = new RKA\Middleware\IpAddress($checkProxyHeaders, $trustedProxies);
+  return $ip->__invoke($request, $response, $next);
+});
+
 
 
 /**
