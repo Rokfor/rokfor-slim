@@ -855,7 +855,7 @@ $app->group('/api', function () {
 
 $app->options('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}',
   function ($request, $response, $args) {}
-);
+)->add($cors);
 
 $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $response, $args) {
 
@@ -954,4 +954,4 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
     throw new \Slim\Exception\NotFoundException($request, $response);
   }
   return $response;
-});
+})->add($cors);

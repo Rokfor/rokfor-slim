@@ -34,7 +34,7 @@ class Acl extends ZendAcl
         $_rf_routes['user'][] = ['/rf/field/{id:[0-9]*}',                                                   'POST'];
         $_rf_routes['user'][] = ['/rf/profile',                                                             ['GET','POST']];
         $_rf_routes['user'][] = ['/rf/exporters[/{id:[0-9]*}]',                                             ['GET','POST']];
-        $_rf_routes['user'][] = ['/rf/proxy',                                                               'GET'];
+        //$_rf_routes['user'][] = ['/rf/proxy',                                                               'GET'];
 
 
         // Administrators: Structure and template management
@@ -68,7 +68,7 @@ class Acl extends ZendAcl
         $_api_routes['guest'][] = ['/api/contribution',                                                     'PUT'];
         $_api_routes['guest'][] = ['/api/contribution/{id:[0-9]*}',                                         ['GET', 'POST', 'DEL']];
         $_api_routes['guest'][] = ['/api/contributions/{issue:[0-9]*}/{chapter:[0-9]*}',                    'GET'];
-        $_api_routes['guest'][] = ['/api/proxy/{id:[0-9]*}/{file}',                                         'GET'];
+        //$_api_routes['guest'][] = ['/api/proxy/{id:[0-9]*}/{file}',                                         'GET'];
         $_api_routes['guest'][] = ['/api/users',                                                            'GET'];
         $_api_routes['guest'][] = ['/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}',                           'GET'];
 
