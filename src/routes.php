@@ -222,6 +222,15 @@ $app->group('/rf', function () {
           if ($data["password"]) {
             $u->setPassword(md5($data["password"]));
           }
+          $u->setRoapikey($data["api"]);
+          $u->setRwapikey($data["rwapi"]);
+          $u->setIp($data["acl"]);
+          $_config = json_decode($u->getConfigSys());
+          if (!$_config) $_config = new stdClass;
+          if (!$_config->cors) $_config->cors = new stdClass;
+          $_config->cors->get = $data["corsget"] ? $data["corsget"] : $_config->cors->get;
+          $_config->cors->postputdel = $data["corspostdelput"] ? $data["corspostdelput"] : $_config->cors->postputdel;
+          $u->setConfigSys(json_encode($_config));
           $u->save();
         }
       }
@@ -251,13 +260,22 @@ $app->group('/rf', function () {
         foreach ($this->db->getRights() as $_allright) {
           $rights[] = [id => $_allright->getId(),  name => $_allright->getGroup(), selected => in_array($_allright->getId(), $act_rights) ? true : false];
         }
+
+        $_config = json_decode($u->getConfigSys());
+        if (!$_config) $_config = new stdClass;
         $json['user']  = [
           "username"  => $u->getUsername(),
           "email"     => $u->getEmail(),
           "role"      => $u->getUsergroup(),
           "id"        => $u->getId(),
           "password"  => "",
-          "group"     => $rights
+          "group"     => $rights,
+
+          "api"       => $u->getRoapikey(),
+          "rwapi"     => $u->getRwapikey(),
+          "acl"       => $u->getIp(),
+          "corsget"   => $_config->cors->get,
+          "corspostdelput" => $_config->cors->postputdel
         ];
       }
       $r->getBody()->write(json_encode($json));

@@ -75,6 +75,13 @@
       $(this).find('#user').val(data.username || "");
       $(this).find('#nemail').val(data.email || "");
       $(this).find('#npassword').val(data.password || "");
+
+      $(this).find('#api').val(data.api || "");
+      $(this).find('#rwapi').val(data.rwapi || "");
+      $(this).find('#acl').val(data.acl || "");
+      $(this).find('#corsget').val(data.corsget || "");
+      $(this).find('#corspostdelput').val(data.corspostdelput || "");
+
       $(this).find('#role option').each(function() {
         $(this).prop('selected', data.role && (data.role == $(this).attr('value')));
       })
@@ -188,6 +195,12 @@
         groupmodal.populate(data.groups);
         groupmodal.modal({keyboard: true});
       });
+      return false;
+    });
+
+    $('#usermodal').on('click', '.apigen', function (e) {
+      e.preventDefault();
+      $(this).parents('.input-group').find('input').val($.rokfor.hat());
       return false;
     });
 
