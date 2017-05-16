@@ -305,8 +305,8 @@ $apiauth = function ($request, $response, $next) {
           $this->db->setUser($u->getId());
           $access = true;
           if (trim($this->db->getUser()['ip'])) {
-            if (!stristr($this->db->getUser()['ip'], $request->getAttribute('ip_address'))) {
-              $msg = "IP not allowed";
+            if (stristr($this->db->getUser()['ip'], $request->getAttribute('ip_address')) === false) {
+              $msg = "IP not allowed: ".$request->getAttribute('ip_address');
               $access = false;
             }
           }
