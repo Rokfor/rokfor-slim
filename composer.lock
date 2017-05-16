@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ce186f10765b16313d8d908c5735fe04",
-    "content-hash": "bb3f32ad8e2d9a1a6beee17e870d1e94",
+    "hash": "6839fc3b968b19574a80c90c446e8869",
+    "content-hash": "1a1244d1dd048b9e7cd1f70ace8537f2",
     "packages": [
         {
             "name": "akrabat/rka-ip-address-middleware",
-            "version": "0.4",
+            "version": "0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/akrabat/rka-ip-address-middleware.git",
-                "reference": "1c9947fdbaad04614e8b15d55f191f11c39293d1"
+                "reference": "832687b13bae4d7fe889fab1414aef6fafeecf80"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/akrabat/rka-ip-address-middleware/zipball/1c9947fdbaad04614e8b15d55f191f11c39293d1",
-                "reference": "1c9947fdbaad04614e8b15d55f191f11c39293d1",
+                "url": "https://api.github.com/repos/akrabat/rka-ip-address-middleware/zipball/832687b13bae4d7fe889fab1414aef6fafeecf80",
+                "reference": "832687b13bae4d7fe889fab1414aef6fafeecf80",
                 "shasum": ""
             },
             "require": {
@@ -53,7 +53,7 @@
                 "middleware",
                 "psr7"
             ],
-            "time": "2015-11-06 10:38:17"
+            "time": "2016-11-13 12:23:41"
         },
         {
             "name": "aws/aws-sdk-php",

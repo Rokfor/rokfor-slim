@@ -36,7 +36,7 @@
         "monolog/monolog": "^1.17",
         "slim/csrf": "^0.6.0",
         "slim/flash": "^0.1.0",
-        "akrabat/rka-ip-address-middleware": "^0.4.0",
+        "akrabat/rka-ip-address-middleware": "^0.5.0",
         "palanik/corsslim": "dev-slim3",
         "erusev/parsedown": "^1.6",
         "predis/predis": "^1.0",
