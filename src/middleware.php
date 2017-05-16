@@ -82,14 +82,9 @@ $app->add(function ($request, $response, $next) {
 
 
 $app->add(function ($request, $response, $next) {
-/*
-  $headers = $request->getHeaders();
-  foreach ($headers as $name => $values) {
-      echo $name . ": " . implode(", ", $values);
-  }
-  die();*/
-
   $checkProxyHeaders = true;
+  // Adding X-Real-IP to standard headers
+  // Used in Nginx Proxy Environments
   $headersToInspect = [
     'X-Real-Ip',
     'Forwarded',
