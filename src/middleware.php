@@ -82,6 +82,13 @@ $app->add(function ($request, $response, $next) {
 
 
 $app->add(function ($request, $response, $next) {
+
+  $headers = $request->getHeaders();
+  foreach ($headers as $name => $values) {
+      echo $name . ": " . implode(", ", $values);
+  }
+  die();
+
   $checkProxyHeaders = true;
   $trustedProxies = (array)$this->settings['trusted_proxies'];
   $ip = new RKA\Middleware\IpAddress($checkProxyHeaders, $trustedProxies);
