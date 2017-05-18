@@ -6,17 +6,13 @@
     // Sorting: Books
 
     $('div.sortable').sortable({
-      forcePlaceholderSize: false,
+      forcePlaceholderSize: true,
       items       : '.bookedit',
       axis        : 'y',
       tolerance   : 'pointer',
       containment: 'parent',
       sort: function(event, ui) {
           var $target = $(event.target);
-          if (!/html|body/i.test($target.offsetParent()[0].tagName)) {
-              var top = event.pageY - $target.offsetParent().offset().top - (ui.helper.outerHeight(true) / 2);
-              ui.helper.css({'top' : top + 'px'});
-          }
       },
       stop: function() {
         var data = [];
@@ -36,17 +32,15 @@
 
     var tabbedsortable = function(e) {
       e.sortable({
-        forcePlaceholderSize: false,
+        forcePlaceholderSize: true,
+        cancel      : '',
         items       : 'tr',
         tolerance   : 'pointer',
         axis        : 'y',
-        containment: 'parent',
+        containment : 'parent',
+        handle      : '.drag',
         sort: function(event, ui) {
             var $target = $(event.target);
-            if (!/html|body/i.test($target.offsetParent()[0].tagName)) {
-                var top = event.pageY - $target.offsetParent().offset().top - (ui.helper.outerHeight(true) / 2);
-                ui.helper.css({'top' : top + 'px'});
-            }
         },
         stop: function() {
           var data = [];
@@ -200,8 +194,10 @@
       var url = "/rf/structure/"+action+(type ? "/"+ type : '')+(id ? "/"+ id : '');
 
       // Is Post
+      $.rokfor.spinner.show();
       if (val) {
         $.rokfor.post(url, val, function(data){
+          $.rokfor.spinner.hide();
           target.html(data);
           if (type != 'book') {
             tabbedsortable(target.find('tbody.sortable'));
@@ -212,6 +208,7 @@
       // Is Get
       else {
         $.rokfor.get(url, function(data){
+          $.rokfor.spinner.hide();
           target.html(data);
           if (type != 'book') {
             tabbedsortable(target.find('tbody.sortable'));

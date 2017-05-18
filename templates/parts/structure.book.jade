@@ -25,18 +25,27 @@
             tbody.sortable(data-sort="chapters")
               each chapter in book.chapters
                 tr.idcontainer(id=$chapter['chapter']->getId())
-                  td.col-xs-12(colspan=3)
+                  td.col-xs-12
                     .input-group.col-xs-12
                       span.input-group-btn
-                        :php
-                          $r = []; foreach($chapter['chapter']->getRightss() as $b) $r[] = $b->getId();
-                        a.btn.btn-solid.btn-default.btn-sm.rights(href="rights", data-rights=json_encode($r))
-                          span=$translations['structure_chapter_rights']
-                        a.btn.btn-solid.btn-default.btn-sm.settingschapter(href="settings", data-rights=$chapter['chapter']->getConfigSys())
-                          span=$translations['structure_chapter_settings']
-                      small(style="position: absolute; z-index: 1000; margin-left: 0.5em; margin-top: 0.5em;")
+                        button.btn.btn-default.dropdown-toggle.btn-sm.drag
+                          span.fa.fa-bars
+                        button.btn.btn-default.dropdown-toggle.btn-sm(type="button", data-toggle="dropdown", aria-expanded="false")
+                          span.fa.fa-cog
+                        ul.dropdown-menu
+                          li
+                            :php
+                              $r = []; foreach($chapter['chapter']->getRightss() as $b) $r[] = $b->getId();
+                            a.rights(href="rights", data-rights=json_encode($r))
+                              span.fa.fa-users
+                              span=$translations['structure_chapter_rights']
+                          li
+                            a.settingschapter(href="settings", data-rights=$chapter['chapter']->getConfigSys())
+                              span.fa.fa-cog
+                              span=$translations['structure_chapter_settings']
+                      small.idlabel
                         span.label.label-default!='Id&nbsp;'.$chapter['chapter']->getId()
-                      input.form-control.input-sm(value=chapter.name, style="padding-left: 4em;")
+                      input.form-control.input-sm(value=chapter.name, style="padding-left: 4em; background: transparent;")
                       span.input-group-btn
                         a.btn.btn-solid.btn-danger.btn-sm
                           i.fa.fa-danger &nbsp;
@@ -58,27 +67,35 @@
                   td
                     .input-group
                       span.input-group-btn
+                        button.btn.btn-default.dropdown-toggle.btn-sm.drag
+                          span.fa.fa-bars
                         button.btn.btn-default.dropdown-toggle.btn-sm(type="button", data-toggle="dropdown", aria-expanded="false")
-                          span.fa.fa-caret-down &nbsp;
-                          span=$translations['structure_issue_status']
+                          span.fa.fa-cog
                         ul.dropdown-menu
                           li
-                            a.changestate(href="open")=$translations['structure_issue_statusopen']
+                            a.changestate(href="open")
                               if ($issue['issue']->getStatus() == 'open')
                                 span.fa.fa-check
+                              span=$translations['structure_issue_statusopen']
                           li
-                            a.changestate(href="close")=$translations['structure_issue_statusclose']
+                            a.changestate(href="close")
                               if ($issue['issue']->getStatus() == 'closed')
                                 span.fa.fa-check
-                        :php
-                          $r = []; foreach($issue['issue']->getRightss() as $b) $r[] = $b->getId();
-                        a.btn.btn-solid.btn-default.btn-sm.rights(href="rights", data-rights=json_encode($r))
-                          span=$translations['structure_issue_rights']
-                        a.btn.btn-solid.btn-default.btn-sm.settingsissue(href="settings", data-rights=$issue['issue']->getConfigSys())
-                          span=$translations['structure_issue_settings']
-                      small(style="position: absolute; z-index: 1000; margin-left: 0.5em; margin-top: 0.5em;")
+                              span=$translations['structure_issue_statusclose']
+                          li.divider
+                          li
+                            :php
+                              $r = []; foreach($issue['issue']->getRightss() as $b) $r[] = $b->getId();
+                            a.rights(href="rights", data-rights=json_encode($r))
+                              i.fa.fa-users
+                              span=$translations['structure_issue_rights']
+                          li
+                            a.settingsissue(href="settings", data-rights=$issue['issue']->getConfigSys())
+                              i.fa.fa-cog
+                              span=$translations['structure_issue_settings']
+                      small.idlabel
                         span.label.label-default!='Id&nbsp;'.$issue['issue']->getId()
-                      input.form-control.input-sm(value=issue.name, style="padding-left: 4em;")
+                      input.form-control.input-sm(value=issue.name, style="padding-left: 4em; background: transparent;")
                       span.input-group-btn
                         a.btn.btn-solid.btn-danger.btn-sm
                           i.fa.fa-danger &nbsp;
@@ -89,12 +106,19 @@
       .tab-pane.book(id="book_".$book['book']->getId(), class=(!$type||$type=='book'?'active':''))
         .input-group.idcontainer(id=$book['book']->getId())
           span.input-group-btn
-            :php
-              $r = []; foreach($book['book']->getRightss() as $b) $r[] = $b->getId();
-            a.btn.btn-solid.btn-default.rights(href="rights", data-rights=json_encode($r))
-              span=$translations['structure_book_rights']
-            a.btn.btn-solid.btn-default.settingsbook(href="settings", data-rights=$book['book']->getConfigSys())
-              span=$translations['structure_book_settings']
+            button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", aria-expanded="false")
+              span.fa.fa-cog
+            ul.dropdown-menu
+              li            
+                :php
+                  $r = []; foreach($book['book']->getRightss() as $b) $r[] = $b->getId();
+                a.rights(href="rights", data-rights=json_encode($r))
+                  i.fa.fa-users
+                  span=$translations['structure_book_rights']
+              li            
+                a.settingsbook(href="settings", data-rights=$book['book']->getConfigSys())
+                  i.fa.fa-cog
+                  span=$translations['structure_book_settings']
           input.form-control(type="text", value=book.name)
           span.input-group-btn
             a.btn.btn-solid.btn-warning=$translations['structure_book_copy']

@@ -7,18 +7,19 @@
   
     var fieldsortable = function(e) {
       e.sortable({
-        forcePlaceholderSize: false,
+        forcePlaceholderSize: true,
         items       : 'div.panel',
         tolerance   : 'pointer',
         axis        : 'y',
         containment: 'parent',
+        handle      : '.drag',
+        cancel      : '',        
         sort: function(event, ui) {
             var $target = $(event.target);
-            if (!/html|body/i.test($target.offsetParent()[0].tagName)) {
-                var top = event.pageY - $target.offsetParent().offset().top - (ui.helper.outerHeight(true) / 2);
-                ui.helper.css({'top' : top + 'px'});
-            }
         },
+
+
+
         stop: function() {
           var data = [];
           var sort = 0;
@@ -209,15 +210,18 @@
       var url = "/rf/templates/"+action+(id ? "/"+ id : '');
 
       // Is Post
+      $.rokfor.spinner.show();
       if (val) {
         $.rokfor.post(url, val, function(data){
           $('.content-wrapper#list').html(data);
+          $.rokfor.spinner.hide();
         });      
       }
       // Is Get
       else {
         $.rokfor.get(url, function(data){
           $('.content-wrapper#list').html(data);
+          $.rokfor.spinner.hide();
         });      
       }      
       return false;
@@ -254,9 +258,11 @@
       var url = "/rf/templates/field/"+action+(id ? "/"+ id : '');
 
       // Is Post
+      $.rokfor.spinner.show();
       if (val) {
         $.rokfor.post(url, val, function(data){
           target.html(data);
+          $.rokfor.spinner.hide();          
           fieldsortable(target.find('div.sortable'));
         });      
       }
@@ -264,6 +270,7 @@
       else {
         $.rokfor.get(url, function(data){
           target.html(data);
+          $.rokfor.spinner.hide();
           fieldsortable(target.find('div.sortable'));
         });      
       }      

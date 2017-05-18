@@ -26,16 +26,17 @@
           each field in $template->getTemplatess($criteria)
             :php
               $fields_in_template["id"][] = $field->getId(); $fields_in_template["label"][] = $field->getFieldname();
-            .panel.box.box-default.box-solid.fieldtemplate(id=$field->getId())
-              .box-header(data-toggle="collapse", style="cursor:ns-resize;", data-parent="#fields_".$template->getId(), href="#f_".$field->getId())
-                .col-xs-2(style="padding-left: 0")
-                  button.btn
-                    i.fa.fa-bars
-                  small
+            .panel.box.fieldtemplate(id=$field->getId())
+              .box-header(style="cursor:ns-resize;", data-parent="#fields_".$template->getId(), href="#f_".$field->getId())
+                .input-group.has-warning.col-xs-12
+                  span.input-group-btn
+                    button.btn.btn-default.drag
+                      i.fa.fa-bars
+                    button.btn.btn-default(data-toggle="collapse", data-target=("#f_".$field->getId()))
+                      i.fa.fa-cog
+                  small.idlabel
                     span.label.label-default!='&nbsp;Id&nbsp;'.$field->getId()
-
-                .input-group.has-warning.col-xs-10
-                  input.form-control.onchange(name="Fieldname", type="text", value=$field->getFieldname())
+                  input.form-control.onchange(name="Fieldname", type="text", value=$field->getFieldname(), style="padding-left: 4em;")
                   span.input-group-btn
                     a.btn.btn-solid.btn-warning.fieldaction=$translations['template_copy']
                     a.btn.btn-solid.btn-danger.fieldaction

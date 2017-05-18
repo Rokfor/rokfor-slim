@@ -358,3 +358,30 @@ p.divider {
       transition: all 0.218s;
   }
 }
+
+/* Overlay Wrapper for Blocking Loading Spinner */
+
+#ovw {
+  position: fixed; 
+  z-index: 12000; 
+  width: 100%; 
+  height: 100%; 
+  left: 0; 
+  top: 0;
+  transition: opacity 0.25s;
+  opacity: 0;
+  display: block;
+  &.show {
+    opacity: 1;
+  }
+  &.hidden {
+    display: none;
+  }  
+}
+
+.idlabel {
+  position: absolute; 
+  z-index: 999; 
+  margin-left: 0.5em; 
+  margin-top: 0.5em;
+}

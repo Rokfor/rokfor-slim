@@ -106,6 +106,21 @@
     }
   }
   
+  // Load Spinner for Blocking Calls
+
+  $.rokfor.spinner = {  
+    show: function() {
+      $('#ovw').removeClass('hidden').addClass('show');
+    },
+    hide: function() {
+      $('#ovw').removeClass('show');     
+      setTimeout(function() {
+          $('#ovw').addClass('hidden');
+      }, 500);
+    }
+  };
+
+  
   // XHR Callback, in POST and GET Function
   
   $.rokfor.xhr = function() {

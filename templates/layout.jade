@@ -5,6 +5,9 @@ html
     .progress#loadbar(style="position: absolute; z-index: 10000").progress-xxs
       .progress-bar.progress-bar-danger.progress-bar-striped(style="width: 0%", role="progressbar",aria-valuenow="0",aria-valuemin="0",aria-valuemax="100")
         .span.sr-only 60% Complete (warning)
+    .overlay-wrapper.hidden#ovw
+      .overlay
+        i.fa.fa-refresh.fa-spin
     .wrapper
       include parts/layout.header.jade
       include parts/layout.menu.jade
