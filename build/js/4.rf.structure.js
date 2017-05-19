@@ -98,7 +98,7 @@
 
     // Klicks
 
-    $('section.content').on('click', 'a.changestate, a.btn, button.btn:not(.dropdown-toggle)', function(e) {
+    $('section.content').on('click', '.dropdown-menu > li > a, a.btn, button.btn:not(.dropdown-toggle)', function(e) {
       e.stopPropagation();
       var bt = $(this);     // Button Reference
       var action = false;   // Button Action depending on class

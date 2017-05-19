@@ -18,7 +18,15 @@
   JSONEditor.defaults.themes.rokfor = JSONEditor.defaults.themes.bootstrap3.extend({
     getButton: function(text, icon, title) {
       var el = this._super(text, icon, title);
-      el.className += 'btn btn-default btn-flat';
+      if (title === 'Collapse') {
+        el.className += 'btn-default btn-link btn-sm';        
+      }
+      else if(title.indexOf("Delete") !== -1) {
+        el.className += 'btn btn-danger btn-sm';        
+      }
+      else {
+        el.className += 'btn btn-success btn-sm';        
+      }
       return el;
     },
 
