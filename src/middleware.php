@@ -525,7 +525,7 @@ $cors = function ($request, $response, $next) {
 
   if ($request->isGet()) {
     $corsOptions = [
-      "origin"            => join(',', $cors_get),
+      "origin"            => $cors_get,
       "maxAge"            => 1728000,
       "allowCredentials"  => true,
       "allowMethods"      => array("GET", "OPTIONS")
@@ -533,8 +533,7 @@ $cors = function ($request, $response, $next) {
   }
   if ($request->isOptions()) {
     $corsOptions = [
-      //"origin"            => join(',', array_merge((array)$cors_get, (array)$cors_ppd)),
-      "origin"            => "*",
+      "origin"            => array_unique(array_merge((array)$cors_get, (array)$cors_ppd)),
       "maxAge"            => 1728000,
       "allowCredentials"  => true,
       "allowMethods"      => array("GET", "OPTIONS", "POST", "PUT", "DELETE")
@@ -542,7 +541,7 @@ $cors = function ($request, $response, $next) {
   }
   if ($request->isPost() || $request->isPut() || $request->isDelete()) {
     $corsOptions = [
-      "origin"            => join(',', $cors_ppd),
+      "origin"            => $cors_ppd,
       "maxAge"            => 1728000,
       "allowCredentials"  => true,
       "allowMethods"      => array("POST", "PUT", "DELETE")
