@@ -533,7 +533,7 @@ $cors = function ($request, $response, $next) {
   }
   if ($request->isOptions()) {
     $corsOptions = [
-      "origin"            => array_unique(array_merge((array)$cors_get, (array)$cors_ppd)),
+      "origin"            => array_merge($cors_get, $cors_ppd),
       "maxAge"            => 1728000,
       "allowCredentials"  => true,
       "allowMethods"      => array("GET", "OPTIONS", "POST", "PUT", "DELETE")
