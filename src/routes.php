@@ -228,8 +228,8 @@ $app->group('/rf', function () {
           $_config = json_decode($u->getConfigSys());
           if (!$_config) $_config = new stdClass;
           if (!$_config->cors) $_config->cors = new stdClass;
-          $_config->cors->get = $data["corsget"] ? $data["corsget"] : $_config->cors->get;
-          $_config->cors->postputdel = $data["corspostdelput"] ? $data["corspostdelput"] : $_config->cors->postputdel;
+          $_config->cors->get = $data["corsget"] ? $data["corsget"] : "";
+          $_config->cors->postputdel = $data["corspostdelput"] ? $data["corspostdelput"] : "";
           $u->setConfigSys(json_encode($_config));
           $u->save();
         }
