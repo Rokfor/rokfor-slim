@@ -531,9 +531,12 @@ $cors = function ($request, $response, $next) {
       "allowMethods"      => array("GET", "OPTIONS")
     ];
   }
+  /* 
+    Option Requests Currently Send nothing, leave cors to allow all then
+  */
   if ($request->isOptions()) {
     $corsOptions = [
-      "origin"            => array_merge($cors_get, $cors_ppd),
+      "origin"            => '*',
       "maxAge"            => 1728000,
       "allowCredentials"  => true,
       "allowMethods"      => array("GET", "OPTIONS", "POST", "PUT", "DELETE")
