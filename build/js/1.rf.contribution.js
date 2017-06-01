@@ -444,11 +444,79 @@
     };
 
     $.rokfor.clearAssets();
+    
+    wysihtml.commands.pasteRaw = {
+      exec: function(composer, command, param) {
+        if (wysihtml.browser.pasteFromWord == null)
+          wysihtml.browser.pasteFromWord = false;
+        
+        wysihtml.browser.pasteFromWord = !wysihtml.browser.pasteFromWord;
+  
+      },
+      state: function(composer, command) {
+         return wysihtml.browser.pasteFromWord;
+      }
+    };
+
+    wysihtml.dom.getPastedHtml = function(event) {
+      var html;
+      if (wysihtml.browser.pasteFromWord === true) {
+        var breakTag = '<br>'; 
+        html = String(event.clipboardData.getData('text/plain')).replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
+      }
+      else {
+        if (wysihtml.browser.supportsModernPaste() && event.clipboardData) {
+          if (wysihtml.lang.array(event.clipboardData.types).contains('text/html')) {
+            html = event.clipboardData.getData('text/html');
+          } else if (wysihtml.lang.array(event.clipboardData.types).contains('text/plain')) {
+            html = wysihtml.lang.string(event.clipboardData.getData('text/plain')).escapeHTML(true, true);
+          }
+        }
+      }
+      return html;
+    };
+
 
     $(".rtftextarea").each(function(i,n) {
         var e = $(this);
         e.data('editor', new wysihtml.Editor(e[0], {
           toolbar: 'editor-toolbar_' + e.attr('id'),
+          /*pasteParserRulesets: [
+            {
+                type_definitions: {
+                    text_color_object: {
+                      styles: {
+                        color: true
+                      }
+                    },
+                },
+                tags: {
+                  strong: {},
+                  b:      {},
+                  i:      {},
+                  em:     {},
+                  br:     {},
+                  p:      {},
+                  ul:     {},
+                  u:      {},
+                  h1:     wysihtml5ParserRulesDefaults.blockLevelEl,
+                  h2:     wysihtml5ParserRulesDefaults.blockLevelEl,
+                  h3:     wysihtml5ParserRulesDefaults.blockLevelEl,
+                  h4:     wysihtml5ParserRulesDefaults.blockLevelEl,
+                  a:      {
+                      "check_attributes": {
+                          "target": "any",
+                          "href": "href" // if you compiled master manually then change this from 'url' to 'href'
+                      },
+                      "set_attributes": {
+                          "rel": "nofollow"
+                      }
+                  },
+                  comment: { remove: 1 },
+                  style: { remove: 1 }
+                }
+              }
+          ],*/
           parserRules:  {
             type_definitions: {
                 text_color_object: {
@@ -503,7 +571,8 @@
                       color: 1
                   },
                   remove_action: "unwrap"
-              }
+              },
+              comment: { remove: 1 }
             }
           },
           showToolbarDialogsOnSelection: false,

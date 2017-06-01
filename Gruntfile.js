@@ -53,7 +53,8 @@ module.exports = function(grunt) {
   		  expand: true,
         flatten: true,
   		  src: [
-          'build/img/*'
+          'build/img/*',
+          'bower_components/AdminLTE/plugins/ionslider/img/*'
   		  ], 
   		  dest: 'public/assets/img'
   	  },
@@ -62,11 +63,7 @@ module.exports = function(grunt) {
         flatten: true,
   		  src: [
           'bower_components/AdminLTE/bootstrap/fonts/*',
-          'bower_components/font-awesome/fonts/*',
-          'bower_components/roboto-fontface/fonts/Roboto-Regular.*',
-          'bower_components/roboto-fontface/fonts/Roboto-RegularItalic.*',
-          'bower_components/roboto-fontface/fonts/Roboto-Bold.*',
-          'bower_components/roboto-fontface/fonts/Roboto-BoldItalic.*',
+          'bower_components/font-awesome/fonts/*'
   		  ], 
   		  dest: 'public/assets/fonts'
   	  }

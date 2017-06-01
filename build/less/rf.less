@@ -2,74 +2,19 @@
  *   FontAwesome
 !*/
 
-@import "../../bower_components/font-awesome/less/variables.less";
-@import "../../bower_components/font-awesome/less/mixins.less";
-@import "../../bower_components/font-awesome/less/path.less";
-@import "../../bower_components/font-awesome/less/core.less";
-@import "../../bower_components/font-awesome/less/larger.less";
-@import "../../bower_components/font-awesome/less/fixed-width.less";
-@import "../../bower_components/font-awesome/less/list.less";
-@import "../../bower_components/font-awesome/less/bordered-pulled.less";
-@import "../../bower_components/font-awesome/less/animated.less";
-@import "../../bower_components/font-awesome/less/rotated-flipped.less";
-@import "../../bower_components/font-awesome/less/stacked.less";
-@import "../../bower_components/font-awesome/less/icons.less";
+@import "../../bower_components/font-awesome/less/font-awesome.less";
 
 
-
-/*!
- *   AdminLTE Bootstrap Mixins
-!*/
-
-@import "../../bower_components/AdminLTE/build/bootstrap-less/mixins.less";
-@import "../../bower_components/AdminLTE/build/bootstrap-less/variables.less";
-
-/*!
- *   AdminLTE Variables
-!*/
-
-@import "variables.less";
 
 /*!
  *   AdminLTE v2.3.2
+ *
+ *   - uncommend google font and variable files in bower repo!
+ *
 !*/
 
-@import "../../bower_components/AdminLTE/build/less/core.less";
-@import "../../bower_components/AdminLTE/build/less/mixins.less";
-@import "../../bower_components/AdminLTE/build/less/header.less";
-@import "../../bower_components/AdminLTE/build/less/sidebar.less";
-@import "../../bower_components/AdminLTE/build/less/sidebar-mini.less";
-@import "../../bower_components/AdminLTE/build/less/control-sidebar.less";
-@import "../../bower_components/AdminLTE/build/less/dropdown.less";
-@import "../../bower_components/AdminLTE/build/less/forms.less";
-@import "../../bower_components/AdminLTE/build/less/progress-bars.less";
-@import "../../bower_components/AdminLTE/build/less/small-box.less";
-@import "../../bower_components/AdminLTE/build/less/boxes.less";
-@import "../../bower_components/AdminLTE/build/less/info-box.less";
-@import "../../bower_components/AdminLTE/build/less/timeline.less";
-@import "../../bower_components/AdminLTE/build/less/buttons.less";
-@import "../../bower_components/AdminLTE/build/less/callout.less";
-@import "../../bower_components/AdminLTE/build/less/alerts.less";
-@import "../../bower_components/AdminLTE/build/less/navs.less";
-@import "../../bower_components/AdminLTE/build/less/products.less";
-@import "../../bower_components/AdminLTE/build/less/table.less";
-@import "../../bower_components/AdminLTE/build/less/labels.less";
-@import "../../bower_components/AdminLTE/build/less/direct-chat.less";
-@import "../../bower_components/AdminLTE/build/less/users-list.less";
-@import "../../bower_components/AdminLTE/build/less/carousel.less";
-@import "../../bower_components/AdminLTE/build/less/modal.less";
-@import "../../bower_components/AdminLTE/build/less/social-widgets.less";
-@import "../../bower_components/AdminLTE/build/less/mailbox.less";
-@import "../../bower_components/AdminLTE/build/less/lockscreen.less";
-@import "../../bower_components/AdminLTE/build/less/login_and_register.less";
-@import "../../bower_components/AdminLTE/build/less/404_500_errors.less";
-@import "../../bower_components/AdminLTE/build/less/invoice.less";
-@import "../../bower_components/AdminLTE/build/less/profile";
-@import "../../bower_components/AdminLTE/build/less/bootstrap-social.less";
-@import "../../bower_components/AdminLTE/build/less/fullcalendar.less";
-@import "../../bower_components/AdminLTE/build/less/select2.less";
-@import "../../bower_components/AdminLTE/build/less/miscellaneous.less";
-@import "../../bower_components/AdminLTE/build/less/print.less";
+@import "adminLTE.less";
+
 
 /*!
  *   AdminLTE Skin
@@ -82,7 +27,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 
       "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", 
       "Fira Sans", "Droid Sans", "Helvetica Neue", 
-      sans-serif;
+      sans-serif !important;
 }
 
 // Width variables (appears count calculates by raw css)
@@ -91,7 +36,7 @@ body {
 input.nameedit {
 	width: @width0 !important;  
 }
-
+ 
 input.rowedit {
 	background-color: transparent;
 	border: none;
@@ -226,6 +171,10 @@ p.divider {
   
 }
 
+.wysihtml-command-active {
+  background-color: @gray !important;
+}
+
 
 #rftable, .rfimagetable, .rftable {
   tr {
@@ -357,6 +306,23 @@ p.divider {
       -webkit-transition: all 0.218s;
       transition: all 0.218s;
   }
+}
+
+/* Slider Overrules */
+
+.irs-line-mid,
+.irs-line-left,
+.irs-line-right,
+.irs-bar,
+.irs-bar-edge,
+.irs-slider {
+    background: url(/assets/img/sprite-skin-nice.png) repeat-x;
+}
+
+/* Uploader Overrule */
+
+.uploader {
+  overflow: hidden;
 }
 
 /* Overlay Wrapper for Blocking Loading Spinner */

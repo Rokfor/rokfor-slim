@@ -33,7 +33,7 @@
     "uploader": "https://github.com/urshofer/uploader.git",
     "jquery-locationpicker-plugin": "https://github.com/urshofer/jquery-locationpicker-plugin.git",
     "json-editor": "jdorn/json-editor#^0.7.28",
-    "jquery.inputmask": "robinherbots/jquery.inputmask#^3.2.7",
+    "jquery.inputmask": "robinherbots/jquery.inputmask#3.2.7",
     "font-awesome": "fortawesome/font-awesome#^4.5.0",
     "AdminLTE": "almasaeed2010/adminlte#^2.3.6",
     "datatables.net": "^1.10.11",
