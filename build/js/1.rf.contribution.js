@@ -537,6 +537,7 @@
               u:      {},
               ol:     {},
               li:     {},
+              sup:    {},              
               blockquote: {
                   "keep_styles": {
                       "textAlign": 1,
