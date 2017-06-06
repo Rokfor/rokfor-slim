@@ -16,6 +16,11 @@ use Lcobucci\JWT\ValidationData;
 
 
 $app->add(function ($request, $response, $next) {
+  
+  if ($request->isOptions()) {
+    return $next($request, $response);
+  }
+  
   // Check for Existing Database
   try {
     $_p = $this->db->PDO();
@@ -509,28 +514,6 @@ $redis = function ($request, $response, $next) {
  * @author Urs Hofer
  */
 $cors = function ($request, $response, $next) {
-  $corsOptions = [];
-  if (trim($this->db->getUser()['config']->cors->get) == "") {
-    $cors_get = (array)$this->settings['cors']['ro'];
-  }
-  else {
-    $cors_get = explode(',', trim($this->db->getUser()['config']->cors->get));
-  }
-  if (trim($this->db->getUser()['config']->cors->postputdel) == "") {
-    $cors_ppd = (array)$this->settings['cors']['rw'];
-  }
-  else {
-    $cors_ppd = explode(',', trim($this->db->getUser()['config']->cors->postputdel));
-  }
-
-  if ($request->isGet()) {
-    $corsOptions = [
-      "origin"            => $cors_get,
-      "maxAge"            => 1728000,
-      "allowCredentials"  => true,
-      "allowMethods"      => array("GET", "OPTIONS")
-    ];
-  }
   /* 
     Option Requests Currently Send nothing, leave cors to allow all then
   */
@@ -542,13 +525,38 @@ $cors = function ($request, $response, $next) {
       "allowMethods"      => array("GET", "OPTIONS", "POST", "PUT", "DELETE")
     ];
   }
-  if ($request->isPost() || $request->isPut() || $request->isDelete()) {
-    $corsOptions = [
-      "origin"            => $cors_ppd,
-      "maxAge"            => 1728000,
-      "allowCredentials"  => true,
-      "allowMethods"      => array("POST", "PUT", "DELETE")
-    ];
+  else {
+    $corsOptions = [];
+    if (trim($this->db->getUser()['config']->cors->get) == "") {
+      $cors_get = (array)$this->settings['cors']['ro'];
+    }
+    else {
+      $cors_get = explode(',', trim($this->db->getUser()['config']->cors->get));
+    }
+    if (trim($this->db->getUser()['config']->cors->postputdel) == "") {
+      $cors_ppd = (array)$this->settings['cors']['rw'];
+    }
+    else {
+      $cors_ppd = explode(',', trim($this->db->getUser()['config']->cors->postputdel));
+    }
+
+    if ($request->isGet()) {
+      $corsOptions = [
+        "origin"            => $cors_get,
+        "maxAge"            => 1728000,
+        "allowCredentials"  => true,
+        "allowMethods"      => array("GET", "OPTIONS")
+      ];
+    }
+
+    if ($request->isPost() || $request->isPut() || $request->isDelete()) {
+      $corsOptions = [
+        "origin"            => $cors_ppd,
+        "maxAge"            => 1728000,
+        "allowCredentials"  => true,
+        "allowMethods"      => array("POST", "PUT", "DELETE")
+      ];
+    }
   }
   $cors = new \CorsSlim\CorsSlim($corsOptions);
   return $cors->__invoke($request, $response, $next);

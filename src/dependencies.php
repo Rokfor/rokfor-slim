@@ -169,6 +169,11 @@ $container['logger'] = function ($c) {
 
 // rokfor database & update paths
 $container['db'] = function ($c) {
+  
+  if ($c['request']->isOptions()) {
+    return false;
+  }
+  
   $settings = require __DIR__ . '/../config/database.php';
 
   // Overrule DbName if multi Environment Setting is true
@@ -261,6 +266,11 @@ $container['csrf'] = function ($c) {
 
 // auth middleware
 $container['authAdapter'] = function ($c) {
+  
+  if ($c['request']->isOptions()) {
+    return false;
+  }
+  
   // Example callback to validate a sha512 hashed password
   $callback = function ($password, $passwordHash, $salt) {
       if (hash('md5', $password ) === $passwordHash) {
@@ -284,7 +294,11 @@ $container['acl'] = function ($c) {
 };
 $container['redirectNotAuthenticated']  = '/rf/login';
 $container['redirectNotAuthorized']     = '/rf/login';
-$container->register(new \JeremyKendall\Slim\Auth\ServiceProvider\SlimAuthProvider());
+
+if (!$container['request']->isOptions()) {
+  $container->register(new \JeremyKendall\Slim\Auth\ServiceProvider\SlimAuthProvider());
+}
+
 
 
 // flash messages
