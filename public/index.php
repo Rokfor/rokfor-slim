@@ -33,6 +33,7 @@ if (stristr($_SERVER['REQUEST_URI'], '/rf/')) {
 
 // Instantiate the app
 $settings = require __DIR__ . '/../config/settings.php';
+$GLOBALS[starttime] = microtime(true);
 date_default_timezone_set($settings['settings']['timezone']);
 $app = new \Slim\App($settings);
 
