@@ -17,7 +17,11 @@ use Lcobucci\JWT\ValidationData;
 
 $app->add(function ($request, $response, $next) {
   $route = $request->getAttribute('route', null);
-  if ($request->isOptions() || stristr($route->getPattern(), "/api")) {
+  $uri = "";
+  if ($route) {
+    $uri = $route->getPattern();
+  }
+  if ($request->isOptions() || stristr($uri, "/api")) {
     return $next($request, $response);
   }
   
@@ -324,6 +328,8 @@ $apiauth = function ($request, $response, $next) {
           $this->db->setUser($u->getId());
           $access = true;
           if (trim($this->db->getUser()['ip'])) {
+            $hash = md5($request->getUri()->getPath().$request->getUri()->getQuery().serialize($request->getHeader('Authorization')));
+            $this->redis['client']->set($hash."-ip", trim($this->db->getUser()['ip']));
             if (stristr($this->db->getUser()['ip'], $request->getAttribute('ip_address')) === false) {
               $msg = "IP not allowed: ".$request->getAttribute('ip_address');
               $access = false;
@@ -435,6 +441,17 @@ $redis = function ($request, $response, $next) {
       $redis_expiration = $this->redis['client']->get('expiration');
 
       if ($this->redis['client']->exists($hash) === 1 && $this->redis['client']->exists($hash."-hash") === 1  && $this->redis['client']->exists($hash."-cors") === 1 && ($redis_expiration == false || time() < $redis_expiration)) {
+        
+        
+        if ($this->redis['client']->get($hash."-ip") &&  (stristr($this->redis['client']->get($hash."-ip"), $request->getAttribute('ip_address')) === false)) {
+          $r = $response->withHeader('Content-type', 'application/json')->withStatus(500);
+          $msg = "IP not allowed: ".$request->getAttribute('ip_address');
+          $r->getBody()->write(json_encode(["Error" => $msg]));
+          return $r; 
+        }
+        
+        
+        
         if ($request->getHeader('Hash')) {
           $response->getBody()->write($this->redis['client']->get($hash."-hash"));
         }
@@ -487,6 +504,7 @@ $redis = function ($request, $response, $next) {
               $nodeClient->del($key);
               $nodeClient->del($key."-hash");
               $nodeClient->del($key."-cors");
+              $nodeClient->del($key."-ip");              
             }
         });
       }
@@ -499,6 +517,7 @@ $redis = function ($request, $response, $next) {
             $this->redis['client']->del($key);
             $this->redis['client']->del($key."-hash");
             $this->redis['client']->del($key."-cors");
+            $this->redis['client']->del($key."-ip");            
           }
         }
       }
