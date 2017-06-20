@@ -16,8 +16,8 @@ use Lcobucci\JWT\ValidationData;
 
 
 $app->add(function ($request, $response, $next) {
-  
-  if ($request->isOptions()) {
+  $route = $request->getAttribute('route', null);
+  if ($request->isOptions() || stristr($route->getPattern(), "/api")) {
     return $next($request, $response);
   }
   
@@ -293,7 +293,6 @@ $apiauth = function ($request, $response, $next) {
     }
 
 
-    $response = $response->withHeader('Content-type', 'application/json');
     $apikey = false;
     $msg = "No key supplied";
     $route = $request->getAttribute('route', null);
@@ -402,7 +401,7 @@ $apiauth = function ($request, $response, $next) {
  */
 
 $redis = function ($request, $response, $next) {
-
+  
   $cluster_iterate = function ($callback)
   {
       $clientClass = get_class($this->redis['client']);
@@ -424,6 +423,10 @@ $redis = function ($request, $response, $next) {
             : false
         );
 
+    if ($_calltype === "apicall") {
+      $response = $response->withHeader('Content-type', 'application/json');
+    }
+
     // Call Cache on Get and Api Calls, But not on private file proxy calls
     if ($request->isGet() && $_calltype === "apicall") {
       // Create Transaction Hash
@@ -431,7 +434,7 @@ $redis = function ($request, $response, $next) {
       // Send Cache
       $redis_expiration = $this->redis['client']->get('expiration');
 
-      if ($this->redis['client']->exists($hash) === 1 && $this->redis['client']->exists($hash."-hash") === 1 && ($redis_expiration == false || time() < $redis_expiration)) {
+      if ($this->redis['client']->exists($hash) === 1 && $this->redis['client']->exists($hash."-hash") === 1  && $this->redis['client']->exists($hash."-cors") === 1 && ($redis_expiration == false || time() < $redis_expiration)) {
         if ($request->getHeader('Hash')) {
           $response->getBody()->write($this->redis['client']->get($hash."-hash"));
         }
@@ -439,6 +442,8 @@ $redis = function ($request, $response, $next) {
           $response->getBody()->write($this->redis['client']->get($hash));
         }
         return $response
+          ->withAddedHeader('Access-Control-Allow-Credentials', 'true')
+          ->withAddedHeader('Access-Control-Allow-Origin', $this->redis['client']->exists($hash."-cors") ? $this->redis['client']->get($hash."-cors") : '*')
           ->withAddedHeader('X-Redis-Cache', 'true')
           ->withAddedHeader('X-Redis-Expiration', $redis_expiration ? date('r', $redis_expiration) : -1 )
           ->withAddedHeader('X-Redis-Time', (microtime(true) - $qt))
@@ -481,6 +486,7 @@ $redis = function ($request, $response, $next) {
               $key = substr($key, strlen($prefix));
               $nodeClient->del($key);
               $nodeClient->del($key."-hash");
+              $nodeClient->del($key."-cors");
             }
         });
       }
@@ -492,6 +498,7 @@ $redis = function ($request, $response, $next) {
             $key = substr($key, strlen($prefix));
             $this->redis['client']->del($key);
             $this->redis['client']->del($key."-hash");
+            $this->redis['client']->del($key."-cors");
           }
         }
       }
@@ -561,5 +568,10 @@ $cors = function ($request, $response, $next) {
     }
   }
   $cors = new \CorsSlim\CorsSlim($corsOptions);
-  return $cors->__invoke($request, $response, $next);
+  $__c = $cors->__invoke($request, $response, $next);
+  if ($request->isGet()) {
+    $hash = md5($request->getUri()->getPath().$request->getUri()->getQuery().serialize($request->getHeader('Authorization')));
+    $this->redis['client']->set($hash."-cors", join(",",$__c->getHeader('Access-Control-Allow-Origin')));
+  }
+  return $__c;
 };

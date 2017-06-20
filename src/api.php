@@ -849,7 +849,7 @@ $app->group('/api', function () {
   );
 
 
-})->add($redis)->add($cors)->add($apiauth);
+})->add($cors)->add($apiauth)->add($redis);
 
 /* Asset Rewriting - only running on nginx. all other servers are just redirecting to */
 
