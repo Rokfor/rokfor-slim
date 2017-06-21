@@ -328,8 +328,10 @@ $apiauth = function ($request, $response, $next) {
           $this->db->setUser($u->getId());
           $access = true;
           if (trim($this->db->getUser()['ip'])) {
-            $hash = md5($request->getUri()->getPath().$request->getUri()->getQuery().serialize($request->getHeader('Authorization')));
-            $this->redis['client']->set($hash."-ip", trim($this->db->getUser()['ip']));
+            if ($this->redis['redis']) {
+              $hash = md5($request->getUri()->getPath().$request->getUri()->getQuery().serialize($request->getHeader('Authorization')));
+              $this->redis['client']->set($hash."-ip", trim($this->db->getUser()['ip']));
+            }
             if (stristr($this->db->getUser()['ip'], $request->getAttribute('ip_address')) === false) {
               $msg = "IP not allowed: ".$request->getAttribute('ip_address');
               $access = false;
@@ -596,7 +598,7 @@ $cors = function ($request, $response, $next) {
   }
   $cors = new \CorsSlim\CorsSlim($corsOptions);
   $__c = $cors->__invoke($request, $response, $next);
-  if ($request->isGet()) {
+  if ($request->isGet() && $this->redis['redis']) {
     $hash = md5($request->getUri()->getPath().$request->getUri()->getQuery().serialize($request->getHeader('Authorization')));
     $this->redis['client']->set($hash."-cors", join(",",$__c->getHeader('Access-Control-Allow-Origin')));
   }
