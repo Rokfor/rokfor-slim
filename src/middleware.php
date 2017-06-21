@@ -469,10 +469,14 @@ $redis = function ($request, $response, $next) {
       }
       // Send Original
       else {
+        $qt1 = microtime(true);
         $response = $next($request, $response);
+        $qt1 = (microtime(true) - $qt1);
+        $qt2 = microtime(true);
         $this->redis['client']->set($hash, $response->getBody());
         $_hash = json_encode(json_decode($response->getBody())->Hash);
         $this->redis['client']->set($hash."-hash", $_hash);
+        $qt2 = (microtime(true) - $qt2);
         if ($request->getHeader('Hash')) {
           // Cors to everybody. It's only a hash.
           $newresponse = new Response;
@@ -481,7 +485,9 @@ $redis = function ($request, $response, $next) {
             ->withHeader('Access-Control-Allow-Credentials', 'true')
             ->withHeader('Access-Control-Allow-Origin', '*')
             ->withHeader('X-Cache-Hash', $hash)
-            ->withHeader('X-Rokfor-Exectime', microtime(true) - $GLOBALS[starttime])              
+            ->withHeader('X-Rokfor-Exectime', microtime(true) - $GLOBALS[starttime])
+            ->withHeader('X-Redis-Write-Time', $qt1)
+            ->withHeader('X-Response-Write-Time', $qt2)
             ->write($_hash);
         }
         else {
