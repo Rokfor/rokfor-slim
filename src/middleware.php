@@ -493,7 +493,9 @@ $redis = function ($request, $response, $next) {
         else {
           return $response
                   ->withAddedHeader('X-Cache-Hash', $hash)
-                  ->withAddedHeader('X-Rokfor-Exectime', microtime(true) - $GLOBALS[starttime]);
+                  ->withAddedHeader('X-Rokfor-Exectime', microtime(true) - $GLOBALS[starttime])
+                  ->withAddedHeader('X-Redis-Write-Time', $qt1)
+                  ->withAddedHeader('X-Response-Write-Time', $qt2);
         }
       }
     }
