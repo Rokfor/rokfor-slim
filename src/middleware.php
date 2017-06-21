@@ -420,16 +420,16 @@ $redis = function ($request, $response, $next) {
       }
   };
 
+  $_calltype = substr($request->getUri()->getPath(), 0, 10) === "/api/proxy"
+      ? "proxycall"
+      : (
+        substr($request->getUri()->getPath(), 0, 4) === "/api"
+          ? "apicall"
+          : false
+      );
+
   if ($this->redis['redis'] && ($request->isPost() || $request->isGet())) {
     $qt = microtime(true);
-
-    $_calltype = substr($request->getUri()->getPath(), 0, 10) === "/api/proxy"
-        ? "proxycall"
-        : (
-          substr($request->getUri()->getPath(), 0, 4) === "/api"
-            ? "apicall"
-            : false
-        );
 
     if ($_calltype === "apicall") {
       $response = $response->withHeader('Content-type', 'application/json');
@@ -538,6 +538,9 @@ $redis = function ($request, $response, $next) {
   }
 
   // Continue not cached.
+  if ($_calltype === "apicall") {
+    $response = $response->withHeader('Content-type', 'application/json');
+  }
   $response = $next($request, $response);
   return $response->withAddedHeader('X-Rokfor-Exectime', microtime(true) - $GLOBALS[starttime]);
 };
