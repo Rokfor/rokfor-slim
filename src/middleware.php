@@ -488,8 +488,8 @@ $redis = function ($request, $response, $next) {
             ->withHeader('Access-Control-Allow-Origin', '*')
             ->withHeader('X-Cache-Hash', $hash)
             ->withHeader('X-Rokfor-Exectime', microtime(true) - $GLOBALS[starttime])
-            ->withHeader('X-Redis-Write-Time', $qt1)
-            ->withHeader('X-Response-Write-Time', $qt2)
+            ->withHeader('X-Redis-Write-Time', $qt2)
+            ->withHeader('X-Response-Write-Time', $qt1)
             ->write($_hash);
         }
         else {
