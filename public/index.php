@@ -34,27 +34,28 @@ if (stristr($_SERVER['REQUEST_URI'], '/rf/')) {
 // Instantiate the app
 $settings = require __DIR__ . '/../config/settings.php';
 $GLOBALS[starttime] = microtime(true);
+$GLOBALS[timers] = [];
 date_default_timezone_set($settings['settings']['timezone']);
 $app = new \Slim\App($settings);
-
+$GLOBALS[timers]['a'] = microtime(true) - $GLOBALS[starttime];
 // Set up acl
 require __DIR__ . '/../src/acl.php';
-
+$GLOBALS[timers]['b'] = microtime(true) - $GLOBALS[starttime];
 // Set up dependencies
 require __DIR__ . '/../src/dependencies.php';
-
+$GLOBALS[timers]['c'] = microtime(true) - $GLOBALS[starttime];
 // Set up helper functions
 require __DIR__ . '/../src/helpers.php';
-
+$GLOBALS[timers]['d'] = microtime(true) - $GLOBALS[starttime];
 // Register middleware
 require __DIR__ . '/../src/middleware.php';
-
+$GLOBALS[timers]['e'] = microtime(true) - $GLOBALS[starttime];
 // Register routes
 require __DIR__ . '/../src/routes.php';
-
+$GLOBALS[timers]['f'] = microtime(true) - $GLOBALS[starttime];
 // Register API specific routes
 require __DIR__ . '/../src/api.php';
-
+$GLOBALS[timers]['g'] = microtime(true) - $GLOBALS[starttime];
 
 // Run app
 $app->run();

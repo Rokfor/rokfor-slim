@@ -467,7 +467,8 @@ $redis = function ($request, $response, $next) {
           ->withAddedHeader('X-Redis-Expiration', $redis_expiration ? date('r', $redis_expiration) : -1 )
           ->withAddedHeader('X-Redis-Time', (microtime(true) - $qt))
           ->withAddedHeader('X-Cache-Hash', $hash)
-          ->withAddedHeader('X-Rokfor-Exectime', microtime(true) - $GLOBALS[starttime]);
+          ->withAddedHeader('X-Rokfor-Exectime', microtime(true) - $GLOBALS[starttime])
+          ->withAddedHeader('X-Rokfor-Timers', json_encode($GLOBALS[timers]));
       }
       // Send Original
       else {
@@ -490,6 +491,7 @@ $redis = function ($request, $response, $next) {
             ->withHeader('X-Rokfor-Exectime', microtime(true) - $GLOBALS[starttime])
             ->withHeader('X-Redis-Write-Time', $qt2)
             ->withHeader('X-Response-Write-Time', $qt1)
+            ->withHeader('X-Rokfor-Timers', json_encode($GLOBALS[timers]))              
             ->write($_hash);
         }
         else {
