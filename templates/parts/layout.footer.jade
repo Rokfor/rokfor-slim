@@ -2,3 +2,7 @@ footer.main-footer!=copy
   .pull-right.hidden-xs
     b Version&nbsp;
     span=$version."-".$commit
+    :php
+      $dev = (PHP_SAPI == 'cli-server');
+    if dev
+      span (DEV)

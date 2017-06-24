@@ -1,6 +1,8 @@
 <?php
 use Slim\CallableResolver;
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+$GLOBALS[starttime] = microtime(true);
+$GLOBALS[timers] = [];
 
 /* To help the built-in PHP dev server, check if the request was actually for
  * something which should probably be served as a static file
@@ -28,13 +30,28 @@ require __DIR__ . '/../vendor/autoload.php';
 // Start Session for backend calls
 
 if (stristr($_SERVER['REQUEST_URI'], '/rf/')) {
-  session_start();
+  $session = require __DIR__ . '/../config/session.php';
+  if ($session['handler'] === 'redis') {
+    $redis_config = [
+      'scheme' => 'tcp',
+      'host' => $session['redis_ip'],
+      'port' => $session['redis_port']
+    ];
+    $client = new \Predis\Client($redis_config, ['prefix'  => 'sessions:', 'throw_errors' => false]);
+    try {
+      $client->connect();
+      $handler = new \Predis\Session\Handler($client, array('gc_maxlifetime' => ini_get('session.gc_maxlifetime')));
+      $handler->register();
+    }
+    catch (\Predis\Connection\ConnectionException $exception) {
+      /* Do nothing - fall back */
+    }
+  }
+  session_start();    
 }
 
 // Instantiate the app
 $settings = require __DIR__ . '/../config/settings.php';
-$GLOBALS[starttime] = microtime(true);
-$GLOBALS[timers] = [];
 date_default_timezone_set($settings['settings']['timezone']);
 $app = new \Slim\App($settings);
 $GLOBALS[timers]['a'] = microtime(true) - $GLOBALS[starttime];

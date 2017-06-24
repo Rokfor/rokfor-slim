@@ -15,6 +15,7 @@ _private/udb/thumbs/*
 config/database.php
 config/settings.php
 config/redis.php
+config/session.php
 logs/propel.log
 logs/app.log
 .DS_Store
