@@ -10,6 +10,10 @@ return [
 
 
 // Clustered Redis Setting
+// Currently, it seems that the clustered setup
+// is far from fast. Try to avoid client side
+// clustering and move to a seperate redis server
+// if you run on distributed infrastructure
 
 /*
 return [
