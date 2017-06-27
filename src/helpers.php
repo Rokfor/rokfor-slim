@@ -1027,7 +1027,8 @@ class helpers
           $_row = [
             "Files"    => $_versions,
             "Captions" => $_row[0],
-            "Parsed"   => $_caps_parsed
+            "Parsed"   => $_caps_parsed,
+            "Sizes"    => ($_row[3] ? $_row[3] : false)
           ];
         }
       }
