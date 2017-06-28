@@ -179,12 +179,29 @@ p.divider {
 #rftable, .rfimagetable, .rftable {
   tr {
     cursor: pointer;
-    td:first-child {
-      cursor: move;
-    }
   }
   td {
     position: relative;
+  }
+}
+
+#rftable {
+  table-layout: fixed;
+  @media only screen and (max-width : 480px) {
+    th:nth-child(4),
+    td:nth-child(4),
+    th:nth-child(7),
+    td:nth-child(7)  {    
+      display: none;
+    }
+  }
+  @media only screen and (max-width : 992px) {
+    th:nth-child(2),
+    td:nth-child(2),
+    th:nth-child(3),
+    td:nth-child(3) {
+      display: none;
+    }
   }
 }
 

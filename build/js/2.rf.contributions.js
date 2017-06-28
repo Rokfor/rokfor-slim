@@ -20,8 +20,8 @@
       "ordering": ($('#rftable').parents('section.content').attr('data-path') && $('#rftable').parents('section.content').attr('data-path').indexOf('search') == -1) ? true : false,
       "rowReorder": ($('#rftable').parents('section.content').attr('data-path') && $('#rftable').parents('section.content').attr('data-path').indexOf('search') == -1) 
                     ? {
-                      selector: 'td:first-child',
-                      update: true
+                      selector: 'td:first-child .fa-bars',
+                      update: false
                     }
                     : false,
       "info": false,
@@ -51,7 +51,7 @@
       .on( 'order.dt', function ( e, diff, edit ) {
         $.rokfor.ctorder = [[ edit[0].col, edit[0].dir ]]
       })
-      .on( 'row-reordered', function ( e, diff, edit ) {
+      .on( 'row-reorder', function ( e, diff, edit ) {
         console.log(e, diff, edit);
         if (table.bulkaction == undefined) {
           var data = {
@@ -60,7 +60,7 @@
           };
 
           for (var i = 0; i < diff.length; i++) {
-            data.id.push({id:diff[i].node.id, sort:diff[i].newData});
+            data.id.push({id:diff[i].node.id, sort:diff[i].newData['@data-order']});
           };
           
           /*
@@ -115,6 +115,17 @@
             }
           });
         }
+    });
+    
+    /* Open Click Button */
+    
+    $('.opencontribution').on("click", function (e) {
+      e.stopPropagation();
+      var row = $(this).closest('#rftable tr');
+      if (row.attr('id')) {
+        $.rokfor.contribution.edit(row.attr('id'));
+      }
+      return false;
     });
 
 

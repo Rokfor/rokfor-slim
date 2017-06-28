@@ -54,22 +54,27 @@ section.content(data-path=base_path)
         .box-body
           .row
             .col-sm-12
-              table#rftable.table.table-bordered.table-striped.dataTable
+              table(style="width:100%")#rftable.table.table-bordered.table-striped.dataTable
                 thead
                   tr
-                    th=translations['contrib_th_seq']
-                    th=translations['contrib_th_id']
-                    th=translations['contrib_th_autor']
-                    th=translations['contrib_th_datum']
-                    th.col-xs-3=translations['contrib_th_name']
-                    th=translations['contrib_th_status']
-                    th.col-xs-2=translations['contrib_th_lock']
+                    th(style="width:45px")=translations['contrib_th_seq']
+                    th(style="width:35px")=translations['contrib_th_id']
+                    th(style="width:60px")=translations['contrib_th_autor']
+                    th(style="width:70px")=translations['contrib_th_datum']
+                    th=translations['contrib_th_name']
+                    th(style="width:50px")=translations['contrib_th_status']
+                    th(style="width:95px")=translations['contrib_th_lock']
                 tbody
                   each contribution in contributions
                     :php
                       $configuration = json_decode($contribution->getConfigSys());
                     tr(id=contribution->getId())
-                      td=contribution->getSort()
+                      td(data-order=contribution->getSort())
+                        .btn-group.btn-group-sm
+                          button.btn.btn-default
+                            i.fa.fa-bars
+                          button.btn.btn-default.opencontribution
+                            i.fa.fa-pencil
                       td=contribution->getId()
                       td=($contribution->getuserSysRef() ? $contribution->getuserSysRef()->getUsername() : '-')
                       td=strftime($translations['day_locale'],$contribution->getNewdate())
@@ -93,6 +98,8 @@ section.content(data-path=base_path)
                         :php
                           $d = helpers::timeFormatHelper($configuration->lockdate ? $configuration->lockdate : time(), 'd/m/Y H:i');
                         input.form-control.rfreleasemask(id=$contribution->getId(), type="text", value=d.value, data-inputmask=d.mask, data-inputmask-placeholder=d.placeholder)
+
+                          
       // /.box-body
 if (is_array($templates))
   .modal.modal-success.fade#rfmodalnew(tabindex="-1",role="dialog")
