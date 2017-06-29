@@ -58,6 +58,7 @@ $app->add(function ($request, $response, $next) {
   }
   return $next($request, $response);
 });
+$GLOBALS[timers]['e1'] = microtime(true) - $GLOBALS[starttime];
 
 /**
  * Trailing Slash Middleware
@@ -80,6 +81,7 @@ $app->add(function ($request, $response, $next) {
 
     return $next($request, $response);
 });
+$GLOBALS[timers]['e2'] = microtime(true) - $GLOBALS[starttime];
 
 /**
  * IP Resolver Middleware
@@ -106,8 +108,7 @@ $app->add(function ($request, $response, $next) {
   $ip = new RKA\Middleware\IpAddress($checkProxyHeaders, $trustedProxies, null, $headersToInspect);
   return $ip->__invoke($request, $response, $next);
 });
-
-
+$GLOBALS[timers]['e3'] = microtime(true) - $GLOBALS[starttime];
 
 /**
  * Settings Middleware
@@ -124,6 +125,7 @@ $app->add(function ($request, $response, $next) {
   $response = $next($request, $response);
   return $response;
 });
+$GLOBALS[timers]['e4'] = microtime(true) - $GLOBALS[starttime];
 
 /**
  * Logging Middleware
@@ -141,6 +143,7 @@ $app->add(function ($request, $response, $next) {
   $response = $next($request, $response);
   return $response;
 });
+$GLOBALS[timers]['e5'] = microtime(true) - $GLOBALS[starttime];
 
 /**
  * Ajax Check Middleware
@@ -190,6 +193,8 @@ try {
       throw new NotFoundException($request, $response);
   };*/
 }
+$GLOBALS[timers]['e6'] = microtime(true) - $GLOBALS[starttime];
+
 
 
 /**
@@ -219,7 +224,7 @@ $csrf = function ($request, $response, $next) {
  * Route Hooks are configured in the backend and executed if a route matches...
  */
 
- $routeHook = function($request, $response, $next) {
+$routeHook = function ($request, $response, $next) {
    $route = $request->getAttribute('route', null)->getPattern();
    // Call Post Processor
    if ($route <> "/rf/login") {
