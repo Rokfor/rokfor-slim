@@ -174,6 +174,7 @@ $ajaxcheck = function ($request, $response, $next) {
   $response = $next($request, $response);
   return $response;
 };
+$GLOBALS[timers]['e6'] = microtime(true) - $GLOBALS[starttime];
 
 /**
  * Authentification Middleware
@@ -193,7 +194,7 @@ try {
       throw new NotFoundException($request, $response);
   };*/
 }
-$GLOBALS[timers]['e6'] = microtime(true) - $GLOBALS[starttime];
+$GLOBALS[timers]['e7'] = microtime(true) - $GLOBALS[starttime];
 
 
 
