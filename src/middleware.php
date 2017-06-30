@@ -16,11 +16,12 @@ use Lcobucci\JWT\ValidationData;
 
 
 $app->add(function ($request, $response, $next) {
-  $route = $request->getAttribute('route', null);
+  $uri = $request->getUri()->getPath(); 
+/*  $route = $request->getAttribute('route', null);
   $uri = "";
   if ($route) {
     $uri = $route->getPattern();
-  }
+  }*/
   if ($request->isOptions() || stristr($uri, "/api")) {
     return $next($request, $response);
   }
@@ -136,10 +137,9 @@ $GLOBALS[timers]['e4'] = microtime(true) - $GLOBALS[starttime];
  */
 
 $app->add(function ($request, $response, $next) {
-  $route = $request->getAttribute('route', null);
-  if ($route) {
-    $this->get('logger')->info("Rokfor ".$route->getPattern());
-  }
+//  $route = $request->getAttribute('route', null);
+  $route = $request->getUri()->getPath(); 
+  $this->get('logger')->info("Rokfor ".$route);
   $response = $next($request, $response);
   return $response;
 });
@@ -164,13 +164,16 @@ $ajaxcheck = function ($request, $response, $next) {
     '/rf/',
     '/rf'
   ];
-  $route = $request->getAttribute('route', null);
-  if ($route) {
-    $current = $route->getPattern();
+  
+  $current = $request->getUri()->getPath(); 
+  
+//  $route = $request->getAttribute('route', null);
+//  if ($route) {
+//  $current = $route->getPattern();
     if (!$request->isXhr() && !in_array($current, $settings)) {
       return $response->withRedirect('/rf/login');
     }
-  }
+//  }
   $response = $next($request, $response);
   return $response;
 };
@@ -184,15 +187,14 @@ $GLOBALS[timers]['e6'] = microtime(true) - $GLOBALS[starttime];
  *
  * @author Urs Hofer
  */
-try {
-  $authentification = $container->get('slimAuthRedirectMiddleware');
-} catch (Exception $e) {
-/*  $authentification = function ($request, $response, $next) {
-    if ($this->settings['multiple_spaces'] === true)
-      return $response->withRedirect($this->settings['unknow_space_redirect']);
-    else
-      throw new NotFoundException($request, $response);
-  };*/
+
+
+$uri = $container->get('request')->getUri()->getPath(); 
+if (substr($uri, 0, 3) === "/rf") {
+  try {
+    $authentification = $container->get('slimAuthRedirectMiddleware');
+  } catch (Exception $e) {
+  }
 }
 $GLOBALS[timers]['e7'] = microtime(true) - $GLOBALS[starttime];
 
@@ -226,7 +228,8 @@ $csrf = function ($request, $response, $next) {
  */
 
 $routeHook = function ($request, $response, $next) {
-   $route = $request->getAttribute('route', null)->getPattern();
+//   $route = $request->getAttribute('route', null)->getPattern();
+   $route = $request->getUri()->getPath(); 
    // Call Post Processor
    if ($route <> "/rf/login") {
      foreach (\FieldpostprocessorQuery::create() as $proc) {
@@ -269,8 +272,9 @@ $identificator = function ($request, $response, $next) {
       $this->view->offsetSet('__currentuser__', $this->db->getUser());
     }
     else {
-      $route = $request->getAttribute('route', null);
-      if ($route->getPattern() <> "/rf/login") {
+ //     $route = $request->getAttribute('route', null);
+      $route = $request->getUri()->getPath(); 
+      if ($route <> "/rf/login") {
         return $response->withRedirect('/rf/login');
       }
     }
@@ -305,7 +309,8 @@ $apiauth = function ($request, $response, $next) {
 
     $apikey = false;
     $msg = "No key supplied";
-    $route = $request->getAttribute('route', null);
+//    $route = $request->getAttribute('route', null);
+    $route = $request->getUri()->getPath(); 
 
     // Read API KEY - GET (R/O Requests) allow Key as QueryParam as well
     if ($request->getQueryParams()['access_token'] && $request->isGet()) {
@@ -387,7 +392,7 @@ $apiauth = function ($request, $response, $next) {
     // Only called on POST with Pattern /api/login
 
     else {
-      if ($request->isPost() && $route->getPattern() == "/api/login") {
+      if ($request->isPost() && $route == "/api/login") {
         $response = $next($request, $response);
         return $response;
       }
