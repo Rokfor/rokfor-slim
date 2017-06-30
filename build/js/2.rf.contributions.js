@@ -20,8 +20,8 @@
       "ordering": ($('#rftable').parents('section.content').attr('data-path') && $('#rftable').parents('section.content').attr('data-path').indexOf('search') == -1) ? true : false,
       "rowReorder": ($('#rftable').parents('section.content').attr('data-path') && $('#rftable').parents('section.content').attr('data-path').indexOf('search') == -1) 
                     ? {
-                      selector: 'td:first-child .fa-bars',
-                      update: false
+                      selector: 'td:first-child',
+                      update: true
                     }
                     : false,
       "info": false,
@@ -30,7 +30,7 @@
       "select": true,
       "columnDefs": [ 
                       {
-                        "targets": 4,
+                        "targets": 5,
                         "render": function(data) {
                           return ('<input class="form-control nameedit" type="text" rows="1" value="' + data + '"><span style="display:none;">' + data + '</span>');
                         }
@@ -51,7 +51,7 @@
       .on( 'order.dt', function ( e, diff, edit ) {
         $.rokfor.ctorder = [[ edit[0].col, edit[0].dir ]]
       })
-      .on( 'row-reorder', function ( e, diff, edit ) {
+      .on( 'row-reordered', function ( e, diff, edit ) {
         console.log(e, diff, edit);
         if (table.bulkaction == undefined) {
           var data = {
@@ -60,7 +60,7 @@
           };
 
           for (var i = 0; i < diff.length; i++) {
-            data.id.push({id:diff[i].node.id, sort:diff[i].newData['@data-order']});
+            data.id.push({id:diff[i].node.id, sort:diff[i].newData});
           };
           
           /*

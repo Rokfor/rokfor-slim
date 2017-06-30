@@ -57,22 +57,21 @@ section.content(data-path=base_path)
               table(style="width:100%")#rftable.table.table-bordered.table-striped.dataTable
                 thead
                   tr
-                    th(style="width:45px")=translations['contrib_th_seq']
-                    th(style="width:35px")=translations['contrib_th_id']
-                    th(style="width:60px")=translations['contrib_th_autor']
-                    th(style="width:70px")=translations['contrib_th_datum']
+                    th(colspan=2, style="min-width:80px; width:80px;")=translations['contrib_th_seq']
+                    th(style="min-width:30px; width:30px;")=translations['contrib_th_id']
+                    th(style="min-width:60px; width:60px;")=translations['contrib_th_autor']
+                    th(style="min-width:70px; width:70px;")=translations['contrib_th_datum']
                     th=translations['contrib_th_name']
-                    th(style="width:50px")=translations['contrib_th_status']
-                    th(style="width:95px")=translations['contrib_th_lock']
+                    th(style="min-width:50px; width:50px;")=translations['contrib_th_status']
+                    th(style="min-width:100px; width:100px;")=translations['contrib_th_lock']
                 tbody
                   each contribution in contributions
                     :php
                       $configuration = json_decode($contribution->getConfigSys());
                     tr(id=contribution->getId())
-                      td(data-order=contribution->getSort())
+                      td=contribution->getSort()
+                      td
                         .btn-group.btn-group-sm
-                          button.btn.btn-default
-                            i.fa.fa-bars
                           button.btn.btn-default.opencontribution
                             i.fa.fa-pencil
                       td=contribution->getId()
