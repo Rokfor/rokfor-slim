@@ -858,6 +858,50 @@ $app->options('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}',
 )->add($cors);
 
 $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $response, $args) {
+  
+  // QUICK PUBLIC CHECK ON REDIS
+  $s3        = $this->get('settings')['paths']['s3'];  
+  if ($this->get('redis')['client']) {
+    $c = $this->redis['client']->get('%%asset%%'.$args['field']);
+    if ($this->redis['client']->get('%%asset%%'.$args['field']) === "public") {
+      ob_end_flush();
+      if ($s3 === true) {
+        if ($_isnginx === true) {
+          header('X-Accel-Redirect: /cdn/' . str_replace('https://', '', $this->db->presign_file($args['file'])));
+        }
+        else {
+          header('Location: ' . $this->db->presign_file($args['file']));
+        }
+      }
+      else {
+        if ($_isnginx === true) {
+          if ($_file = $this->db->presign_file($args['file'], $public, false)) {
+            header('X-Accel-Redirect: /cdn-local'.($public?'-public':'-private') . $_file);
+          }
+          else {
+            throw new \Slim\Exception\NotFoundException($request, $response);
+          }
+        }
+        else {
+          if ($_file = $this->db->presign_file($args['file'], $public)) {
+            header('Content-Type: '.mime_content_type($_file));
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($_file));
+            readfile($_file);
+          }
+          else {
+            throw new \Slim\Exception\NotFoundException($request, $response);
+          }
+        }
+      }
+      exit(0);
+    }
+  }
+  
+  
+  
 
   // Check if user is logged in
   // only if the asset is called with the backend = True query param.
@@ -873,7 +917,6 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
 
   $apikey    = false;
   $access    = false;
-  $s3        = $this->get('settings')['paths']['s3'];
 
   // Check for existing contribution. If logged in ignore state, otherwise just published or draft
   $c = $this->db->getContribution($args['id'], $logged_in ? false : true, true);
@@ -916,6 +959,9 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
 
   // Do the presigining if contribution
   if (($public || $access || $logged_in) && stristr($f->getContent(), $args['file'])) {
+    if ($this->get('redis')['client'] && $public === true) {
+      $this->redis['client']->set('%%asset%%'.$args['field'], "public");
+    }
     ob_end_flush();
     if ($s3 === true) {
       if ($_isnginx === true) {
@@ -954,4 +1000,4 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
     throw new \Slim\Exception\NotFoundException($request, $response);
   }
   return $response;
-})->add($cors);
+})->add($cors)->add($redis);

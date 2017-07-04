@@ -22,7 +22,7 @@ $app->add(function ($request, $response, $next) {
   if ($route) {
     $uri = $route->getPattern();
   }*/
-  if ($request->isOptions() || stristr($uri, "/api")) {
+  if ($request->isOptions() || stristr($uri, "/api") || stristr($uri, "/asset/")) {
     return $next($request, $response);
   }
   
@@ -524,6 +524,7 @@ $redis = function ($request, $response, $next) {
             $prefix = $nodeClient->getOptions()->__get('prefix')->getPrefix();
             $keyspace = new \Predis\Collection\Iterator\Keyspace($nodeClient, "$prefix*");
             foreach ($keyspace as $key) {
+              if (stristr($key, "%%asset%%")) continue;
               $key = substr($key, strlen($prefix));
               $nodeClient->del($key);
               $nodeClient->del($key."-hash");
@@ -538,6 +539,7 @@ $redis = function ($request, $response, $next) {
         foreach ($keys as $key) {
           if (substr($key, 0, strlen($prefix)) == $prefix) {
             $key = substr($key, strlen($prefix));
+            if (stristr($key, "%%asset%%")) continue;
             $this->redis['client']->del($key);
             $this->redis['client']->del($key."-hash");
             $this->redis['client']->del($key."-cors");

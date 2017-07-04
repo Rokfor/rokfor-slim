@@ -888,6 +888,12 @@ $app->group('/rf', function () {
       switch ($type) {
         // Binary Uploads
         case 'Bild':
+
+          // Resetting Redis Cache here
+          if ($this->get('redis')['client']) {
+            $c = $this->redis['client']->set('%%asset%%'.$args['id'], "");
+          }
+          
           $file = $request->getUploadedFiles()['file'];
           $data = json_decode($request->getParsedBody()['data'], true);
           if ((is_object($file) && $file->getError() == 0) && $data['action'] == 'add') {
