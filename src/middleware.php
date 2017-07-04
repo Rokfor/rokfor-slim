@@ -349,7 +349,7 @@ $apiauth = function ($request, $response, $next) {
             }
           }
           if ($access === true) {
-            $this->db->addLog('get_api', 'GET' , $request->getAttribute('ip_address'));
+            //$this->db->addLog('get_api', 'GET' , $request->getAttribute('ip_address'));
             $response = $next($request, $response);
             return $response;
           }
