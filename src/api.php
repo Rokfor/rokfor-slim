@@ -861,6 +861,10 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
   
   // QUICK PUBLIC CHECK ON REDIS
   $s3        = $this->get('settings')['paths']['s3'];  
+  // Check for NGINX
+  $_isnginx = (strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== false);
+  
+  
   if ($this->get('redis')['client']) {
     $c = $this->redis['client']->get('%%asset%%'.$args['field']);
     if ($this->redis['client']->get('%%asset%%'.$args['field']) === "public") {
@@ -931,8 +935,7 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
   // Check for field
   $f = $this->db->getField($args['field']);
 
-  // Check for NGINX
-  $_isnginx = (strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== false);
+
   // Check for Authentification if Public = 0
 
   if (!$public) {
