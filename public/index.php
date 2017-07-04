@@ -29,7 +29,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 // Start Session for backend calls
 
-if (stristr($_SERVER['REQUEST_URI'], '/rf/')) {
+if (stristr($_SERVER['REQUEST_URI'], '/rf/') || stristr($_SERVER['REQUEST_URI'], 'backend=true')) {
   $session = require __DIR__ . '/../config/session.php';
   if ($session['handler'] === 'redis') {
     $redis_config = [
