@@ -444,14 +444,14 @@
     };
 
     $.rokfor.clearAssets();
-    
+
     wysihtml.commands.pasteRaw = {
       exec: function(composer, command, param) {
         if (wysihtml.browser.pasteFromWord == null)
           wysihtml.browser.pasteFromWord = false;
-        
+
         wysihtml.browser.pasteFromWord = !wysihtml.browser.pasteFromWord;
-  
+
       },
       state: function(composer, command) {
          return wysihtml.browser.pasteFromWord;
@@ -461,7 +461,7 @@
     wysihtml.dom.getPastedHtml = function(event) {
       var html;
       if (wysihtml.browser.pasteFromWord === true) {
-        var breakTag = '<br>'; 
+        var breakTag = '<br>';
         html = String(event.clipboardData.getData('text/plain')).replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
       }
       else {
@@ -537,7 +537,7 @@
               u:      {},
               ol:     {},
               li:     {},
-              sup:    {},              
+              sup:    {},
               blockquote: {
                   "keep_styles": {
                       "textAlign": 1,
@@ -613,6 +613,10 @@
         savable:false,
         iconlibrary: 'fa',
         fullscreen: false,
+        parser: new marked({
+          gfm: true,
+          breaks: true
+        }),
         onChange: function(el){
            console.log("Changed!")
           // Jsonize if RTF Editor is part of multi form
