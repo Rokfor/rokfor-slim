@@ -605,8 +605,8 @@
 
     // Markdown Editor
 
-    var mk = marked();
-    mk.setOptions({
+
+    marked.setOptions({
       gfm: true,
       breaks: true
     });
@@ -619,7 +619,6 @@
         savable:false,
         iconlibrary: 'fa',
         fullscreen: false,
-        parser: mk,
         onChange: function(el){
            console.log("Changed!")
           // Jsonize if RTF Editor is part of multi form
