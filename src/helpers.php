@@ -939,6 +939,10 @@ class helpers
             $_imgstring = '<div class="rf-embedded rf-wrapper"><iframe class="rf-embedded rf-youtube" src="//www.youtube.com/embed/'.$id.'" frameborder="0" allowfullscreen></iframe></div>';
             $template = str_replace($m[0][$i], $_imgstring, $template);
             break;
+          case '__iframe__':
+            $_imgstring = '<div class="rf-embedded rf-wrapper"><iframe class="rf-embedded rf-youtube" src="'.$id.'" frameborder="0" allowfullscreen></iframe></div>';
+            $template = str_replace($m[0][$i], $_imgstring, $template);
+            break;            
           default:
             // Resolve Image Field
             $_imagefield = $this->container->db->getData()
