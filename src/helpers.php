@@ -16,6 +16,7 @@ class helpers
     {
         $this->container = $_container;
         $this->Parsedown = new Parsedown();
+        $this->Parsedown->setBreaksEnabled(true);
     }
 
     /**
