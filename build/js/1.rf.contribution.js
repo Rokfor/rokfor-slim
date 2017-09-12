@@ -605,6 +605,12 @@
 
     // Markdown Editor
 
+    var mk = marked();
+    mk.setOptions({
+      gfm: true,
+      breaks: true
+    });
+
     $(".mdtextarea").each(function(i,n) {
       var e = $(this);
 //      var editor = new Pen(e[0]);
@@ -613,10 +619,7 @@
         savable:false,
         iconlibrary: 'fa',
         fullscreen: false,
-        parser: new marked({
-          gfm: true,
-          breaks: true
-        }),
+        parser: mk,
         onChange: function(el){
            console.log("Changed!")
           // Jsonize if RTF Editor is part of multi form
