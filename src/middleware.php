@@ -298,6 +298,14 @@ $identificator = function ($request, $response, $next) {
  */
 
 $apiauth = function ($request, $response, $next) {
+
+ // Post Login Route
+ // Only called on POST with Pattern /api/login
+ $_post_routes_without_login = [
+   "/api/login",
+   "/api/exporter"
+ ];
+
   try {
     // Option Requests
 
@@ -387,12 +395,9 @@ $apiauth = function ($request, $response, $next) {
       }
 
     }
-
-    // Post Login Route
-    // Only called on POST with Pattern /api/login
-
+    // Post Routes without Login
     else {
-      if ($request->isPost() && $route == "/api/login") {
+      if ($request->isPost() && in_array($route, $_post_routes_without_login)) {
         $response = $next($request, $response);
         return $response;
       }

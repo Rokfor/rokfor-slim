@@ -14,6 +14,7 @@ mixin list
               th Id
               th Name
               th Api Call
+              th Linked
               th Action
 
             tbody
@@ -24,7 +25,28 @@ mixin list
                 tr
                   td=$processor->getId()
                   td=$processor->getName()
-                  td=$processor->getConfigSys()
+                  td=$processor->getApi()
+                  td
+                    if (count($processor->getRBooks()) > 0)
+                      p
+                        span Books: 
+                        each ref, key in $processor->getRBooks()
+                          span!=($key>0?",&nbsp;":"").$ref->getName()
+                    if (count($processor->getRIssues()) > 0)
+                      p
+                        span Issues: 
+                        each ref, key in $processor->getRIssues()
+                          span!=($key>0?",&nbsp;":"").$ref->getName()
+                    if (count($processor->getTemplatenamess()) > 0)
+                      p
+                        span Template: 
+                        each ref, key in $processor->getTemplatenamess()
+                          span!=($key>0?",&nbsp;":"").$ref->getName()
+                    if (count($processor->getRFormats()) > 0)
+                      p
+                        span Chapters: 
+                        each ref, key in $processor->getRFormats()
+                          span!=($key>0?",&nbsp;":"").$ref->getName()
                   td
                     a.btn.btn-xs.btn-danger(
                       href="/rf/batchhooks/".$processor->getId()
@@ -58,9 +80,39 @@ if (!$post)
                   .col-sm-10
                     input.form-control#setCode(name="setName", type="text")
                 .form-group
-                  label.col-sm-2.control-label(for="setConfigSys") Api Call
+                  label.col-sm-2.control-label(for="setApi") Api Call
                   .col-sm-10
-                    input.form-control#setCode(name="setConfigSys", type="text")                      
+                    input.form-control#setCode(name="setApi", type="text")                      
+
+                .form-group
+                  label.col-sm-2.control-label(for="setRBooks") Book Reference
+                  .col-sm-10
+                    select.form-control.modal2(multiple='multiple', style='width: 100%;' name="setRBooks")
+                      each select in $books
+                        option(value=select->getId())=select->getName() 
+
+                .form-group
+                  label.col-sm-2.control-label(for="setRIssues") Issue Reference
+                  .col-sm-10
+                    select.form-control.modal2(multiple='multiple', style='width: 100%;' name="setRIssues")
+                      each select in $issues
+                        option(value=select->getId())=select->getName()                      
+
+                .form-group
+                  label.col-sm-2.control-label(for="setTemplatenamess") Template Reference
+                  .col-sm-10
+                    select.form-control.modal2(multiple='multiple', style='width: 100%;' name="setTemplatenamess")
+                      each select in $templatenames
+                        option(value=select->getId())=select->getName()                      
+                
+                .form-group
+                  label.col-sm-2.control-label(for="setRFormats") Chapter Reference
+                  .col-sm-10
+                    select.form-control.modal2(multiple='multiple', style='width: 100%;' name="setRFormats")
+                      each select in $formats
+                        option(value=select->getId())=select->getName()                      
+
+
         .modal-footer
           button.btn.pull-left(type="button", data-dismiss="modal")=$translations['rfmodal_close']
           button.btn.btn-primary.rfmodal_continue(type="button")=$translations['rfmodal_continue']

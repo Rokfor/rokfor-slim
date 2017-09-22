@@ -893,7 +893,7 @@ $app->group('/rf', function () {
           if ($this->get('redis')['client']) {
             $c = $this->redis['client']->set('%%asset%%'.$args['id'], "");
           }
-          
+
           $file = $request->getUploadedFiles()['file'];
           $data = json_decode($request->getParsedBody()['data'], true);
           if ((is_object($file) && $file->getError() == 0) && $data['action'] == 'add') {
@@ -1217,23 +1217,58 @@ $app->group('/rf', function () {
 
   /* Exporters
    *
-   * Show List of registered exporters and trigger hooks on post
+   * Show List of registered exporters and trigger hooks
    *
-   * GET /rf/exporters
-   * POST /rf/exporters
+   * GET /rf/exporters/
    *
    */
-  $this->map(['GET', 'POST'], '/exporters[/{id:[0-9]*}]', function ($request, $response, $args) {
+  $this->get('/exporters[/{id:[0-9]*}]', function ($request, $response, $args) {
     $args['processors'] = \PluginsQuery::create();
-    $args['post']       = $request->isPost();
     if ($args['id']) {
-      $u = new \Pdf();
-      $u->setDate(time())
-        ->setPlugin($args['id'])
-        ->setPages(0)
-        ->setFile('–')
-        ->setConfigSys("Processing");
-      $u->save();
+      $exporter = \PluginsQuery::create()->findPk($args['id']);
+      if ($exporter) {
+
+        /* one time code */
+        $uid = uniqid('otc-', true);
+        $u = new \Pdf();
+        $u->save();
+
+        $signer = new Sha256();
+        $token = (new Builder())->setIssuer($_SERVER['HTTP_HOST'])    // Configures the issuer (iss claim)
+                                ->setAudience($_SERVER['HTTP_HOST'])  // Configures the audience (aud claim)
+                                ->setId(uniqid('rf', true), true)     // Configures the id (jti claim), replicating as a header item
+                                ->setIssuedAt(time())                 // Configures the time that the token was issue (iat claim)
+                                ->setNotBefore(time())                // Configures the time that the token can be used (nbf claim)
+                                ->set('uid', $u->getId())             // Configures a new claim, called "uid"
+                                ->setExpiration(time() + 86400)        // Configures the expiration time of the token (nbf claim)
+                                ->sign($signer,  $uid)      // creates a signature using "testing" as key
+                                ->getToken();                         // Retrieves the generated token
+
+
+
+        $u->setDate(time())
+          ->setPlugin($exporter->getId())
+          ->setPages(0)
+          ->setFile('–')
+          ->setConfigSys("Processing")
+          ->setSplit($uid);
+        $u->save();
+        $criteria = new \Propel\Runtime\ActiveQuery\Criteria();
+        $criteria->addAscendingOrderByColumn(__sort__);
+        $this->helpers->apiCall(
+          $exporter->getApi(),
+          'POST',
+          [
+            "ProcessId"    => $u->getId(),
+            "CallbackUrl"  => 'http'.($_SERVER[HTTPS]?'s':'').'://'.$_SERVER['HTTP_HOST'].'/api/exporter',
+            "Token"        => (string)$token,
+            "Book"         => $exporter->getRBooks($criteria)->toArray(),
+            "Issue"        => $exporter->getRIssues($criteria)->toArray(),
+            "Chapter"      => $exporter->getRFormats($criteria)->toArray(),
+            "Template"     => $exporter->getTemplatenamess($criteria)->toArray()
+          ]
+        );
+      }
     }
     $args['exports'] = \PdfQuery::create()->orderByDate('desc')->limit(20);
     $this->view->render($response, 'content-wrapper/exporters.jade', $args);
@@ -1249,6 +1284,10 @@ $app->group('/rf', function () {
    */
   $this->map(['GET', 'POST'], '/batchhooks[/{id:[0-9]*}]', function ($request, $response, $args) {
     $args['processors'] = \PluginsQuery::create();
+    $args['books'] = $this->db->getBooks();
+    $args['issues'] = $this->db->getIssues();
+    $args['formats'] = $this->db->getFormats();
+    $args['templatenames'] = $this->db->getTemplatenames();
     $args['post']       = $request->isPost();
 
     if ($args['post']) {
@@ -1268,15 +1307,47 @@ $app->group('/rf', function () {
         */
         $u = new \Plugins();
 
+        $parsed_data = [];
+        $store_okay = true;
         foreach ($request->getParsedBody()['data'] as $value) {
-          if ($value['name'] === "addTemplates" && $value['value'] !== -1) {
-            $value['value'] = $this->db->getTemplatefields()->findPk($value['value']);
+          if (!$parsed_data[$value['name']]) {
+            $parsed_data[$value['name']] = [
+              "name" => $value['name'],
+              "value" => $value['value']
+            ];
           }
+          else {
+            $parsed_data[$value['name']]["value"] = (array)$parsed_data[$value['name']]["value"];
+            array_push($parsed_data[$value['name']]["value"], $value['value']);
+          }
+          if ($value['name']=="setApi") {
+            if (!filter_var($value['value'], FILTER_VALIDATE_URL)) {
+              $store_okay = false;
+            }
+          }
+        }
+
+        foreach ($parsed_data as $value) {
+          // Some Overwrites
+          if ($value['name'] === "setRBooks" && $value['value']) 
+            $value['value'] = $this->db->getBooks()->findPks((array)$value['value']);
+          if ($value['name'] === "setRIssues" && $value['value']) 
+            $value['value'] = $this->db->getIssues()->findPks((array)$value['value']);
+          if ($value['name'] === "setTemplatenamess" && $value['value']) 
+            $value['value'] = $this->db->getTemplatenames()->findPks((array)$value['value']);
+          if ($value['name'] === "setRFormats" && $value['value']) 
+            $value['value'] = $this->db->getFormats()->findPks((array)$value['value']);
           if (method_exists($u, $value['name']) && $value['value']) {
             $u->{$value['name']}($value['value']);
           }
+          else {
+            if ($value['name'] != "id")
+              $store_okay = false;
+          }
         }
-        $u->save();
+        if ($store_okay) {
+          $u->save();
+        }
       }
     }
 

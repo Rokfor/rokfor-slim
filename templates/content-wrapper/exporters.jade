@@ -1,6 +1,6 @@
 section.content-header
   h1 Exporter Actions
-  
+
 section.content
   .row
     each exporter in processors
@@ -11,9 +11,9 @@ section.content
           .info-box-content
             span.info-box-text.text-muted
               b=$exporter->getName()
-            span.info-box-text.text-muted=$exporter->getConfigSys()
-            
-                
+            span.info-box-text.text-muted=$exporter->getApi()
+
+
   .row
     .col-md-12
       .box.box-success
@@ -34,10 +34,15 @@ section.content
                   td=date('d.m.Y', $export->getDate())
                   td=date('H:i:s', $export->getDate())
                   td
-                    span.badge.bg-red=$export->getConfigSys()
+                    span.badge(class=$export->getConfigSys()=="Complete"?"bg-green":($export->getConfigSys()=="Timed out"?"bg-blue":"bg-red"))=$export->getConfigSys()
                   td=$export->getPlugins()->getName()
                   td=$export->getPages()
-                  td=$export->getFile()
+                  td
+                    each file, filetype in (array)json_decode($export->getFile())
+                      p(style="margin:0;")
+                        if (!is_numeric($filetype))
+                          span!=filetype.":&nbsp;"
+                        a(href=file target="_blank")=file
 
 
         .box-footer

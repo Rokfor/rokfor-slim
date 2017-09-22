@@ -2,6 +2,8 @@
 
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Lcobucci\JWT\Parser;
+use Lcobucci\JWT\ValidationData;
 
 $app->group('/api', function () {
   /*
@@ -848,6 +850,116 @@ $app->group('/api', function () {
     }
   );
 
+/*
+ * Posting exporter updates, closing jobs
+ *
+ * Json Payload:
+ * {"Status": String, "Url": String, "Pages": Int
+ *
+ */
+
+$this->post('/exporter',
+  function ($request, $response, $args) {
+    $r = $response->withHeader('Content-type', 'application/json');
+    $_error = false;
+
+      // Check for Valid Payload, either json body
+      // or a json string in the json post variable
+
+    $_json = ($request->getParsedBody()['body'] ? $request->getParsedBody()['body'] : $request->getBody());
+    if ($data = json_decode($_json)) {
+      $otc = $data->Token;
+      if ($otc) {
+        try {
+          $signer = new Sha256();
+          $token  = (new Parser())->parse((string) $otc); // Parses from a string
+          $process_id = $token->getClaim('uid');
+          $vdata   = new ValidationData(); // It will use the current time to validate (iat, nbf and exp)
+          $vdata->setIssuer($_SERVER['HTTP_HOST']);
+          $vdata->setAudience($_SERVER['HTTP_HOST']);
+        } catch (Exception $e) {
+          $args["message"]  = 'Link is not valid';
+          $args["showform"] = false;
+        }
+        $pdf =\PdfQuery::create()->findPk($process_id);
+        if ($pdf) {
+          $otcstack = $pdf->getSplit();
+          if ($token && $token->verify($signer, $otcstack) && $token->validate($vdata)) {
+            if ($pdf->getConfigSys() == "Processing" ) {
+              if (time() - $pdf->getDate() < 3600) {
+                  switch (strtolower($data->Status)) {
+                    case 'complete':
+                      if ($data->Url) {
+                        $testurl = (array)$data->Url;
+                        $array_tested = false;
+                        foreach ($testurl as $_testurl) {
+                          if (!filter_var($_testurl, FILTER_VALIDATE_URL)) {
+                            $array_tested = false;
+                            break;
+                          }
+                          else {
+                            $array_tested = true;
+                          }
+                        }
+                        if ($array_tested) {
+                          $pdf->setDate(time())
+                              ->setPages($data->Pages ? (int)$data->Pages : 0)
+                              ->setFile(json_encode($testurl))
+                              ->setConfigSys("Complete");
+                          $pdf->save();
+                        }
+                        else {
+                          $_error = "'".$testurl."' is not a valid URL.";
+                        }
+                      }
+                      else {
+                        $_error = "Url mandatory for job completion.";
+                      }
+                      break;
+                    case 'processing':
+                      $pdf->setDate(time())
+                          ->setConfigSys("Processing");
+                      $pdf->save();
+                      break;
+                    default:
+                      $_error = "Status must be 'complete' or 'processing'.";
+                      break;
+                  }
+                }
+                else {
+                  $_error = "Job expired";
+                  $pdf->setConfigSys("Timed out");
+                  $pdf->save();
+                }
+            }
+            else {
+               $_error = "Job already completed";
+            }            
+          }
+          else {
+            $_error = "token not valid";
+          }
+        }
+        else {
+          $_error = "Id missing or not existing.";
+        }
+      }
+      else {
+        $_error = "token missing";
+      }
+    }
+    else {
+      $_error = "JSON Post Payload missing";
+    }
+
+    if ($_error === false) {
+      $r->getBody()->write(json_encode(["Success" => "ok"]));
+    }
+    else {
+      $r->withStatus(500)->getBody()->write(json_encode(["Error" => $_error]));
+    }
+  }
+);
 
 })->add($cors)->add($apiauth)->add($redis);
 
@@ -858,13 +970,13 @@ $app->options('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}',
 )->add($cors);
 
 $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $response, $args) {
-  
+
   // QUICK PUBLIC CHECK ON REDIS
-  $s3        = $this->get('settings')['paths']['s3'];  
+  $s3        = $this->get('settings')['paths']['s3'];
   // Check for NGINX
   $_isnginx = (strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== false);
-  
-  
+
+
   if ($this->get('redis')['client']) {
     $c = $this->redis['client']->get('%%asset%%'.$args['field']);
     if ($this->redis['client']->get('%%asset%%'.$args['field']) === "public") {
@@ -903,9 +1015,9 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
       exit(0);
     }
   }
-  
-  
-  
+
+
+
 
   // Check if user is logged in
   // only if the asset is called with the backend = True query param.
