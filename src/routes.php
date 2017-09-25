@@ -1222,7 +1222,7 @@ $app->group('/rf', function () {
    * GET /rf/exporters/
    *
    */
-  $this->get('/exporters[/{id:[0-9]*}]', function ($request, $response, $args) {
+  $this->get('/exporters[/{id:[0-9]*}[/{mode}/{sub:[0-9]*}]]', function ($request, $response, $args) {
     $args['processors'] = \PluginsQuery::create();
     if ($args['id']) {
       $exporter = \PluginsQuery::create()->findPk($args['id']);
@@ -1262,10 +1262,16 @@ $app->group('/rf', function () {
             "ProcessId"    => $u->getId(),
             "CallbackUrl"  => 'http'.($_SERVER[HTTPS]?'s':'').'://'.$_SERVER['HTTP_HOST'].'/api/exporter',
             "Token"        => (string)$token,
-            "Book"         => $exporter->getRBooks($criteria)->toArray(),
-            "Issue"        => $exporter->getRIssues($criteria)->toArray(),
-            "Chapter"      => $exporter->getRFormats($criteria)->toArray(),
-            "Template"     => $exporter->getTemplatenamess($criteria)->toArray()
+            "Configuration" => [
+              "Book"         => $exporter->getRBooks($criteria)->toArray(),
+              "Issue"        => $exporter->getRIssues($criteria)->toArray(),
+              "Chapter"      => $exporter->getRFormats($criteria)->toArray(),
+              "Template"     => $exporter->getTemplatenamess($criteria)->toArray()
+            ],
+            "Selection" => [
+              "Mode"         => $args['mode'],
+              "Value"        => $args['sub']
+            ],            
           ]
         );
       }

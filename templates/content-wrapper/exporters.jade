@@ -1,18 +1,72 @@
+mixin box(title, mode, class)
+  span.info-box-icon(class=class)
+    i.fa.fa-external-link
+  .info-box-content
+    span.info-box-text.text-muted(style="float: left")
+      b=$exporter->getName()
+    if mode == "contributions"
+      span.text-muted(style="float: right")
+        .fa.fa-filter &nbsp;
+        each tmp, key in $exporter->getTemplatenamess()
+          if key > 0
+            span /
+          span=tmp->getName()
+      span.info-box-text &nbsp;
+      span.info-box-text &nbsp;
+      select.form-control.rfselect(id=$exporter->getId()."s2-".$mode, style='width: 100%;', data-placeholder=title, data-mode='/rf/exporters/'.$exporter->getId().'/contribution')
+        option
+        each tmp in $exporter->getTemplatenamess()
+          each c in $tmp->getContributionss()
+            if ($c->getStatus() == "Close" || $c->getStatus() == "Draft")
+              option(value=$c->getId())=$c->getName()
+
+    if mode == "books"
+      span.text-muted(style="float: right")
+        .fa.fa-filter &nbsp;
+        each tmp, key in $exporter->getRBooks()
+          if key > 0
+            span /
+          span=tmp->getName()
+      span.info-box-text &nbsp;
+      span.info-box-text &nbsp;
+      select.form-control.rfselect(id=$exporter->getId()."s2-".$mode, style='width: 100%;', data-placeholder=title, data-mode='/rf/exporters/'.$exporter->getId().'/issue')
+        option
+        each tmp in $exporter->getRBooks()
+          each c in $tmp->getIssuess()
+             option(value=$c->getId())=$c->getName()
+    if mode == "issues"
+      span.text-muted(style="float: right")
+        .fa.fa-filter &nbsp;
+        span=title
+    if mode == "formats"
+      span.text-muted(style="float: right")
+        .fa.fa-filter &nbsp;
+        span=title
+
 section.content-header
   h1 Exporter Actions
 
 section.content
   .row
     each exporter in processors
-      .col-md-4.col-sm-6.col-xs-12
-        a.info-box.ajaxload(href='/rf/exporters/'.$exporter->getId(), target=".content-wrapper#detail")
-          span.info-box-icon.bg-green
-            i.fa.fa-external-link
-          .info-box-content
-            span.info-box-text.text-muted
-              b=$exporter->getName()
-            span.info-box-text.text-muted=$exporter->getApi()
-
+      if (count($exporter->getTemplatenamess()) > 0)
+        .col-md-4.col-sm-6.col-xs-12
+          .info-box
+            +box("Select Contribution", "contributions", "bg-green")
+      if (count($exporter->getRBooks()) > 0)
+        .col-md-4.col-sm-6.col-xs-12
+          .info-box
+            +box("Select Issue", "books", "bg-blue")
+      if (count($exporter->getRIssues()) > 0)
+        each tmp in $exporter->getRIssues()
+          .col-md-4.col-sm-6.col-xs-12
+            a.info-box.ajaxload(href='/rf/exporters/'.$exporter->getId().'/issue/'.$tmp->getId(), target=".content-wrapper#detail")
+              +box($tmp->getName(), "issues", "bg-orange")
+      if (count($exporter->getRIssues()) > 0)
+        each tmp in $exporter->getRFormats()
+          .col-md-4.col-sm-6.col-xs-12
+            a.info-box.ajaxload(href='/rf/exporters/'.$exporter->getId().'/format/'.$tmp->getId(), target=".content-wrapper#detail")
+              +box($tmp->getName(), "formats", "bg-red")
 
   .row
     .col-md-12
@@ -46,3 +100,7 @@ section.content
 
 
         .box-footer
+
+include ../js/csrf.js.jade
+script.
+  $.rokfor.initExporters();        
