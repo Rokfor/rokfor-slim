@@ -12,8 +12,8 @@
 @import (reference) "../../bower_components/AdminLTE/build/less/../bootstrap-less/variables.less";
 //MISC
 //----
-@import "variablesLTE.less";
 @import "../../bower_components/AdminLTE/build/less/core.less";
+@import "admin_lte_mods/variablesLTE.less";
 @import "../../bower_components/AdminLTE/build/less/mixins.less";
 //COMPONENTS
 //-----------
@@ -50,7 +50,14 @@
 @import "../../bower_components/AdminLTE/build/less/profile";
 //Plugins
 //--------
-@import "../../bower_components/AdminLTE/build/less/plugins.less";
+//@import "../../bower_components/AdminLTE/build/less/plugins.less";
+// 
+// Customized third-party plugins
+@import "admin_lte_mods/bootstrap-social.less";
+@import "admin_lte_mods/fullcalendar.less";
+@import "admin_lte_mods/select2.less";
+
+
 //Miscellaneous
 //-------------
 @import "../../bower_components/AdminLTE/build/less/miscellaneous.less";
