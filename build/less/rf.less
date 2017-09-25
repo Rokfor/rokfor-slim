@@ -183,6 +183,14 @@ p.divider {
   td {
     position: relative;
   }
+  .rowhandle {
+    color: transparent;
+    position: absolute;
+    width: 1em;
+    &:before {
+      color: black;
+    }
+  }
 }
 
 #rftable {
@@ -367,4 +375,17 @@ p.divider {
   z-index: 999; 
   margin-left: 0.5em; 
   margin-top: 0.5em;
+}
+
+/* Sortable */
+
+.rfkeyword + span .select2-selection__rendered li {
+  float: none !important;
+  width: 100%;
+}
+/* Markdown Preview */
+.md-editor {
+  .md-preview {
+    overflow-x: scroll
+  }
 }

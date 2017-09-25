@@ -118,29 +118,34 @@
                           "targets": 0,
                           "defaultContent": '',
                           "render": function(data) {
-                            return (data);
-                          }
+                            return ('<span class="rowhandle btn btn-xs fa fa-bars">' + data + '</span>');
+                          },
+                          "orderDataType": "dom-span-text",
+                          "width": "0.1em"
                         },
                         {
                           "targets": 1,
                           "defaultContent": '',
                           "render": function(data) {
                             return (data);
-                          }
+                          },
+                          "width": "80px"
                         },
                         {
                           "targets": -1,
                           "defaultContent": '',
                           "render": function(data) {
                             return ('<a class="btn btn-xs btn-danger"><i class="fa fa-minus"></i></a>');
-                          }
+                          },
+                          "width": "0.1em"
                         },
                         {
                           "targets": '_all',
                           "defaultContent": '',
                           "render": function(data) {
                             return ('<textarea name="caption[][]" class="rowedit">' + data + '</textarea>');
-                          }
+                          },
+                          "width": "auto"
                         }
                       ]
         })
@@ -640,11 +645,21 @@
     });
 
 
+    /* Create an array with the values of all the input boxes in a column, parsed as numbers */
+    $.fn.dataTable.ext.order['dom-span-text'] = function  ( settings, col )
+    {
+        return this.api().column( col, {order:'index'} ).nodes().map( function ( td, i ) {
+            return $('span', td).text();
+        } );
+    }
+
     // Tables
 
     $('.rftable').each(function(i,n) {
       var table = $(this);
       var addbutton = table.next('a');
+      var serialize = function(){};
+
       var dt = table.DataTable({
         "paging": false,
         "lengthChange": false,
@@ -655,53 +670,82 @@
             update: true
         },
         "info": false,
-        "autoWidth": true,
-        "dom": 'rt',
+        "autoWidth": false,
+        "dom": 'rtp',
+        "drawCallback": function( settings ) {
+          var api = this.api();
+          serialize();
+        },
         "columnDefs": [
                         {
                           "targets": 0,
-                          "data": function( data, type, full, meta) {if (meta) return meta.row;},
                           "defaultContent": '',
+                          "render": function(data) {
+                            return ('<span class="rowhandle btn btn-xs fa fa-bars">' + data + '</span>');
+                          },
+                          "orderDataType": "dom-span-text",
+                          "width": "0.1em"
                         },
+                        /*{
+                          "targets": 0,
+                          "defaultContent": '',
+                          "render": function(data) {
+                            return (data);
+                          }
+                        },*/
                         {
                           "targets": -1,
                           "defaultContent": '<a class="btn btn-xs btn-danger"><i class="fa fa-minus"></i></a>',
+                          "render": function(data) {
+                            return (data);
+                          },
+                          "width": "0.1em"
                         },
                         {
                           "targets": '_all',
-                          "defaultContent": '<textarea class="rowedit"></textarea>',
+                          "defaultContent": '',
+                          "render": function(data) {
+                            return ('<textarea class="rowedit">' + data + '</textarea>');
+                          },
+                          "width": "auto"
                         }
                       ]
       });
       dt.on('keyup', 'textarea', function(){
+        $(this).next().html($(this).val());
         serialize();
       });
       dt.on('click', 'a', function(e){
         e.stopPropagation();
         dt.row($(this).parents('tr')).remove().draw();
-        serialize();
         return false;
       });
-      dt.on( 'order.dt', function ( e, diff, edit ) {
-        serialize();
-      })
       addbutton.click(function(e){
         e.stopPropagation();
-        dt.row.add([]).draw();
-        serialize();
+        dt.row.add([dt.rows().count()]).draw();
         return false;
       });
+
       var serialize = function() {
         var d = [];
         var cols = $(dt.row(0).node()).children('td').length;
+        var row_pointer;
+        var oldrow;
         dt.cells().every( function ( rowIdx, cellIdx) {
-          var v = $(this.node()).find('textarea').val();
-          if (d[rowIdx] == undefined) d[rowIdx] = [];
+          if (rowIdx !== oldrow) {
+            row_pointer = row_pointer + 1 || 0;
+          }
+          d[row_pointer] = d[row_pointer] || [];
+          var v = $(this.node()).find('textarea').val() || false;
           if(cellIdx > 0 && cellIdx < cols - 1)
-            d[rowIdx].push(v ? v : false);
+            d[row_pointer][cellIdx - 1] = v;
+          oldrow = rowIdx;
         });
         $.rokfor.contribution.store( table.attr('id'), JSON.stringify(d));
       }
+
+
+
     });
 
     $('.closebutton').click(function(e){

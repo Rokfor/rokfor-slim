@@ -13,7 +13,7 @@
       table.table.table-bordered.table-striped.dataTable.rftable(id=field->getId())
         thead
           tr
-            th Sort
+            th
             each col in $config['colnames']
               th=col
             if ($config['growing']==true)
@@ -22,17 +22,18 @@
               th(style="display:none")
         tbody
           :php
-            $rows = json_decode($field->getContent(), true); if ($rows == null) {if (!is_array($rows[0]) && is_array($rows)) $rows = [$rows]; else if (!is_array($rows)) $rows = [[$field->getContent()]];}
-          each row in $rows
+            $rows = json_decode($field->getContent(), true); 
+            if ($rows == null) {
+              if (!is_array($rows[0]) && is_array($rows)) 
+                $rows = [$rows]; 
+              else 
+                if (!is_array($rows)) $rows = [[$field->getContent()]];
+            }
+          each row, rkey in $rows
             tr
-              td
-              :php
-                $c = 0;
-              each col in $config['colnames']
-                td
-                  textarea.rowedit=($row[$c]?$row[$c]:"")
-                  :php
-                    $c++;
+              td=rkey
+              each col, c in $config['colnames']
+                td=($row[$c]?$row[$c]:"")
               if ($config['growing']==true)
                 td
                   a.btn.btn-xs.btn-danger

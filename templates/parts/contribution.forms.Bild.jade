@@ -16,10 +16,10 @@
           span=$translations['imageform_open']
           input(type='file', name='files[]', multiple='multiple', title=$translations['imageform_open'])
     .box-footer
-      table.table.table-bordered.table-striped.box-footer.dataTable.rfimagetable
+      table.table.table-bordered.table-striped.dataTable.rfimagetable
         thead
           tr
-            th=$translations['imageform_sort']
+            th
             th=$translations['imageform_image']
             if (count($config['caption_variants']) > 1)
               each caption_variant in config.caption_variants
