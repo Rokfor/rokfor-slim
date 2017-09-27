@@ -1248,10 +1248,12 @@ $app->group('/rf', function () {
 
         $u->setDate(time())
           ->setPlugin($exporter->getId())
-          ->setPages(0)
-          ->setFile('–')
-          ->setConfigSys("Processing")
-          ->setSplit($uid);
+          ->setPages("")
+          ->setFile("")
+          ->setIssue($args[sub])
+          ->setConfigSys($args[mode])
+          ->setConfigValue(1)
+          ->setOtc($uid);
         $u->save();
         $criteria = new \Propel\Runtime\ActiveQuery\Criteria();
         $criteria->addAscendingOrderByColumn(__sort__);

@@ -851,6 +851,64 @@ $app->group('/api', function () {
   );
 
 /*
+ * Get Exported Files
+ *
+ * Additional Query Params:
+ * limit: int (default: 10, max 100)
+ * type: string (contribution, format or issue)
+ * filter: int
+ *
+ */
+
+  $this->get('/exporter/{id:[0-9]*}',
+    function ($request, $response, $args) {
+      $r        = $response->withHeader('Content-type', 'application/json');
+      $_error   = false;
+      $_exports = [];
+      $limit    = $request->getQueryParams()['limit'] && (int)$request->getQueryParams()['limit']<100 ? (int)$request->getQueryParams()['limit'] : 10;
+      $type     = $request->getQueryParams()['type'] ? $request->getQueryParams()['type'] : false;
+      $filter   = $request->getQueryParams()['filter'] ? (int)$request->getQueryParams()['filter'] : false;
+
+      if ($args['id']) {
+        $pdfs =\PdfQuery::create()
+                  ->filterByPlugin($args['id'])
+                  ->filterByConfigValue(2)
+                  ->_if($type)
+                    ->filterByConfigSys($type)
+                  ->_endif()
+                  ->_if($filter)
+                    ->filterByIssue($filter)
+                  ->_endif()
+                  ->orderByDate(desc)
+                  ->limit($limit);
+        foreach($pdfs as $_pdf) {
+          $_exports[] = [
+            Date   => $_pdf->getDate(),
+            Files  => json_decode($_pdf->getFile()),
+            Meta   => json_decode($_pdf->getPages()),
+            Filter => $_pdf->getIssue(),
+            Type   => $_pdf->getConfigSys()
+          ];
+        }
+      }
+      else {
+        $_error = "Id missing in Call (exporter/id)";
+      }
+
+
+      if ($_error === false) {
+        $r->getBody()->write(json_encode(["Exports" => $_exports, "Hash" => md5(json_encode($_exports))]));
+      }
+      else {
+        $r->withStatus(500)->getBody()->write(json_encode(["Error" => $_error]));
+      }
+
+
+
+    }
+  );
+
+/*
  * Posting exporter updates, closing jobs
  *
  * Json Payload:
@@ -883,9 +941,9 @@ $this->post('/exporter',
         }
         $pdf =\PdfQuery::create()->findPk($process_id);
         if ($pdf) {
-          $otcstack = $pdf->getSplit();
+          $otcstack = $pdf->getOtc();
           if ($token && $token->verify($signer, $otcstack) && $token->validate($vdata)) {
-            if ($pdf->getConfigSys() == "Processing" ) {
+            if ($pdf->getConfigValue() == 1 ) {
               if (time() - $pdf->getDate() < 3600) {
                   switch (strtolower($data->Status)) {
                     case 'complete':
@@ -903,13 +961,13 @@ $this->post('/exporter',
                         }
                         if ($array_tested) {
                           $pdf->setDate(time())
-                              ->setPages($data->Pages ? (int)$data->Pages : 0)
+                              ->setPages($data->Pages ? json_encode($data->Pages) : "")
                               ->setFile(json_encode($testurl))
-                              ->setConfigSys("Complete");
-                          $pdf->save();
+                              ->setConfigValue(2)
+                              ->save();
                         }
                         else {
-                          $_error = "'".$testurl."' is not a valid URL.";
+                          $_error = $_testurl." is not a valid URL.";
                         }
                       }
                       else {
@@ -918,17 +976,23 @@ $this->post('/exporter',
                       break;
                     case 'processing':
                       $pdf->setDate(time())
-                          ->setConfigSys("Processing");
-                      $pdf->save();
+                          ->setConfigValue(1)
+                          ->save();
                       break;
+                    case 'error':
+                      $pdf->setDate(time())
+                          ->setConfigValue(0)
+                          ->setPages($data->Pages ? json_encode($data->Pages) : "")
+                          ->save();
+                      break;                      
                     default:
-                      $_error = "Status must be 'complete' or 'processing'.";
+                      $_error = "Status must be 'complete' or 'processing' or 'error'.";
                       break;
                   }
                 }
                 else {
                   $_error = "Job expired";
-                  $pdf->setConfigSys("Timed out");
+                  $pdf->setConfigValue(3);
                   $pdf->save();
                 }
             }

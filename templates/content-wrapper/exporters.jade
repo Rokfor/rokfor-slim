@@ -88,15 +88,47 @@ section.content
                   td=date('d.m.Y', $export->getDate())
                   td=date('H:i:s', $export->getDate())
                   td
-                    span.badge(class=$export->getConfigSys()=="Complete"?"bg-green":($export->getConfigSys()=="Timed out"?"bg-blue":"bg-red"))=$export->getConfigSys()
+                    span.badge(class=$export->getConfigValue()==2?"bg-green":($export->getConfigValue()==3?"bg-blue":"bg-red"))
+                      :php
+                        switch ($export->getConfigValue()) {
+                          case 0:
+                            echo "Errored";
+                            break;
+                          case 1:
+                            echo "Processing";
+                            break;
+                          case 2:
+                            echo "Complete";
+                            break;
+                          case 3:
+                            echo "Timed Out";
+                            break;
+                        }
                   td=$export->getPlugins()->getName()
-                  td=$export->getPages()
+                  td
+                    each info, filetype in (array)json_decode($export->getPages())
+                      ul.intable
+                        li!=filetype
+                          ul
+                            if filetype == "Error"
+                              li!=str_replace(["\\n","\\\\"], ["<br>",'\\'] , print_r($info, true))
+                            else
+                              li!=info.creator
+                              li!=info.pages." Pages"
+
+
                   td
                     each file, filetype in (array)json_decode($export->getFile())
-                      p(style="margin:0;")
+                      ul.intable
                         if (!is_numeric($filetype))
-                          span!=filetype.":&nbsp;"
-                        a(href=file target="_blank")=file
+                          li
+                            span!=filetype.":&nbsp;"
+                            ul
+                              li
+                                a(href=file target="_blank")=pathinfo($file, PATHINFO_BASENAME)
+                        else
+                          li
+                            a(href=file target="_blank")=pathinfo($file, PATHINFO_BASENAME)
 
 
         .box-footer
