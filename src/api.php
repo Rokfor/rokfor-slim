@@ -281,6 +281,85 @@ $app->group('/api', function () {
     }
   );
 
+  /* Post Issue and Chapter
+   *
+   * Supporting only renaming and changing options and locales
+   *
+   * Payload:
+   *
+   * {
+   *  Name: STRING;
+   *  Options: [];
+   *  Locale: [];
+   * }
+   *
+   */
+
+  $this->post('/{action:issue|chapter}/{id:[0-9]*}',
+  function ($request, $response, $args) {
+    // Actions
+    $_error = false;
+
+    $_json = ($request->getParsedBody()['body'] ? $request->getParsedBody()['body'] : $request->getBody());
+    if ($data = json_decode($_json)) {
+
+      // Get Previous Data
+              
+        
+      if ($args['action'] == "issue")
+        $oldvalue = @json_decode($this->db->getIssue($args['id'])->getConfigSys());
+      else
+        $oldvalue = @json_decode($this->db->getFormat($args['id'])->getConfigSys());        
+
+      if ($data->Options) {
+        if (is_array($data->Options)) {
+          $oldvalue->editorcolumns = $data->Options;
+        }
+        else {
+          $_error = "The 'Options' parameter must be an array";
+        }
+      }
+      if ($data->Locale) {
+        if (is_array($data->Locale)) {
+          $oldvalue->locale = $data->Locale;
+        }
+        else {
+          $_error = "The 'Locale' parameter must be an array";
+        }
+      }      
+      if (($data->Locale || $data->Options) && $_error === false) {
+        $funcname = 'settings'.ucfirst($args['action']);
+        $this->db->$funcname($args['id'], json_encode($oldvalue));
+      }
+
+      if ($data->Name) {
+        if (is_string($data->Name)) {
+          $funcname = 'rename'.ucfirst($args['action']);
+          $this->db->$funcname($args['id'], $request->getParsedBody()['Name']);
+        }
+        else {
+         $_error = "The 'Name' parameter must be a type of string"; 
+        }
+      }
+    }
+    else {
+      $_error = "Body is not a valid json string.";
+    }
+    
+    if ($_error === false) {
+      $response->getBody()->write(json_encode([
+        "Id" => $args['id']
+      ]));
+    }
+    else {
+      $errcode = 404;
+      $newResponse = $response->withStatus($errcode);
+      $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>$_error], JSON_CONSTANTS));
+      return $newResponse;
+    }
+  }
+);
+
 
   /* Binary Proxy
    *

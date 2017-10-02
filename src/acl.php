@@ -65,6 +65,7 @@ class Acl extends ZendAcl
         $_api_routes['guest'][] = ['/api/login',                                                            'POST'];
         $_api_routes['guest'][] = ['/api/books[/{id:[0-9]*}]',                                              'GET'];
         $_api_routes['guest'][] = ['/api/{action:issues|chapters}[/{id:[0-9]*}]',                           'GET'];
+        $_api_routes['guest'][] = ['/api/{action:issue|chapter}/{id:[0-9]*}',                               'POST'];
         $_api_routes['guest'][] = ['/api/contribution',                                                     'PUT'];
         $_api_routes['guest'][] = ['/api/contribution/{id:[0-9]*}',                                         ['GET', 'POST', 'DEL']];
         $_api_routes['guest'][] = ['/api/contributions/{issue:[0-9]*}/{chapter:[0-9]*}',                    'GET'];
