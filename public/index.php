@@ -1,4 +1,5 @@
 <?php
+
 use Slim\CallableResolver;
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 $GLOBALS[starttime] = microtime(true);

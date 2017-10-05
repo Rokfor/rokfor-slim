@@ -43,7 +43,8 @@
         "lcobucci/jwt": "^3.1",
         "phpmailer/phpmailer": "^6.0",
         "ext-imagick": "*",
-        "ext-gd": "*"
+        "ext-gd": "*",
+        "ext-redis": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "*"
