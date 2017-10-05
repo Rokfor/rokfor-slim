@@ -87,6 +87,26 @@ $app->group('/api', function () {
           ? $this->db->searchContributions($_query, $args['issue'], $args['chapter'], $_status, false, false, $filterfields, $filterclause, false, true, $_template)
           : $this->db->getContributions($args['issue'], $args['chapter'], false, $_status, false, false, true, $_template);
 
+
+      /* Result Contributions */
+      $_result_contribs = $c->find()->toArray();
+      array_walk($_result_contribs, function(&$a){$a = $a[Id];});
+      // No Recursion on multiple contributions
+      $recursion = false;
+      // Creating Cache Signature
+      $signatur_fields = explode("|", strtolower($request->getQueryParams()['data']));
+      sort($signatur_fields);
+      $signature = md5($compact."-".$follow_references."-".$recursion."-".$request->getQueryParams()['populate'].join(".",$signatur_fields));
+      $_caches = [];
+      foreach (\ContributionscacheQuery::create()
+          ->filterByForcontribution($_result_contribs)
+          ->filterBySignature($signature)
+          ->find()
+          ->toArray() as $_value) {
+        $_caches[$_value[Forcontribution]] = $_value[Cache];
+      }
+
+
       foreach ($c as $_c) {
         // Check for publish date.
         $_config = json_decode($_c->getConfigSys());
@@ -96,14 +116,9 @@ $app->group('/api', function () {
           }
           continue;
         }
-        // No Recursion on multiple contributions
-        $recursion = false;
-        // Creating Cache Signature
-        $signatur_fields = explode("|", strtolower($request->getQueryParams()['data']));
-        sort($signatur_fields);
-        $signature = md5($compact."-".$follow_references."-".$recursion."-".$request->getQueryParams()['populate'].join(".",$signatur_fields));
         // Asking Cache first
-        if ($h = $_c->checkCache($signature)) {
+        if ($_caches[$_c->getId()]) {
+          $h = json_decode($_caches[$_c->getId()]);
           $_contribution["Contribution"] = $h->Contribution;
           $_contribution["Data"]         = $h->Data;
           $_cache_count++;
