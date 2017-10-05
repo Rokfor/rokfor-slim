@@ -79,7 +79,8 @@ $app->group('/api', function () {
     $c = $_query !== false
           ? $this->db->searchContributions($_query, $args['issue'], $args['chapter'], $_status, $_limit, $_offset, $filterfields, $filterclause, $_sort, false, $_template)
           : $this->db->getContributions($args['issue'], $args['chapter'], $_sort, $_status, $_limit,  $_offset, false, $_template);
-
+    
+    $_cache_count = 0;
     if (is_object($c)) {
       // Counting Max Objects without pages and limits
       $_count = $_query !== false
@@ -105,6 +106,7 @@ $app->group('/api', function () {
         if ($h = $_c->checkCache($signature)) {
           $_contribution["Contribution"] = $h->Contribution;
           $_contribution["Data"]         = $h->Data;
+          $_cache_count++;
         }
         // Create new Entry and store in Cache
         else {
@@ -122,6 +124,7 @@ $app->group('/api', function () {
                     array("Documents" => $j,
                           "NumFound"  => $_count,
                           "Limit"     => count($c),
+                          "CachePerc" => (count($j) > 0 ? round(100 / count($j) * $_cache_count) : 0),
                           "Offset"    =>  $_offset,
                           "QueryTime" => (microtime(true) - $qt),
                           "Hash"      => md5(json_encode($j))
