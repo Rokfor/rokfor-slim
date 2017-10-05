@@ -229,6 +229,18 @@ $container['redis'] = function ($c) {
       }
     }
     else {
+
+
+      \TFC\Cache\DoctrineCacheFactory::setOption(
+        array(
+          'storage'     => 'redis',
+          'prefix'      => 'rokfor-cache-'.$dbsettings['dbname'],
+          'host'        => $settings['redis_ip'],
+          'port'        => $settings['redis_port'],
+          'default_ttl' => 0
+          )
+      );            
+
       $redis_config = [
         'scheme' => 'tcp',
         'host' => $settings['redis_ip'],
