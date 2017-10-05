@@ -175,6 +175,7 @@ $container['db'] = function ($c) {
   }
   
   $settings = require __DIR__ . '/../config/database.php';
+  $rsettings = require __DIR__ . '/../config/redis.php';
 
   // Overrule DbName if multi Environment Setting is true
 
@@ -182,6 +183,16 @@ $container['db'] = function ($c) {
     $host = explode('.', $_SERVER['HTTP_HOST']);
     $settings['dbname'] = preg_replace("/[^A-Za-z0-9-_]/", '', $host[0]);
   }
+
+  \TFC\Cache\DoctrineCacheFactory::setOption(
+    array(
+      'storage'     => 'redis',
+      'prefix'      => 'rokfor-cache-'.$settings['dbname'],
+      'host'        => $rsettings['redis_ip'],
+      'port'        => $rsettings['redis_port'],
+      'default_ttl' => 0
+      )
+  );   
 
 
   try {
@@ -212,7 +223,6 @@ $container['redis'] = function ($c) {
     $dbsettings['dbname'] = preg_replace("/[^A-Za-z0-9-_]/", '', $host[0]);
   }
 
-
   if ($settings['redis']) {
 
     // Clusterd Setup
@@ -229,18 +239,6 @@ $container['redis'] = function ($c) {
       }
     }
     else {
-
-
-      \TFC\Cache\DoctrineCacheFactory::setOption(
-        array(
-          'storage'     => 'redis',
-          'prefix'      => 'rokfor-cache-'.$dbsettings['dbname'],
-          'host'        => $settings['redis_ip'],
-          'port'        => $settings['redis_port'],
-          'default_ttl' => 0
-          )
-      );            
-
       $redis_config = [
         'scheme' => 'tcp',
         'host' => $settings['redis_ip'],
