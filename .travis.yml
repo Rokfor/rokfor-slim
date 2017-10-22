@@ -3,13 +3,14 @@ sudo: required
 language: php
 
 php:
-  - 7.0
   - 7.1
 
 before_install:
   - sudo apt-get install imagemagick
   - printf "\n" | pecl install imagick
   - echo "extension = imagick.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - phpenv config-rm xdebug.ini
+  - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 install:
   - composer install
