@@ -990,6 +990,10 @@ class helpers
     /* Preliminary Checks */
     if (!$field) return false;
     if (!$field_id = $field->getId()) return false;
+    if ($field->getContributions()->getStatus() == 'Open') {
+      return false;
+    }
+
 
     /* Recursion Check */
     if (in_array($field_id, $_recursion_check)) return false;
@@ -1086,7 +1090,32 @@ class helpers
               $_nc[$_c->getId()] = $_temp;
             }
           }
-          $_content = $_nc ? array_keys($_nc) : $_content;
+          //$_content = $_nc ? array_keys($_nc) : $_content;
+
+          
+          if (is_array($_content) && $_nc) {
+            $_needs_update = false;
+            // Check for non existent values in _content - add to _content          
+            foreach (array_keys($_nc) as $_indb) {
+              if (!in_array($_indb, $_content)) {
+                $_content[] = $_indb;
+                $_needs_update = true;
+              }
+            }
+            // Check for non existent values in relations - delete from _content
+            foreach ($_content as $__key => $__vals) {
+              if (!$_nc[$__vals]) {
+                unset($_content[$__key]);
+                $_needs_update = true;
+              }
+            }
+            if ($_needs_update) {
+              $field->setContent(json_encode($_content))->save();
+            }
+          }
+          else {
+            $_content = $_nc ? array_keys($_nc) : $_content;
+          }
           break;
       }
     }

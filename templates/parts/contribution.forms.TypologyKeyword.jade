@@ -13,12 +13,29 @@
       .form-group
         :php
           $data = $field->getRelationsAsArray($config['history_command']);
+          $sort = @json_decode($field->getContent());
+
+          if (is_array($sort)) {
+            foreach ($data as $_indb) {
+              if (!in_array($_indb, $sort)) {
+                $sort[] = $_indb;
+              }
+            }
+            foreach ($sort as $__key => $__vals) {
+              if (!in_array($__vals, $data)) {
+                unset($sort[$__key]);
+              }
+            }
+          }
+          else {
+            $sort = [];
+          }
           $history_reverse = [];
           foreach ($field->getHistory() as $hist) {
             $history_reverse[$hist[id]] = $hist[value];
           };
         select.form-control.rfkeyword(id=field->getId(), style='width: 100%;', multiple="multiple", data-tags=($config['history_command']=='self'?'true':'false'))
-          each dt in data
+          each dt in sort
             option(value=dt, selected='selected')=$history_reverse[$dt]
           each select in $field->getHistory()
             if (!in_array($select['id'], $data))
