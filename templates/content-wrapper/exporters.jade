@@ -29,7 +29,7 @@ mixin box(title, mode, class)
           span=tmp->getName()
       span.info-box-text &nbsp;
       span.info-box-text &nbsp;
-      select.form-control.rfselect(id=$exporter->getId()."s2-".$mode, style='width: 100%;', data-placeholder=title, data-mode='/rf/exporters/'.$exporter->getId().'/issue')
+      select.form-control.rfselect(id=$exporter->getId()."s2-".$mode, style='width: 100%;', data-placeholder=title, data-mode='/rf/exporters/'.$exporter->getId().'/issues')
         option
         each tmp in $exporter->getRBooks()
           each c in $tmp->getIssuess()
