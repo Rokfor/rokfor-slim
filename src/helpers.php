@@ -1092,7 +1092,6 @@ class helpers
           }
           //$_content = $_nc ? array_keys($_nc) : $_content;
 
-          
           if (is_array($_content) && $_nc) {
             $_needs_update = false;
             // Check for non existent values in _content - add to _content          
@@ -1104,7 +1103,7 @@ class helpers
             }
             // Check for non existent values in relations - delete from _content
             foreach ($_content as $__key => $__vals) {
-              if (!$_nc[$__vals]) {
+              if (!in_array($__vals, array_keys($_nc))) {
                 unset($_content[$__key]);
                 $_needs_update = true;
               }
