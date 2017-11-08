@@ -1270,7 +1270,7 @@ $app->group('/rf', function () {
           'POST',
           [
             "ProcessId"    => $u->getId(),
-            "CallbackUrl"  => 'http'.($_SERVER[HTTPS]?'s':'').'://'.$_SERVER['HTTP_HOST'].'/api/exporter',
+            "CallbackUrl"  => 'http'.($this->helpers->isSSL()?'s':'').'://'.$_SERVER['HTTP_HOST'].'/api/exporter',
             "Token"        => (string)$token,
             "Configuration" => [
               "Book"         => $exporter->getRBooks($criteria)->toArray(),

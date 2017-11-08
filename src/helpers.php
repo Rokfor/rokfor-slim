@@ -19,6 +19,17 @@ class helpers
         $this->Parsedown->setBreaksEnabled(true);
     }
 
+    public function isSSL()
+    {
+        if( !empty( $_SERVER['https'] ) )
+            return true;
+
+        if( !empty( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' )
+            return true;
+
+        return false;
+    }
+
     /**
      * adds copyright notices and version info to args array for template rendering
      *
