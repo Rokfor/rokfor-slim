@@ -27,6 +27,9 @@ class helpers
         if( !empty( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' )
             return true;
 
+        if ($this->container->paths['enforce_https'])
+            return true;
+
         return false;
     }
 
