@@ -4,23 +4,50 @@ rokfor-slim
 ===========
 
 Rokfor build based on [Slim Framework](<http://slimframework.com/>) for PHP.
-Rokfor is a api-first, data centristic content management. It currently
-features:
+Rokfor is a api-first, data centristic content management. Its logic is based on somthing,
+that is all around us: Books and Magazines.
 
--   Flexible structures called "Books", divided into parts, called "Chapters".
--   Every book can have multiple instances called "Issues".
--   Every Chapter contains data, called "Contributions".
--   "Contributions" are collections of fields, gathered in templates.
--   Various data types supported: Text, Text Arrays, RTF Text, Tables, Numbers,
-    Dates, Locations, Image and File uploads, Tags, Selectors, Sliders, Two Way
-    Sliders.
--   Various data relations: field to fields, field to structures, fixed values
-    and many more.
--   Read only api with a simple bearer-key authentification based on user
-    rights.
+Overview
+--------
+
+__Data Structure__
+
+-   Basic structure called _Books_, divided into parts, called _Chapters_
+-   Book exist as (multiple) instances called _Issues_
+-   Chapters contain data, called _Contributions_
+-   _Contributions_ are collections of fields, defined in _Templates_
+
+__Templates__
+
+-   Text: Multi-field arrays, RTF text, Markdown, plain text
+-   Tables: Dynamic rows and columns
+-   Numbers: Integer, Float or customizable Dates
+-   Locations: Including Google Maps and Location Pickers
+-   Image and Files: Automatically resize to multiple previews, keeping the original
+-   Select Boxes: Single, Multiple, Sortable. Various data relations (one-to-one, one-to-many based on foreign keys pointing to other Contributions, Books or Chapters)
+-   Sliders: Either one or two dimensional
+
+__Users__
+
+-   Multi user setup
+-   Roles: Administrator, regular users
+-   Access to Chapters, Templates and Books defined by access groups.
+
+__Api__
+
+-   Read only api with a bearer-key authentification
 -   Read/Write Api based on JWT Tokens
--   Fine grained roles and rights system.
--   Installable via composer, using grunt and bower as build system.
+-   CORS settings and IP restriction based on user profiles
+-   RESTful
+
+__Installation__
+
+-   Installable via composer, using grunt and bower as build system
+-   Runs behind Nginx and Apache
+-   Uploads stored on the server or on a S3 service, suitable for cloud/load balanced installations
+-   Requires MySQL and (for best performance) Redis
+-   Deployable on EC2 instances (tested on Beanstalk), runs within Dokker (tested using Dokku) and Heroku
+
 
 Rokfor is optimized for speed, although complex search queries over a large database
 can take quite a while. The problem lays in the nature of relational databases an the
