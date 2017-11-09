@@ -952,7 +952,7 @@ $app->group('/api', function () {
  *
  * Additional Query Params:
  * limit: int (default: 10, max 100)
- * type: string (contribution, format or issue)
+ * type: string (contribution, format or issues)
  * filter: int
  *
  */
