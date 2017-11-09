@@ -38,7 +38,7 @@ mixin box(title, mode, class)
       span.text-muted(style="float: right")
         .fa.fa-filter &nbsp;
         span=title
-    if mode == "formats"
+    if mode == "chapters"
       span.text-muted(style="float: right")
         .fa.fa-filter &nbsp;
         span=title
@@ -60,13 +60,13 @@ section.content
       if (count($exporter->getRIssues()) > 0)
         each tmp in $exporter->getRIssues()
           .col-md-4.col-sm-6.col-xs-12
-            a.info-box.ajaxload(href='/rf/exporters/'.$exporter->getId().'/issue/'.$tmp->getId(), target=".content-wrapper#detail")
+            a.info-box.ajaxload(href='/rf/exporters/'.$exporter->getId().'/issues/'.$tmp->getId(), target=".content-wrapper#detail")
               +box($tmp->getName(), "issues", "bg-orange")
-      if (count($exporter->getRIssues()) > 0)
+      if (count($exporter->getRFormats()) > 0)
         each tmp in $exporter->getRFormats()
           .col-md-4.col-sm-6.col-xs-12
-            a.info-box.ajaxload(href='/rf/exporters/'.$exporter->getId().'/format/'.$tmp->getId(), target=".content-wrapper#detail")
-              +box($tmp->getName(), "formats", "bg-red")
+            a.info-box.ajaxload(href='/rf/exporters/'.$exporter->getId().'/chapters/'.$tmp->getId(), target=".content-wrapper#detail")
+              +box($tmp->getName(), "chapters", "bg-red")
 
   .row
     .col-md-12
@@ -80,8 +80,8 @@ section.content
               th Zeit
               th Status
               th Hook
-              th Pages
-              th Datei
+              th Info
+              th File
             tbody
               each export in exports
                 tr
@@ -113,8 +113,13 @@ section.content
                             if filetype == "Error"
                               li!=str_replace(["\\n","\\\\"], ["<br>",'\\'] , print_r($info, true))
                             else
-                              li!=info.creator
-                              li!=info.pages." Pages"
+                              if info.project
+                                li!=info.project
+                              else
+                                li!=info.creator
+                              li!=info.pages." Pages / ".(round($info->file_size/1024))." kB"
+                              li!=info.page_size." Page Size"
+
 
 
                   td
