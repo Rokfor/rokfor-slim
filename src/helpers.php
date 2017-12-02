@@ -1143,7 +1143,7 @@ class helpers
           if ($_fieldsettings->rtfeditor)
             $_parsed[] = $this->parse_tags($__c, $field->getForcontribution());
           else if ($_fieldsettings->markdowneditor)
-            $_parsed[] = $this->parse_tags($this->Parsedown->text($__c), $field->getForcontribution());
+            $_parsed[] = $this->Parsedown->text($this->parse_tags($__c, $field->getForcontribution()));
           else
             $_parsed[] = nl2br($__c);
         }
@@ -1152,7 +1152,7 @@ class helpers
         if ($_fieldsettings->rtfeditor)
           $_parsed = $this->parse_tags($_content, $field->getForcontribution());
         else if ($_fieldsettings->markdowneditor)
-          $_parsed = $this->parse_tags($this->Parsedown->text($_content), $field->getForcontribution());
+          $_parsed = $this->Parsedown->text($this->parse_tags($_content, $field->getForcontribution()));
         else
           $_parsed = nl2br($_content);
       }
