@@ -365,7 +365,7 @@ $apiauth = function ($request, $response, $next) {
         else $msg = "Wrong key supplied";
       }
 
-      // Post Requests: JWT Token Required
+      // Pos/Put/Delete Requests: JWT Token Required
 
       if ($request->isPost() || $request->isPut() || $request->isDelete()) {
         $signer = new Sha256();

@@ -299,6 +299,105 @@ $app->group('/api', function () {
     }
   );
 
+  /* Put Issue / Chapter
+   * Adding an issue / chapter, can only be executed as root
+   *
+   * Payload:
+   *
+   * {
+   *  Name: STRING;
+   *  Forbook: INT;
+   *  Users: []; (optional)
+   * }
+   *
+   */
+
+  $this->put('/{type:issue|chapter}',
+    function ($request, $response, $args) {
+      $_error = false;
+      $issueid = false;
+      $_json = ($request->getParsedBody()['body'] ? $request->getParsedBody()['body'] : $request->getBody());
+      if ($data = json_decode($_json)) {
+        /* Only Root User is allowed to call this... */
+        $u = $this->db->getUser();
+        if ($u['role'] === "root") {
+          if (is_string($data->Name) && is_int($data->Forbook)) {
+            if ($issueid = $this->db->{'add'.ucfirst($args['type'])}($data->Name, $data->Forbook)) {
+              if ($data->Users) {
+                $users = [];
+                foreach ($data->Users as $key => $value) {
+                  $users[] = [key => $key, value => $value];
+                }
+                if (count($users)>0) {
+                   $this->db->{'rights'.ucfirst($args['type'])}($issueid, $users);
+                }
+              }
+            } else {
+              $_error = "Book not known";
+            }
+          } else {
+            $_error = "Book not known or ".$args['type']." without name";
+          }
+        }
+        else {
+           $_error = "Not allowed.";        
+        }
+      }
+      else {
+        $_error = "Body is not a valid json string.";        
+      }
+      if ($_error === false && $issueid !== false) {
+        $response->getBody()->write(json_encode([
+          "Id" => $issueid
+        ]));
+      }
+      else {
+        $errcode = 404;
+        $newResponse = $response->withStatus($errcode);
+        $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>$_error], JSON_CONSTANTS));
+        return $newResponse;
+      }
+    }
+  );
+
+
+  /* Delete Issue / Chapter
+   * Adding an issue / chapter, can only be executed as root
+   *
+   *
+   */
+
+  $this->delete('/{type:issue|chapter}/{id:[0-9]*}',
+    function ($request, $response, $args) {
+      $_error = false;
+      $issueid = false;
+
+      /* Only Root User is allowed to call this... */
+      $u = $this->db->getUser();
+      if ($u['role'] === "root") {
+        if ($issueid = $this->db->{'delete'.ucfirst($args['type'])}($args['id'])) {
+        } else {
+          $_error = $args[type]." not known";
+        }
+      }
+      else {
+         $_error = "Not allowed.";        
+      }
+
+      if ($_error === false && $issueid !== false) {
+        $response->getBody()->write(json_encode([
+          "Id" => $issueid
+        ]));
+      }
+      else {
+        $errcode = 404;
+        $newResponse = $response->withStatus($errcode);
+        $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>$_error], JSON_CONSTANTS));
+        return $newResponse;
+      }
+    }
+  );
+
   /* Post Issue and Chapter
    *
    * Supporting only renaming and changing options and locales
