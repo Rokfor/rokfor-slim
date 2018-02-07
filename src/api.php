@@ -1271,6 +1271,13 @@ $this->post('/exporter',
                         if ($array_tested) {
 
                           $callback = $pdf->getFile();
+
+                          $pdf->setDate(time())
+                              ->setPages($data->Pages ? json_encode($data->Pages) : "")
+                              ->setFile(json_encode($testurl))
+                              ->setConfigValue(2)
+                              ->save();
+
                           if ($callback != "") {
                             $this->helpers->apiCall($callback, 'POST', [
                               'status' => $data->Status, 
@@ -1278,12 +1285,6 @@ $this->post('/exporter',
                               'data' => $pdf->toArray()
                             ]);
                           }
-
-                          $pdf->setDate(time())
-                              ->setPages($data->Pages ? json_encode($data->Pages) : "")
-                              ->setFile(json_encode($testurl))
-                              ->setConfigValue(2)
-                              ->save();
                         }
                         else {
                           $_error = $_testurl." is not a valid URL.";
