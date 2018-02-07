@@ -1272,7 +1272,11 @@ $this->post('/exporter',
 
                           $callback = $pdf->getFile();
                           if ($callback != "") {
-                            $this->helpers->apiCall($callback, 'POST', ['status' => $data->Status, 'id' => $pdf->getId()]);
+                            $this->helpers->apiCall($callback, 'POST', [
+                              'status' => $data->Status, 
+                              'id' => $pdf->getId(),
+                              'data' => $pdf->toArray()
+                            ]);
                           }
 
                           $pdf->setDate(time())
