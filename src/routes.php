@@ -1231,62 +1231,11 @@ $app->group('/rf', function () {
    *
    */
   $this->get('/exporters[/{id:[0-9]*}[/{mode}/{sub:[0-9]*}]]', function ($request, $response, $args) {
-    $args['processors'] = \PluginsQuery::create();
     if ($args['id']) {
-      $exporter = \PluginsQuery::create()->findPk($args['id']);
-      if ($exporter) {
-
-        /* one time code */
-        $uid = uniqid('otc-', true);
-        $u = new \Pdf();
-        $u->save();
-
-        $signer = new Sha256();
-        $token = (new Builder())->setIssuer($_SERVER['HTTP_HOST'])    // Configures the issuer (iss claim)
-                                ->setAudience($_SERVER['HTTP_HOST'])  // Configures the audience (aud claim)
-                                ->setId(uniqid('rf', true), true)     // Configures the id (jti claim), replicating as a header item
-                                ->setIssuedAt(time())                 // Configures the time that the token was issue (iat claim)
-                                ->setNotBefore(time())                // Configures the time that the token can be used (nbf claim)
-                                ->set('uid', $u->getId())             // Configures a new claim, called "uid"
-                                ->setExpiration(time() + 86400)        // Configures the expiration time of the token (nbf claim)
-                                ->sign($signer,  $uid)      // creates a signature using "testing" as key
-                                ->getToken();                         // Retrieves the generated token
-
-
-
-        $u->setDate(time())
-          ->setPlugin($exporter->getId())
-          ->setPages("")
-          ->setFile("")
-          ->setIssue($args[sub])
-          ->setConfigSys($args[mode])
-          ->setConfigValue(1)
-          ->setOtc($uid);
-        $u->save();
-        $criteria = new \Propel\Runtime\ActiveQuery\Criteria();
-        $criteria->addAscendingOrderByColumn(__sort__);
-        $this->helpers->apiCall(
-          $exporter->getApi(),
-          'POST',
-          [
-            "ProcessId"    => $u->getId(),
-            "CallbackUrl"  => 'http'.($this->helpers->isSSL()?'s':'').'://'.$_SERVER['HTTP_HOST'].'/api/exporter',
-            "Token"        => (string)$token,
-            "Configuration" => [
-              "Book"         => $exporter->getRBooks($criteria)->toArray(),
-              "Issue"        => $exporter->getRIssues($criteria)->toArray(),
-              "Chapter"      => $exporter->getRFormats($criteria)->toArray(),
-              "Template"     => $exporter->getTemplatenamess($criteria)->toArray()
-            ],
-            "Selection" => [
-              "Mode"         => $args['mode'],
-              "Value"        => $args['sub']
-            ],            
-          ]
-        );
-      }
+      $this->helpers->triggerExporter($args['id'], $args['mode'], $args['sub']);
     }
-    $args['exports'] = \PdfQuery::create()->orderByDate('desc')->limit(20);
+    $args['processors'] = \PluginsQuery::create();    
+    $args['exports']    = \PdfQuery::create()->orderByDate('desc')->limit(20);
     $this->view->render($response, 'content-wrapper/exporters.jade', $args);
   });
 

@@ -1362,6 +1362,62 @@ class helpers
     curl_close($curl);
   }
 
+  public function triggerExporter($id, $mode, $sub, $callback = "") {
+    if ($exporter = \PluginsQuery::create()->findPk($id)) {
+
+      /* one time code */
+
+      $uid = uniqid('otc-', true);
+      $u = new \Pdf();
+      $u->save();
+      $signer = new \Lcobucci\JWT\Signer\Hmac\Sha256();
+      $token = (new \Lcobucci\JWT\Builder())->setIssuer($_SERVER['HTTP_HOST'])    // Configures the issuer (iss claim)
+                              ->setAudience($_SERVER['HTTP_HOST'])  // Configures the audience (aud claim)
+                              ->setId(uniqid('rf', true), true)     // Configures the id (jti claim), replicating as a header item
+                              ->setIssuedAt(time())                 // Configures the time that the token was issue (iat claim)
+                              ->setNotBefore(time())                // Configures the time that the token can be used (nbf claim)
+                              ->set('uid', $u->getId())             // Configures a new claim, called "uid"
+                              ->setExpiration(time() + 86400)        // Configures the expiration time of the token (nbf claim)
+                              ->sign($signer,  $uid)      // creates a signature using "testing" as key
+                              ->getToken();                         // Retrieves the generated token
+
+
+
+      $u->setDate(time())
+        ->setPlugin($exporter->getId())
+        ->setPages("")
+        ->setFile($callback)
+        ->setIssue($sub)
+        ->setConfigSys($mode)
+        ->setConfigValue(1)
+        ->setOtc($uid);
+      $u->save();
+
+      $criteria = new \Propel\Runtime\ActiveQuery\Criteria();
+      $criteria->addAscendingOrderByColumn(__sort__);
+      $this->apiCall(
+        $exporter->getApi(),
+        'POST',
+        [
+          "ProcessId"    => $u->getId(),
+          "CallbackUrl"  => 'http'.($this->isSSL()?'s':'').'://'.$_SERVER['HTTP_HOST'].'/api/exporter',
+          "Token"        => (string)$token,
+          "Configuration" => [
+            "Book"         => $exporter->getRBooks($criteria)->toArray(),
+            "Issue"        => $exporter->getRIssues($criteria)->toArray(),
+            "Chapter"      => $exporter->getRFormats($criteria)->toArray(),
+            "Template"     => $exporter->getTemplatenamess($criteria)->toArray()
+          ],
+          "Selection" => [
+            "Mode"         => $mode,
+            "Value"        => $sub
+          ],            
+        ]
+      );
+      return $u->getId();
+    }
+    return false;
+  }
 }
 
 

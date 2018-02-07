@@ -1046,6 +1046,67 @@ $app->group('/api', function () {
     }
   );
 
+  /*
+   * Get Available Exporter
+   * Only Root/Admin User is allowed to call this.
+   *
+   *  Additional query parameters:
+   *  - filter=Book|Chapter|Issue|Template: Filters List
+   *  - filterId=integer: Filters List by id
+   * 
+   */
+
+  $this->get('/exporter', 
+    function ($request, $response, $args) {
+      $r = $response->withHeader('Content-type', 'application/json');
+      $u = $this->db->getUser();
+
+      $filter = $request->getQueryParams()['filter'] && in_array($request->getQueryParams()['filter'], ["Book", "Chapter", "Issue", "Template"])  
+                ? $request->getQueryParams()['filter'] 
+                : false;
+      $filterId = $request->getQueryParams()['filterId']  ? (int)$request->getQueryParams()['filterId'] : false;
+      if ($u['role'] === "root" || $u['role'] === "admin") {
+        $j = [];
+        foreach (\PluginsQuery::create() as $p) {
+          $plug = [
+            Id => $p->getId(),
+            Name => $p->getName()
+          ];
+          if ($filter === false || $filter === "Book")
+            foreach ($p->getRPluginBooks()->toArray() as $e) {
+              $plug['Mode'] = "issues";
+              if ($filterId === false || $filterId == $e[Bookid])
+                $j['Book'][$e[Bookid]][] = $plug;
+            }
+          if ($filter === false || $filter === "Chapter")            
+            foreach ($p->getRPluginFormats()->toArray() as $e) {
+              $plug['Mode'] = "chapters";
+              if ($filterId === false || $filterId === $e[Formatid])
+                $j['Chapter'][$e[Formatid]][] = $plug;
+            }   
+          if ($filter === false || $filter === "Issue")   
+            foreach ($p->getRPluginIssues()->toArray() as $e) {
+              $plug['Mode'] = "issues";
+              if ($filterId === false || $filterId === $e[Issueid])
+                $j['Issue'][$e[Issueid]][] = $plug;
+            } 
+          if ($filter === false || $filter === "Template")   
+            foreach ($p->getRPluginTemplates()->toArray() as $e) {
+              $plug['Mode'] = "contribution";
+              if ($filterId === false || $filterId === $e[Templateid])
+                $j['Template'][$e[Templateid]][] = $plug;
+            }
+        }
+        $json  = json_encode($j);
+        $r->getBody()->write(json_encode(["Exporter" => $j, "Hash" => md5($json)]));
+      }
+      else {
+        $r->withStatus(500)->getBody()->write(json_encode(["Error" => "Not allowed. You must be at least administrator."]));
+      }
+    }
+  );
+
+
 /*
  * Get Exported Files
  *
@@ -1056,7 +1117,7 @@ $app->group('/api', function () {
  *
  */
 
-  $this->get('/exporter/{id:[0-9]*}',
+ $this->get('/exporter/{id:[0-9]*}',
     function ($request, $response, $args) {
       $r        = $response->withHeader('Content-type', 'application/json');
       $_error   = false;
@@ -1102,7 +1163,59 @@ $app->group('/api', function () {
 
 
     }
-  );
+ );
+
+/* Start a new Exporter Job for exporter with id 
+ * Returns Job Id
+ * Only Root/Admin User is allowed to call this.
+ * 
+ * Json Payload:
+ * {
+ * "Callback": String,
+ * "Mode": "chapters" | "issues" | "books" | "contribution"
+ * "Selection": int
+ * }
+ */
+
+$this->post('/exporter/{id:[0-9]*}',
+  function ($request, $response, $args) {
+    $r = $response->withHeader('Content-type', 'application/json');
+    $_error = false;
+    $u = $this->db->getUser();
+    if ($u['role'] === "root" || $u['role'] === "admin") {
+      $_json = ($request->getParsedBody()['body'] ? $request->getParsedBody()['body'] : $request->getBody());
+      if ($data = json_decode($_json)) {
+        if (filter_var($data->Callback, FILTER_VALIDATE_URL) === false && $data->Callback != "") {
+          $_error = "Callback is not a valid Url";
+        }
+        if (!in_array($data->Mode, ["chapters", "issues", "books", "contribution"])) {
+          $_error = "Mode must be one of: 'chapters', 'issues', 'books' or 'contribution'";
+        } 
+        if (is_int($data->Selection) === false) {
+          $_error = "Selection not set or not a number.";
+        }       
+        if ($_error === false) {
+          $job = $this->helpers->triggerExporter($args['id'], $data->Mode, $data->Selection, $data->Callback);
+          if ($job === false) {
+            $_error = "Could not trigger Exporter.";
+          }
+
+        }
+      } else {
+        $_error = "Payload is no json string.";
+      }
+    } else {
+      $_error = "Not allowed. You must be at least administrator.";
+    }
+
+    if ($_error === false) {
+      $r->getBody()->write(json_encode(["Success" => "ok", "Job" => $job]));
+    }
+    else {
+      $r->withStatus(500)->getBody()->write(json_encode(["Error" => $_error]));
+    }
+  }
+);
 
 /*
  * Posting exporter updates, closing jobs
@@ -1156,6 +1269,12 @@ $this->post('/exporter',
                           }
                         }
                         if ($array_tested) {
+
+                          $callback = $pdf->getFile();
+                          if ($callback != "") {
+                            $this->helpers->apiCall($callback, 'POST', ['status' => $data->Status, 'id' => $pdf->getId()]);
+                          }
+
                           $pdf->setDate(time())
                               ->setPages($data->Pages ? json_encode($data->Pages) : "")
                               ->setFile(json_encode($testurl))
@@ -1176,6 +1295,12 @@ $this->post('/exporter',
                           ->save();
                       break;
                     case 'error':
+
+                      $callback = $pdf->getFile();
+                      if ($callback != "") {
+                        $this->helpers->apiCall($callback, 'POST', ['status' => $data->Status, 'id' => $pdf->getId()]);
+                      }
+
                       $pdf->setDate(time())
                           ->setConfigValue(0)
                           ->setPages($data->Pages ? json_encode($data->Pages) : "")
