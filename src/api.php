@@ -1300,8 +1300,11 @@ $this->post('/exporter',
                           ->save();
                       break;
                     case 'error':
-
                       $callback = $pdf->getFile();
+                      $pdf->setDate(time())
+                          ->setConfigValue(0)
+                          ->setPages($data->Pages ? json_encode($data->Pages) : "")
+                          ->save();
                       if ($callback != "") {
                         $this->helpers->apiCall($callback, 'POST', [
                           'status' => $data->Status, 
@@ -1309,11 +1312,6 @@ $this->post('/exporter',
                           'data' => $pdf->toArray()
                         ]);
                       }
-
-                      $pdf->setDate(time())
-                          ->setConfigValue(0)
-                          ->setPages($data->Pages ? json_encode($data->Pages) : "")
-                          ->save();
                       break;                      
                     default:
                       $_error = "Status must be 'complete' or 'processing' or 'error'.";
