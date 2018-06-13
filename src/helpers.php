@@ -67,28 +67,13 @@ class helpers
    */
   public function PrevNextContribution(&$contribution)
   {
-      $issue = $contribution->getIssues();
-      $format = $contribution->getFormats();
-      $_p = $this->container->db->getContributions($issue->getId(), $format->getId())
-            ->filterBySort($contribution->getSort() - 1)
-            ->findOne();
-      $_n = $this->container->db->getContributions($issue->getId(), $format->getId())
-            ->filterBySort($contribution->getSort() + 1)
-            ->findOne();
-    /*
-    TODO: Does not work if sort is a irregular row of numbers
     $issue = $contribution->getIssues();
     $format = $contribution->getFormats();
-    $_p = $this->container->db->getContributions($issue->getId(), $format->getId())
-            ->filterBySort($contribution->getSort(), '<')
-            ->orderBySort('desc')
-            ->limit(1)
-            ->findOne();
+    $current = $contribution->getSort();
+    $_p = $this->container->db->getContributions($issue->getId(), $format->getId(), 'desc')
+          ->findOneBySort(array('max' => $current - 1));
     $_n = $this->container->db->getContributions($issue->getId(), $format->getId())
-            ->filterBySort($contribution->getSort(), '>')
-            ->orderBySort('asc')
-            ->findOne();
-    */
+          ->findOneBySort(array('min' => $current + 1));
     return [$_p ? $_p->getId() : false, $_n ? $_n->getId() : false];
   }
 

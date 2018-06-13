@@ -57,7 +57,11 @@ section.content(data-path=base_path)
               table(style="width:100%")#rftable.table.table-bordered.table-striped.dataTable
                 thead
                   tr
-                    th(colspan=2, style="min-width:80px; width:80px;")=translations['contrib_th_seq']
+                    th(id="refresh_man", colspan=2, style="min-width:80px; width:80px;")
+                      span=translations['contrib_th_seq']
+                      span &nbsp;
+                      span.label.label-default
+                        a.fa.fa-refresh(href="/rf/contributions/ReSort")
                     th(style="min-width:30px; width:30px;")=translations['contrib_th_id']
                     th(style="min-width:60px; width:60px;")=translations['contrib_th_autor']
                     th(style="min-width:70px; width:70px;")=translations['contrib_th_datum']

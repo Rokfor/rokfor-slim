@@ -52,15 +52,23 @@
         $.rokfor.ctorder = [[ edit[0].col, edit[0].dir ]]
       })
       .on( 'row-reordered', function ( e, diff, edit ) {
-        console.log(e, diff, edit);
+        console.log(e, diff, edit, edit.triggerRow[0][0]);
         if (table.bulkaction == undefined) {
           var data = {
             action: "reorder",
+            trigger: false,
             id: []
           };
 
           for (var i = 0; i < diff.length; i++) {
             data.id.push({id:diff[i].node.id, sort:diff[i].newData});
+            if (diff[i].oldPosition == edit.triggerRow[0][0]) {
+              data.trigger = {
+                id: diff[i].node.id,
+                from: diff[i].oldData,
+                to: diff[i].newData
+              };
+            }
           };
           
           /*
@@ -127,6 +135,19 @@
       }
       return false;
     });
+
+    /* Manual Resort */
+
+    $('#refresh_man').on('click', 'a', function(e) {
+      e.stopPropagation();
+      var cb = function(data) {
+        $.rokfor.refreshList();
+      }
+      if ($(this).parents('section.content').attr('data-path')) {
+        $.rokfor.contributions.bulkaction($(this).parents('section.content').attr('data-path') , {action: 'refreshmanualsort'}, cb);
+      }
+      return false;
+    })
 
 
     /* Row Editor Field */

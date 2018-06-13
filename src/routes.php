@@ -686,19 +686,31 @@ $app->group('/rf', function () {
         $this->db->DeleteContributions($data['id']);
       break;
       case 'reorder':
-/*        $ids = [];
-        foreach ($data['id'] as $value)
-          array_push($ids, $value['id']);
-        $this->db->ReorderContributions($ids);
-*/
-        if (is_array($data['id'])) {
-          foreach ($data['id'] as $value) {
-            $contribution = $this->db->getContribution($value['id']);
-            $contribution->setSort($value['sort'])
-            ->updateCache()
-            ->save();
+        /* Bulk ReSort 
+           - Changing only moved contribution to (pos - 1)
+           - Cleaning Cache and Resort all Contributions in on SQL statement
+        */
+        if (@$data['trigger']['id'] > 0 || count($data['id']) > 4) {
+          $contribution = $this->db->getContribution($data['trigger']['id']);
+          $contribution->setSort($data['trigger']['to'] - 1)
+          ->updateCache()
+          ->save();
+          $this->db->ResortContributions($issue, $format);
+        }
+        /* Legacy ReSort 
+           - Cycling thru all ids, updating each contribution
+        */
+        else {
+          if (is_array($data['id']) && count($data['id']) > 0) {
+            foreach ($data['id'] as $value) {
+              $contribution = $this->db->getContribution($value['id']);
+              $contribution->setSort($value['sort'])
+              ->updateCache()
+              ->save();
+            }
           }
         }
+        
 
       break;
       case 'new':
@@ -714,6 +726,9 @@ $app->group('/rf', function () {
       break;
       case 'clone':
         $this->db->CloneContributions($data['id'], $this->translations["copy"]);
+      break;
+      case 'refreshmanualsort':
+        $this->db->ResortContributions($issue, $format);
       break;
       default:
         # code...
