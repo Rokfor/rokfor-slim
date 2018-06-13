@@ -690,9 +690,10 @@ $app->group('/rf', function () {
            - Changing only moved contribution to (pos - 1)
            - Cleaning Cache and Resort all Contributions in on SQL statement
         */
-        if (@$data['trigger']['id'] > 0 || count($data['id']) > 4) {
+        if (@$data['trigger']['id'] > 0 && count($data['id']) > 2) {
           $contribution = $this->db->getContribution($data['trigger']['id']);
-          $contribution->setSort($data['trigger']['to'] - 1)
+          $delta = $data['trigger']['to'] < $data['trigger']['from'] ? 1 : -1;
+          $contribution->setSort($data['trigger']['to'] - $delta)
           ->updateCache()
           ->save();
           $this->db->ResortContributions($issue, $format);
