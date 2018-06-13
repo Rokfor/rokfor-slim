@@ -427,16 +427,16 @@
         },
         {
             "name": "intervention/image",
-            "version": "2.4.1",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Intervention/image.git",
-                "reference": "3603dbcc9a17d307533473246a6c58c31cf17919"
+                "reference": "e82d274f786e3d4b866a59b173f42e716f0783eb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Intervention/image/zipball/3603dbcc9a17d307533473246a6c58c31cf17919",
-                "reference": "3603dbcc9a17d307533473246a6c58c31cf17919",
+                "url": "https://api.github.com/repos/Intervention/image/zipball/e82d274f786e3d4b866a59b173f42e716f0783eb",
+                "reference": "e82d274f786e3d4b866a59b173f42e716f0783eb",
                 "shasum": ""
             },
             "require": {
@@ -456,7 +456,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.3-dev"
+                    "dev-master": "2.4-dev"
                 },
                 "laravel": {
                     "providers": [
@@ -493,7 +493,7 @@
                 "thumbnail",
                 "watermark"
             ],
-            "time": "2017-09-21T16:29:17+00:00"
+            "time": "2018-05-29T14:19:03+00:00"
         },
         {
             "name": "ircmaxell/password-compat",
@@ -1620,17 +1620,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Rokfor/rokfor-php-db.git",
-                "reference": "06c4a4d58f41b1c03c5c38810a1a33015b34e818"
+                "reference": "428e6c65dc642ec452c91ec4ceede84cdd10669c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Rokfor/rokfor-php-db/zipball/06c4a4d58f41b1c03c5c38810a1a33015b34e818",
-                "reference": "06c4a4d58f41b1c03c5c38810a1a33015b34e818",
+                "url": "https://api.github.com/repos/Rokfor/rokfor-php-db/zipball/428e6c65dc642ec452c91ec4ceede84cdd10669c",
+                "reference": "428e6c65dc642ec452c91ec4ceede84cdd10669c",
                 "shasum": ""
             },
             "require": {
                 "aws/aws-sdk-php": "^2.8",
-                "intervention/image": "^2.3",
+                "intervention/image": "dev-master",
                 "propel/propel": "2.0.0-alpha5",
                 "thefuriouscoder/propel2-data-cache-behavior": "dev-master"
             },
@@ -1664,7 +1664,7 @@
                 "source": "https://github.com/Rokfor/rokfor-php-db/tree/versioning-redis",
                 "issues": "https://github.com/Rokfor/rokfor-php-db/issues"
             },
-            "time": "2018-06-13T23:19:09+00:00"
+            "time": "2018-06-13T23:51:12+00:00"
         },
         {
             "name": "slim/csrf",
