@@ -211,6 +211,7 @@ $GLOBALS[timers]['e7'] = microtime(true) - $GLOBALS[starttime];
  */
 
 $csrf = function ($request, $response, $next) {
+    $request = $this->csrf->generateNewToken($request);
     $this->view->offsetSet('csrf', [
       'nameKey'   => $this->csrf->getTokenNameKey(),
       'valueKey'  => $this->csrf->getTokenValueKey(),
