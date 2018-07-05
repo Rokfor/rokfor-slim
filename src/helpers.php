@@ -958,7 +958,11 @@ class helpers
                 if (is_array($_row[2]->scaled)) {
                   $_imgstring = '<figure class="rf-parsed"><div class="rf-container">';
                   foreach ($_row[2]->scaled as $_key=>$_scaled) {
-                    $_imgstring .= '<img class="scaled_'.$_key.'" src="';
+                    $_landscape = "";
+                    if (is_object($_row[3])) {
+                      $_landscape  = $_row[3]->{0} > $_row[3]->{1} ? 'scaled_landscape' : 'scaled_portrait';  
+                    }
+                    $_imgstring .= '<img class="scaled_'.$_key.' '.$_landscape.'" src="';
                     $_imgstring .= $_protocol.$this->container->db->_add_proxy_single_file($_scaled, $private, $contribid, $_imageid);
                     $_imgstring .= '">';
                   }
