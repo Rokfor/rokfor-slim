@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/Rokfor/rokfor-slim.svg?branch=master)](https://travis-ci.org/Rokfor/rokfor-slim)
-
 rokfor-slim
 ===========
 
@@ -323,3 +321,10 @@ there are additional functions which will be implemented:
 - Batch functions: Run custom actions over all contributions of a certain chapter.
 - Field processors: Run an action when storing data.  
 - Exporters: Convert data into other formats (i.e. PDF)
+
+Support
+-------
+
+<a href="//browserstack.com" target="_blank"><img src="https://p14.zdusercontent.com/attachment/1015988/GYmbncrPyVk0T5sDJ1HwElwQh?token=eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..Dm1RIu8TVHpMEaDM5yiQ6A.DCZxTFlLrtlcIA2-QOlTyLB27Hi8MVWW8SFrAEamMgbnFJ0AYORJTdo_eXLyZz5MePAmvjagn6AtLofsTpiZGz16Azs93cm0Yx6xV4rSmd_yvcXodrkMcWUES53dcK21tL0eUA31jv7FNY1y0_DCQs90P1HjlV8Tlen68rJNaXc-Kocj7fBnvTij6_2zGqkPQpF8tVgcF9ZyrZ8U8rAaa1B_nu4KHewy4COjrnhdAK2QFD1WFkgmPE7OiKQguWlO456ioxSUnFJhlOZDgtVeJQpdjxXkE-vXojV-vq58sTI.xRSZn_hJdr-50VYQhETZfw" alt="browserstack" width="250"></a>
+
+Rokfor is using [Browserstack](<//browserstack.com/>) to test the dashboard code.
