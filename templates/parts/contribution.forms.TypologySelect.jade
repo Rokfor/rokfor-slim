@@ -15,4 +15,4 @@
           $data = $field->getRelationsAsArray($config['history_command']);
         select.form-control.rfselect(id=field->getId(), style='width: 100%;', multiple=($config['multiple']==1?'multiple':false))
           each select in field->getHistory()
-            option(value=select.id, selected=(in_array($select['id'], $data)?'selected':false))=select.value
+            option(value=select.id, selected=(in_array($select['id'], $data)?'selected':false))!=select.value."&nbsp;(".$select['id'].")"
