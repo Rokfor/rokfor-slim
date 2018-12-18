@@ -1,7 +1,7 @@
 <?php
 
 use Slim\CallableResolver;
-error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED);
 $GLOBALS[starttime] = microtime(true);
 $GLOBALS[timers] = [];
 
