@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "dokku": {
-      "predeploy": "sed -i 's\/rights=\\\"none\\\"\\ pattern=\\\"PDF\\\"\/rights=\\\"read\\ \\|\\ write\\\"\\ pattern=\\\"PDF\\\"\/' \/etc\/ImageMagick-6\/policy.xml"
+      "predeploy": "mv /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.orig; cp /app/policy.xml /etc/ImageMagick-6"
     }
   }
 }
