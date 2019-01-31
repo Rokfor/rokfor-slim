@@ -41,7 +41,7 @@ section.content(data-path=base_path)
                   a(href="/rf/contributions/clone")=$translations["status_clone"]
                 li.divider
                 li
-                  a.bg-red(href="/rf/contributions/Trash")=$translations["status_destroy"]
+                  a.bg-red(data-alert-message=$translations["alert_destroy"] href="/rf/contributions/Trash")=$translations["status_destroy"]
 
           .input-group.col-md-5.margin(style="float: right;")
             span.input-group-btn

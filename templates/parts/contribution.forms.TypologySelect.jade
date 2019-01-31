@@ -1,6 +1,8 @@
 // SELECT
 
 .col-md-6
+  :php
+    $data = $field->getRelationsAsArray($config['history_command']);
   .box.box-primary
     .box-header
       h4.box-title=template->getFieldName()
@@ -11,8 +13,8 @@
          i.fa.fa-minus      
     .box-body
       .form-group
-        :php
-          $data = $field->getRelationsAsArray($config['history_command']);
         select.form-control.rfselect(id=field->getId(), style='width: 100%;', multiple=($config['multiple']==1?'multiple':false))
           each select in field->getHistory()
             option(value=select.id, selected=(in_array($select['id'], $data)?'selected':false))!=select.value."&nbsp;(".$select['id'].")"
+    .box-footer
+      include select.addrelation.jade

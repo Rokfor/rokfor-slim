@@ -164,9 +164,13 @@
         var action = $(this).attr('href').split("/").pop();      
         var bt_class = false;
         switch (action) {
-          case 'Close':
+          case 'Deleted':
             bt_class = 'btn-primary';
             action = 'Open';
+          break;          
+          case 'Close':
+            bt_class = 'btn-danger';
+            action = 'Deleted';
           break;
           case 'Draft':
             bt_class = 'btn-success';
@@ -176,13 +180,14 @@
             bt_class = 'btn-warning';
             action = 'Draft';
           break;
+
         }
         if (bt_class) {
           if ($(this).parents('section.content').attr('data-path')) {
             $.rokfor.contributions.bulkaction($(this).parents('section.content').attr('data-path') , {action: action, id: [id]});
             $(this)
               .attr('href', '/rf/contributions/'+ action)
-              .removeClass('btn-success btn-primary btn-warning')
+              .removeClass('btn-success btn-primary btn-warning btn-danger')
               .addClass(bt_class)
               .text(translations[action]);
           }
@@ -206,6 +211,11 @@
       e.stopPropagation();
       var text = $(this).html();
       var action = $(this).attr('href').split("/").pop();
+
+      if ($(this).attr('data-alert-message') && confirm($(this).attr('data-alert-message'))!==true) {
+        return false;
+      }
+
       // Nasty workaround: tables fire order events on every draw
       // setting table.bulkaction prohibits firing the next order event
       table.bulkaction = true;
@@ -235,15 +245,15 @@
             table
               .rows( '.selected' )
               .remove()
-              .draw();
+              .draw();  
           break;            
         }
         if (bt_class) {
           for (var n in selection.rows[0]) {
             if (selection.rows[0].hasOwnProperty(n)) {
-              $(table.cell( selection.rows[0][n], 5 ).node()).children('a')
+              $(table.cell( selection.rows[0][n], 6 ).node()).children('a')
                 .attr('href', '/rf/contributions/'+ action)
-                .removeClass('btn-primary btn-success btn-danger')
+                .removeClass('btn-primary btn-success btn-danger btn-warning')
                 .addClass(bt_class)
                 .text(text);
   //            table.draw();

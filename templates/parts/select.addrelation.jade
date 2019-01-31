@@ -1,0 +1,17 @@
+if ($config['history_command']=='contributional')
+    .box-tools.pull-left
+        if $config['fromissue'] && $config['fromchapter']
+            a.relationeditor(data-id=field->getId(), data-config=json_encode($config))
+                i.fa.fa-plus-circle 
+                span &nbsp;Add New Relation
+        else
+            .disabled(style="opacity: 0.5")
+                i.fa.fa-plus-circle 
+                span &nbsp;Add New Relation
+    .box-tools.pull-right
+        span!="Edit: "
+        .btn-group(id="relationjump-".$field->getId() data-from=contribution->getId())
+            each d in data
+                if ($d != -1)
+                    button.btn.btn-default.btn-xs.relationjump(data-content=json_encode(['to' => $d, 'from' => $contribution->getId()]))
+                        span!=$d              

@@ -319,13 +319,30 @@
       .select2()
       .on("change", function(){
         $.rokfor.contribution.store($(this).attr('id'), JSON.stringify($(this).val()));
+        populateJumpList($(this).attr('id'), $(this).val());
       });
+
+    var populateJumpList = function(id, val) {
+      val = val instanceof Array ? val : [val];
+      var container = $('#relationjump-'+id).length > 0 ? $('#relationjump-'+id) : false;
+      if (container) {
+        var backlink = container.attr('data-from')
+        container.html("");
+        val.forEach(function(v) {
+          if (v != -1)
+            container.append( "<button data-content='" + JSON.stringify({to: v, from: backlink}) + "' class='btn btn-default btn-xs relationjump'>" + v + '</button>' );
+        })
+      }
+    
+    }
+
 
     // Select 2
     $(".rfkeyword")
       .select2Sortable()
       .on("change", function(){
         $.rokfor.contribution.store($(this).attr('id'), JSON.stringify($(this).val()));
+        populateJumpList($(this).attr('id'), $(this).val());
       });
 
     // Input Masks (date)
@@ -797,6 +814,119 @@
     // Tooltips
 
     $('[data-toggle="tooltip"]').tooltip();
+
+    // Relation Editor
+
+    $('.box-footer').on('click', '.relationeditor', function(e){
+      var button = $(this)
+      e.stopPropagation();
+      $('#rfmodaladdrelation').modal({keyboard: true}).on('shown.bs.modal', function () {
+        $(this).find('input').focus();
+        $(this).attr('data-config', button.attr('data-config'))
+        $(this).attr('data-origin', button.attr('data-id'))
+
+      });
+      return false;
+    });
+    var newRelation = function() {
+      var button = $('#rfmodaladdrelation').find('button.btn-default');
+      var name = button.closest('.modal-content').find('input').val();
+      var config = JSON.parse($('#rfmodaladdrelation').attr('data-config'));
+      var select = JSON.parse($('#rfmodaladdrelation').attr('data-origin'));
+
+      if (name && config.fromissue && config.fromchapter) {
+        $('#rfmodaladdrelation').modal('hide');
+          $.rokfor.contributions.bulkaction('/rf/contributions/0/' + config.fromissue + '/' + config.fromchapter  , {
+            action: 'newrelation', 
+            name: name
+          }, function (data) {
+            var newOption = new Option(data.newrelation.name + ' (' + data.newrelation.id + ')', data.newrelation.id, true, true);
+            $('#'+select).append(newOption).trigger('change');
+          });
+      }
+    }
+
+    $('#rfmodaladdrelation').find('button.btn-default').on('click', function(e) {
+      e.stopPropagation();
+      newRelation();
+      return false;      
+    })
+    $('#rfmodaladdrelation').find('form').on('submit', function(e) {
+      e.stopPropagation();
+      newRelation();
+      return false;
+    });
+
+
+
+
+
+
+
+
+
+
+
+    // Relation Editor
+
+    $('.box-footer').on('click', '.relationjump', function(e){
+      var button = $(this)
+      e.stopPropagation();
+      var fielddata = JSON.parse(button.attr('data-content'));
+      console.log(fielddata);
+      $.rokfor.scrollpos = $(window).scrollTop();
+      $.rokfor.contribution.edit(fielddata.to, fielddata.from);
+      return false;
+    });
+
+    $('.backbutton').click(function(e){
+      e.stopPropagation();
+      var button = $(this)
+      var fielddata = button.attr('data-content');      
+      $.rokfor.contribution.edit(fielddata, false, true);
+      return false;
+    })
+
+
+    // Change State
+    $('#changestate').click(function(e) {
+      e.stopPropagation();
+      var id = $(this).attr('data-id');
+      var translations = JSON.parse($(this).attr('data-status'));
+      var action = $(this).attr('data-action');      
+      var bt_class = false;
+      switch (action) {
+        case 'Deleted':
+          bt_class = 'label-primary';
+          action = 'Open';
+        break;          
+        case 'Close':
+          bt_class = 'label-danger';
+          action = 'Deleted';
+        break;
+        case 'Draft':
+          bt_class = 'label-success';
+          action = 'Close';
+        break;          
+        case 'Open':
+          bt_class = 'label-warning';
+          action = 'Draft';
+        break;
+
+      }
+      if (bt_class) {
+        if ($(this).attr('data-path')) {
+          $.rokfor.contributions.bulkaction($(this).attr('data-path') , {action: action, id: [id]});
+          $(this)
+            .attr('data-action', action)
+            .removeClass('label-success label-primary label-warning label-danger')
+            .addClass(bt_class)
+            .text(translations[action]);
+            $.rokfor.refreshList();
+        }
+      }
+      return false;
+    })
 
   }
 })(jQuery);

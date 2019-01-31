@@ -666,7 +666,8 @@ $app->group('/rf', function () {
     $book   = $this->db->getBook($args['book']);
     $issue  = $this->db->getIssue($args['issue']);
     $data   = $request->getParsedBody()['data'];
-
+    $newrelation = false;
+    
     switch ($data['action']) {
       case 'Deleted':
       case 'Open':
@@ -714,6 +715,19 @@ $app->group('/rf', function () {
         
 
       break;
+      case 'newrelation':
+        $_newtemplate = $this->db->getTemplates($format);
+        $_newrelation = $this->db->NewContribution($issue, $format, $_newtemplate[0]['id'], $data['name']);
+        $newrelation = [
+          "id" => $_newrelation->getId(),
+          "name" => $_newrelation->getName()
+        ];
+        $this->db->addLog(
+          'newrelation_contribution',
+          json_encode([md5("/rf/contributions/0/".$args['issue']."/".$args['chapter']), $_newtemplate[0]['id']]) ,
+          $request->getAttribute('ip_address')
+        );
+      break;
       case 'new':
         $args['contribution'] = $this->db->NewContribution($issue, $format, $data['template'], $data['name']);
         $this->db->addLog(
@@ -738,6 +752,9 @@ $app->group('/rf', function () {
     $r = $response->withHeader('Content-type', 'application/json');
     $json = $this->view->offsetGet('csrf');
     $json['action']  = $data['action'];
+    if ($newrelation) {
+      $json['newrelation']  = $newrelation;
+    }
     $r->getBody()->write(json_encode($json));
     return $r;
   });
@@ -750,6 +767,10 @@ $app->group('/rf', function () {
 
   $this->get('/contribution/{id:[0-9]*}', function ($request, $response, $args) {
     $contribution = $this->db->getContribution($args['id']);
+    if ((int)$request->getQueryParams()['back'] > 0)
+      $args['backlink'] = $this->db->getContribution((int)$request->getQueryParams()['back']);
+    else
+      $args['backlink'] = false;    
     $this->helpers->prepareContributionTemplate($contribution, $args);
     // Store in Laste Open Log File
     $this->db->addLog('get_contribution', $args['id'] , $request->getAttribute('ip_address'));

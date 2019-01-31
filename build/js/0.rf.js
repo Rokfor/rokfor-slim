@@ -227,11 +227,13 @@
     if (callback)
       cb = callback;
     var list = $('.content-wrapper#list');
-    $.rokfor.get(list.find('section.content').attr('data-path'), function(data){
-      console.log("Refreshing List")
-      list.html(data);
-      cb();
-    });
+    if (list.find('section.content').attr('data-path')) {
+      $.rokfor.get(list.find('section.content').attr('data-path'), function(data){
+        console.log("Refreshing List")
+        list.html(data);
+        cb();
+      });
+    }
   };
   
   // Clears some js assets loaded in the detail form
@@ -252,12 +254,18 @@
 
   // Displays Form instead of List, scrolls to top
 
-  $.rokfor.showDetail = function() {
+  $.rokfor.showDetail = function(scrollpos) {
+    scrollpos = scrollpos || false;
     // Store List Scroll Position if the list is still visible
-    if ($('.content-wrapper#list').css('display') != 'none') {
-      $.rokfor.scrollpos = $(document).scrollTop();
+    if (scrollpos===false) {
+      if ($('.content-wrapper#list').css('display') != 'none') {
+        $.rokfor.scrollpos = $(window).scrollTop();
+      }
+      $(window).scrollTop(0);
     }
-    $(document).scrollTop(0);
+    else {
+      $(window).scrollTop($.rokfor.scrollpos);
+    }
     $('.content-wrapper#list').css('display','none');
     $('.content-wrapper#detail').css('display','block');
   }
@@ -265,10 +273,9 @@
   // Displays List instead of form
 
   $.rokfor.showList = function(offset) {
-    if (offset == undefined)
-      offset = 0;
-    $.rokfor.scrollpos = $(document).scrollTop();
-    $(document).scrollTop(offset);
+    offset = offset || 0;
+    //$.rokfor.scrollpos = $(window).scrollTop();
+    $(window).scrollTop(offset);
     $('.content-wrapper#detail')
       .text('')
       .css('display','none');
@@ -314,12 +321,15 @@
     modify: function(action, id, value, callback) {
       $.rokfor.post('/rf/contribution/' + action + '/' + id, value, callback);
     },    
-    edit: function(id) {
+    edit: function(id, fromid, scrollpos) {
+      fromid = fromid || false;
+      scrollpos = scrollpos || false;
       /* Executes a ajax call, updates csrf globals on success, injects form */
-      $.rokfor.get('/rf/contribution/' + id, function (data) {
+      $.rokfor.get('/rf/contribution/' + id + (fromid ? '?back='+fromid: ''), function (data) {
         console.log("Edit: ", id);
         $('.content-wrapper#detail').html(data);
-        $.rokfor.showDetail();
+        $.rokfor.showDetail(scrollpos);
+
       });
     },     
     close: function() {

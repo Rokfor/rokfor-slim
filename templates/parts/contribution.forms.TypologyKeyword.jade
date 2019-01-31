@@ -32,11 +32,13 @@
           }
           $history_reverse = [];
           foreach ($field->getHistory() as $hist) {
-            $history_reverse[$hist[id]] = $hist[value];
+            $history_reverse[$hist[id]] = $hist[value]." (".$hist[id].")";
           };
         select.form-control.rfkeyword(id=field->getId(), style='width: 100%;', multiple="multiple", data-tags=($config['history_command']=='self'?'true':'false'))
           each dt in sort
             option(value=dt, selected='selected')=$history_reverse[$dt]
           each select in $field->getHistory()
             if (!in_array($select['id'], $data))
-              option(value=select.id)=select.value			
+              option(value=select.id)=select.value." (".$select['id'].")"
+    .box-footer
+      include select.addrelation.jade
