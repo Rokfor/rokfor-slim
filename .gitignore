@@ -2,6 +2,7 @@ node_modules
 bower_components
 composer.phar
 vendor
+_vendor
 .tmp/rf.css
 cache/*.php
 cache/.mail.lock

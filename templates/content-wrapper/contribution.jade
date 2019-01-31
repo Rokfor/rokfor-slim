@@ -13,7 +13,7 @@ section.content-header
   span &nbsp;
   small
     a.label#changestate(
-      data-id=contribution->getId()
+      data-id=$contribution->getId()
       data-action=$contribution->getStatus()
       data-path=base_path
       data-status=json_encode(["Open"=>$translations["status_open"],"Draft"=>$translations["status_draft"],"Close"=>$translations["status_close"],"Deleted"=>$translations["status_deleted"]])
@@ -53,7 +53,7 @@ section.content-header
 section.content(data-path=base_path)
   .box
     .box-header.with-border
-      if backlink !== false
+      if (isset($backlink) &&  $backlink > 0)
         .input-group.margin.col-xs-6
           a.btn.btn-success.backbutton.margin(href='#' data-content=backlink->getId())
             span.fa.fa-arrow-left &nbsp;
@@ -116,7 +116,7 @@ section.content(data-path=base_path)
             include ../parts/contribution.forms.Locationpicker.jade
     .box-footer
       .input-group(style='float: right')
-        if backlink !== false
+        if (isset($backlink) &&  $backlink > 0)
           .input-group.margin.col-xs-6
             a.btn.btn-success.backbutton.margin(href='#' data-content=backlink->getId())
               span.fa.fa-arrow-left &nbsp;

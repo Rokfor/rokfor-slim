@@ -31,7 +31,8 @@
           :php
             $rows = json_decode($field->getContent(), true);
             $sortcount = 1;
-            $db->sign_request($rows, $private, $contribution->getId(), $field->getId());
+            if (is_array($rows) && count($rows[0])>1)
+              $db->sign_request($rows, $private, $contribution->getId(), $field->getId());
           if (is_array($rows))
             each row in $rows
               tr
