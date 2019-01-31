@@ -275,11 +275,13 @@
   $.rokfor.showList = function(offset) {
     offset = offset || 0;
     //$.rokfor.scrollpos = $(window).scrollTop();
-    $(window).scrollTop(offset);
     $('.content-wrapper#detail')
       .text('')
       .css('display','none');
     $('.content-wrapper#list').css('display','block');
+    setTimeout(function() {
+      $(window).scrollTop(offset);
+    }, 100);
     $.rokfor.clearAssets();
   }
 
