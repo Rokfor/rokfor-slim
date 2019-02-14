@@ -890,7 +890,7 @@ class helpers
       if ($followrefs) {
         foreach ($object->getRDatas() as $_field) {
           $_c = $_field->getContributions();
-          if ($_c && in_array($_c->getStatus(),["Open","Draft"])) {
+          if ($_c && in_array($_c->getStatus(),["Close","Draft"])) {
             $_refs[] = array (
               "Contribution"  => $this->prepareApiContribution($_c, $compact, $request),
               "Data"          => $this->prepareApiContributionData($_c, $compact, $request)
@@ -1284,7 +1284,7 @@ class helpers
       foreach ($c->getRDataContributions() as $_referencedContribution) {
         $_f = $_referencedContribution->getRData();
         $_c = $_f->getContributions();
-        if ($_c && in_array($_c->getStatus(),["Open","Draft"])) {
+        if ($_c && in_array($_c->getStatus(),["Close","Draft"])) {
           array_push($_references, [
             "ByField"       => $_f->getId(),
             "Contribution"  => $this->prepareApiContribution($_c, $compact, $request, $_recursion_check, $_recursion, $_recursion == true ? true : false),
