@@ -96,7 +96,7 @@ $app->group('/api', function () {
       // Creating Cache Signature
       $signatur_fields = explode("|", strtolower($request->getQueryParams()['data']));
       sort($signatur_fields);
-      $signature = md5($compact."-".$follow_references."-".$recursion."-".$request->getQueryParams()['populate'].join(".",$signatur_fields));
+      $signature = md5($this->db->getUser()['username'].'-'.$compact."-".$follow_references."-".$recursion."-".$request->getQueryParams()['populate'].join(".",$signatur_fields));
       $_caches = [];
       foreach (\ContributionscacheQuery::create()
           ->filterByForcontribution($_result_contribs)
@@ -171,7 +171,7 @@ $app->group('/api', function () {
       $compact = $request->getQueryParams()['verbose'] ? false : true;
       $c = $this->db->getContribution($args['id']);
       if ($c && ($c->getStatus()=="Close" || $c->getStatus()=="Draft")) {
-        $signature = md5($compact);
+        $signature = md5($this->db->getUser()['username'].'-'.$compact);
         if ($h = $c->checkCache($signature)) {
           $jc = $h->Contribution;
           $j  = $h->Data;
