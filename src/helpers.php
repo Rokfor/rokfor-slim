@@ -1194,6 +1194,8 @@ class helpers
     /* Checks */
     if (!$c) return false;
     if (!$c->getId()) return false;
+    if (!$this->container->db->checkContributionAccess($c)) return false;
+
 
     $d = [];
     $_fids = [];
@@ -1256,6 +1258,7 @@ class helpers
     /* Checks */
     if (!$c) return false;
     if (!$c->getId()) return false;
+    if (!$this->container->db->checkContributionAccess($c)) return false;
 
     /* Books */
     static $__book = [];
@@ -1281,11 +1284,13 @@ class helpers
       foreach ($c->getRDataContributions() as $_referencedContribution) {
         $_f = $_referencedContribution->getRData();
         $_c = $_f->getContributions();
-        array_push($_references, [
-          "ByField"       => $_f->getId(),
-          "Contribution"  => $this->prepareApiContribution($_c, $compact, $request, $_recursion_check, $_recursion, $_recursion == true ? true : false),
-          "Data"          => $this->prepareApiContributionData($_c, $compact, $request)
-        ]);
+        if ($_c && in_array($_c->getStatus(),["Open","Draft"])) {
+          array_push($_references, [
+            "ByField"       => $_f->getId(),
+            "Contribution"  => $this->prepareApiContribution($_c, $compact, $request, $_recursion_check, $_recursion, $_recursion == true ? true : false),
+            "Data"          => $this->prepareApiContributionData($_c, $compact, $request)
+          ]);
+        }
       }
     }
 //    die(print_r($_references,true));
