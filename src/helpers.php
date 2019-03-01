@@ -1304,7 +1304,7 @@ class helpers
         "Sort"                    => $c->getSort(),
         "Status"                  => $c->getStatus(),
         "ReferencedFrom"          => $_references,
-        "ReferenceCount"          => is_array($_reference_object) ? count($_reference_object) : 0
+        "ReferenceCount"          => $_reference_object ? count($_reference_object) : 0
       ];
     }
     else {
@@ -1324,7 +1324,7 @@ class helpers
         "ForbookName"             => $_book->getName(),
         "Sort"                    => $c->getSort(),
         "ReferencedFrom"          => $_references,
-        "ReferenceCount"          => is_array($_reference_object) ? count($_reference_object) : 0
+        "ReferenceCount"          => $_reference_object ? count($_reference_object) : 0
       ];
     }
   }
