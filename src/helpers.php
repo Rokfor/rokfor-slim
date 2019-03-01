@@ -1272,16 +1272,10 @@ class helpers
     }
     $_book = $__book[$c->getFormats()->getForbook()];
     $_references = [];
-//    echo '<pre>';
-//    foreach ($c->getRDataContributions() as $__c) {
-//      $__c->getRData();
-    //      print_r(($__c->getContributionid()));
-    //}
-   // print_r(get_class_methods($c->getRDataContributions()));
-
+    $_reference_object = $c->getRDataContributions();
     // Referenced Contributions
     if ($_follow_references === true) {
-      foreach ($c->getRDataContributions() as $_referencedContribution) {
+      foreach ($_reference_object as $_referencedContribution) {
         $_f = $_referencedContribution->getRData();
         $_c = $_f->getContributions();
         if ($_c && in_array($_c->getStatus(),["Close","Draft"])) {
@@ -1310,6 +1304,7 @@ class helpers
         "Sort"                    => $c->getSort(),
         "Status"                  => $c->getStatus(),
         "ReferencedFrom"          => $_references,
+        "ReferenceCount"          => is_array($_reference_object) ? count($_reference_object) : 0
       ];
     }
     else {
@@ -1329,6 +1324,7 @@ class helpers
         "ForbookName"             => $_book->getName(),
         "Sort"                    => $c->getSort(),
         "ReferencedFrom"          => $_references,
+        "ReferenceCount"          => is_array($_reference_object) ? count($_reference_object) : 0
       ];
     }
   }
