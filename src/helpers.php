@@ -1087,8 +1087,8 @@ class helpers
             if ($_c) {
               $_temp = [];
               $_temp["__contribution__"] = [
-                "Sort" => $c->getSort(),
-                "Name" => $c->getName(),
+                "Sort" => $_c->getSort(),
+                "Name" => $_c->getName(),
               ];
               foreach ($_c->getDatas() as $_f) {
                 if ($_follow_references && $_f->getId() && ($_fieldlist == false || (is_array($_fieldlist) && (in_array($_f->getTemplates()->getFieldname(), $_fieldlist)))))
