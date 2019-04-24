@@ -1086,6 +1086,10 @@ class helpers
           foreach ($field->getRelationsAsObject($_fieldsettings->history_command) as $_c) {
             if ($_c) {
               $_temp = [];
+              $_temp["__contribution__"] = [
+                "Sort" => $c->getSort(),
+                "Name" => $c->getName(),
+              ];
               foreach ($_c->getDatas() as $_f) {
                 if ($_follow_references && $_f->getId() && ($_fieldlist == false || (is_array($_fieldlist) && (in_array($_f->getTemplates()->getFieldname(), $_fieldlist)))))
                   $_temp[$_f->getTemplates()->getFieldname()] = $this->prepareApiData($_f, $compact, $_recursion_check, $_fieldlist, $_recursion, $_recursion == true ? true : false);
