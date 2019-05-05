@@ -873,7 +873,7 @@
       var button = $(this)
       e.stopPropagation();
       var fielddata = JSON.parse(button.attr('data-content'));
-      console.log(fielddata);
+      //console.log(fielddata);
       $.rokfor.scrollpos = $(window).scrollTop();
       $.rokfor.contribution.edit(fielddata.to, fielddata.from);
       return false;

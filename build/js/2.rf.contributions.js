@@ -10,39 +10,75 @@
     
   
     // Activating List Table
+    var table = false;
+    if ($('#rftable').length) {
+      table = $('#rftable').DataTable({
+        "paging": false,
+        "order": $.rokfor.ctorder,
+        "lengthChange": false,
+        "searching": true,
+        "ordering": ($('#rftable').parents('section.content').attr('data-path') && $('#rftable').parents('section.content').attr('data-path').indexOf('search') == -1) ? true : false,
+        "rowReorder": ($('#rftable').parents('section.content').attr('data-path') && $('#rftable').parents('section.content').attr('data-path').indexOf('search') == -1) 
+                      ? {
+                        selector: 'td:first-child',
+                        update: true
+                      }
+                      : false,
+        "info": false,
+        "autoWidth": false,
+        "dom": 'rtp',
+        "select": true,
+        "columnDefs": [ 
+                        {
+                          "targets": 1,
+                          "orderable": false
+                        },
+                        {
+                          "targets": 5,
+                          "render": function(data) {
+                            return ('<input class="form-control nameedit" type="text" rows="1" value="' + data + '"><span style="display:none;">' + data + '</span>');
+                          }
+                        }
+                      ]    
+      });
+    }
+    else if ($('#ptable').length) {
+      // Activating Long List Table
+      table = $('#ptable').DataTable({
+        "paging": false,
+        "order": $.rokfor.ctorder,
+        "lengthChange": false,
+        "searching": false,
+        "ordering": false,
+        "rowReorder": false,
+        "info": false,
+        "autoWidth": false,
+        "dom": 'rtp',
+        "select": true
+      });
+    }
+
+
     
   
-    var table = $('#rftable').DataTable({
-      "paging": false,
-      "order": $.rokfor.ctorder,
-      "lengthChange": false,
-      "searching": true,
-      "ordering": ($('#rftable').parents('section.content').attr('data-path') && $('#rftable').parents('section.content').attr('data-path').indexOf('search') == -1) ? true : false,
-      "rowReorder": ($('#rftable').parents('section.content').attr('data-path') && $('#rftable').parents('section.content').attr('data-path').indexOf('search') == -1) 
-                    ? {
-                      selector: 'td:first-child',
-                      update: true
-                    }
-                    : false,
-      "info": false,
-      "autoWidth": false,
-      "dom": 'rtp',
-      "select": true,
-      "columnDefs": [ 
-                      {
-                        "targets": 5,
-                        "render": function(data) {
-                          return ('<input class="form-control nameedit" type="text" rows="1" value="' + data + '"><span style="display:none;">' + data + '</span>');
-                        }
-                      }
-                    ]    
-    });
   
     // External Search Field
   
     $('#table_search').keyup(function(){
       table.bulkaction = true;
       table.search($(this).val()).draw() ;
+    });
+
+    // Real Search Field
+    $('form#subsearch').on('submit', function(e) {
+      e.stopPropagation();
+      var _p = $(this).attr('action').split("/");
+      _p.pop(); _p.push('0');
+      $.rokfor.get(_p.join('/'), function(data) {
+        $('.content-wrapper#list').html(data);
+        $.rokfor.showList(0);
+      }, $(this).serialize());
+      return false;
     });
 
     // Reorder Action, Selection Event 
@@ -52,7 +88,7 @@
         $.rokfor.ctorder = [[ edit[0].col, edit[0].dir ]]
       })
       .on( 'row-reordered', function ( e, diff, edit ) {
-        console.log(e, diff, edit, edit.triggerRow[0][0]);
+        //console.log(e, diff, edit, edit.triggerRow[0][0]);
         if (table.bulkaction == undefined) {
           var data = {
             action: "reorder",
@@ -89,7 +125,7 @@
         $.rokfor.contributions.select(  e, dt, type, indexes  );
       });
     
-      $('#rftable tr').on("dblclick", function (e) {
+      $('#rftable tr, #ptable tr').on("dblclick", function (e) {
         e.stopPropagation();
         if ($(this).attr('id')) {
           $.rokfor.contribution.edit($(this).attr('id'));
@@ -129,7 +165,7 @@
     
     $('.opencontribution').on("click", function (e) {
       e.stopPropagation();
-      var row = $(this).closest('#rftable tr');
+      var row = $(this).closest('#rftable tr, #ptable tr');
       if (row.attr('id')) {
         $.rokfor.contribution.edit(row.attr('id'));
       }
@@ -140,11 +176,13 @@
 
     $('#refresh_man').on('click', 'a', function(e) {
       e.stopPropagation();
-      var cb = function(data) {
-        $.rokfor.refreshList();
-      }
-      if ($(this).parents('section.content').attr('data-path')) {
-        $.rokfor.contributions.bulkaction($(this).parents('section.content').attr('data-path') , {action: 'refreshmanualsort'}, cb);
+      if (confirm($(this).attr('data-alert-message'))===true) {
+        var cb = function(data) {
+          $.rokfor.refreshList();
+        }
+        if ($(this).parents('section.content').attr('data-path')) {
+          $.rokfor.contributions.bulkaction($(this).parents('section.content').attr('data-path') , {action: 'refreshmanualsort'}, cb);
+        }
       }
       return false;
     })
@@ -152,7 +190,7 @@
 
     /* Row Editor Field */
   
-    $('#rftable td')
+    $('#rftable td, #ptable td')
       .on('dblclick', 'a', function(e) {
         e.stopPropagation();
         return false;
@@ -285,13 +323,23 @@
       });
     });
 
+    // Page Change
+    $('#pagechange').change(function(e){
+      var _p = $(this).parents('section.content').attr('data-path').split("/");
+      _p.pop(); _p.push(this.value);
+      var target = $('.content-wrapper#list');
+      $.rokfor.get(_p.join('/'), function(data){
+        target.html(data);
+      })
+    });
+
     // Modal Continue Action
 
     var newContrib = function() {
       var button = $('#rfmodalnew').find('button.btn-default');
       var name = button.closest('.modal-content').find('input').val();
       var template = button.closest('.modal-content').find('select').val();
-      console.log(button, name, template);
+      //console.log(button, name, template);
       if (template && name) {
         $('#rfmodalnew').modal('hide');
 //        $('#rfmodalnew').modal('hide').on('hidden.bs.modal', function () {

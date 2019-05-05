@@ -28,7 +28,7 @@ class Acl extends ZendAcl
         $_rf_routes['user'][] = ['/rf/dashboard',                                                           'GET'];
         $_rf_routes['user'][] = ['/rf/menu',                                                                'GET'];
         $_rf_routes['user'][] = ['/rf/contributions/search',                                                ['GET','POST']];
-        $_rf_routes['user'][] = ['/rf/contributions/{book:[0-9]*}/{issue:[0-9]*}/{chapter:[0-9]*}',         ['GET','POST']];
+        $_rf_routes['user'][] = ['/rf/contributions/{book:[0-9]*}/{issue:[0-9]*}/{chapter:[0-9]*}[/{page:[0-9]*}]',         ['GET','POST']];
         $_rf_routes['user'][] = ['/rf/contribution/{id:[0-9]*}',  'GET'];
         $_rf_routes['user'][] = ['/rf/contribution/{action}/{id:[0-9]*}',                                   ['GET','POST']];
         $_rf_routes['user'][] = ['/rf/field/{id:[0-9]*}',                                                   'POST'];

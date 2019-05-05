@@ -29,6 +29,12 @@ $app->get('/rf', function ($request, $response, $args) {return $response->withRe
 
 $app->group('/rf', function () {
 
+  /*
+   * Hardcoded Long List Threshold
+   */
+
+  define('LONGLIST_CONTRIBUTIONS_THRESHOLD', 500);
+
   /* Browser Call:
    *
    * Dashboard
@@ -625,9 +631,40 @@ $app->group('/rf', function () {
    *
    */
 
-  $this->get('/contributions/{book:[0-9]*}/{issue:[0-9]*}/{chapter:[0-9]*}', function ($request, $response, $args) {
-    $args['contributions'] = $this->db->getContributions($args['issue'], $args['chapter']);
+  $this->get('/contributions/{book:[0-9]*}/{issue:[0-9]*}/{chapter:[0-9]*}[/{page:[0-9]*}]', function ($request, $response, $args) {
+
+    $args['max'] = $this->db->getContributions($args['issue'], $args['chapter'], 'asc', false, false, false, true);    
     $args['base_path'] = '/rf/contributions/'.$args['book'].'/'.$args['issue'].'/'.$args['chapter'];
+
+    /* 
+      Show all
+    */    
+    if ($args['max'] <= LONGLIST_CONTRIBUTIONS_THRESHOLD) {
+      $args['paginated'] = false;
+      $args['contributions'] = $this->db->getContributions($args['issue'], $args['chapter']);
+    }
+
+    /* 
+      Paginated
+    */    
+    else {
+      $args['searchterm'] = $request->getQueryParams()['q'] ? $request->getQueryParams()['q'] : "";
+      $args['pagesize'] = LONGLIST_CONTRIBUTIONS_THRESHOLD;
+      $args['page'] = $args['page'] > 0 ? $args['page'] : 0;
+      $args['paginated'] = true;
+      $args['base_path'] .= '/'.$args['page'];
+      $args['sortmode'] = 'name:asc';
+      if ($args['searchterm'] !== "") {
+        $args['max'] = $this->db->searchContributions($args['searchterm'], $args['issue'], $args['chapter'], false, $args['pagesize'], $args['pagesize'] * $args['page'], false, 'like', $args['sortmode'], true);
+        $args['contributions'] = $this->db->searchContributions($args['searchterm'], $args['issue'], $args['chapter'], false, $args['pagesize'], $args['pagesize'] * $args['page'], false, 'like', $args['sortmode']);
+        $args['base_path'] .= '?q=' . rawurlencode($args['searchterm']);
+      }
+      else {
+        $args['contributions'] = $this->db->getContributions($args['issue'], $args['chapter'], $args['sortmode'], false, $args['pagesize'], $args['pagesize'] * $args['page']);
+      }
+    }
+
+    
     $format = $this->db->getFormat($args['chapter']);
     $book   = $this->db->getBook($args['book']);
     $issue  = $this->db->getIssue($args['issue']);
@@ -661,7 +698,7 @@ $app->group('/rf', function () {
    *
    */
 
-  $this->post('/contributions/{book:[0-9]*}/{issue:[0-9]*}/{chapter:[0-9]*}', function ($request, $response, $args) {
+  $this->post('/contributions/{book:[0-9]*}/{issue:[0-9]*}/{chapter:[0-9]*}[/{page:[0-9]*}]', function ($request, $response, $args) {
     $format = $this->db->getFormat($args['chapter']);
     $book   = $this->db->getBook($args['book']);
     $issue  = $this->db->getIssue($args['issue']);

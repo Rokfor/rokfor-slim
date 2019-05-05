@@ -164,7 +164,7 @@
     var cb = function(){};
     if (callback)
       cb = callback; 
-    console.log("Executing POST: ", url, post);
+    //console.log("Executing POST: ", url, post);
     $.rokfor.progressbar.init();
     $.ajax({
           xhr: $.rokfor.xhr,
@@ -179,14 +179,14 @@
             $.rokfor.progressbar.hide();
           }
         }).done(function( data ) {
-            if (typeof data == "string") {
-              console.log("Received:", data.substring(0,10));
-            }
+            //if (typeof data == "string") {
+            //  console.log("Received:", data.substring(0,10));
+            //}
             // Update CSRV global
             if (data.name && data.value) {
               $.rokfor.csrf_name = data.name;
               $.rokfor.csrf_value = data.value;
-              console.log("updated csrf");
+              //console.log("updated csrf");
             }
             // Update Trigger data in all tags with the corresponding class
             if (data.trigger) {
@@ -202,22 +202,24 @@
   
   // General GET Function
   
-  $.rokfor.get = function(url, callback) {
+  $.rokfor.get = function(url, callback, data) {
+    data = data || null;
     var cb = function(){};
     if (callback)
       cb = callback;     
     $.rokfor.progressbar.init();    
-    console.log("Executing GET: ", url);
+    //console.log("Executing GET: ", url);
     $.ajax({
           xhr: $.rokfor.xhr,
           method: "GET",
           url: url,
+          data: data,
           success: function(data){
             $.rokfor.progressbar.hide();
           }
         }).done(function( data ) {
-            if (typeof(data)=="string")
-              console.log("Received:", data.substring(0,100));
+            //if (typeof(data)=="string")
+            //  console.log("Received:", data.substring(0,100));
             cb(data);
         });    
   }
@@ -229,7 +231,7 @@
     var list = $('.content-wrapper#list');
     if (list.find('section.content').attr('data-path')) {
       $.rokfor.get(list.find('section.content').attr('data-path'), function(data){
-        console.log("Refreshing List")
+        //console.log("Refreshing List")
         list.html(data);
         cb();
       });
@@ -300,7 +302,7 @@
 
   $.rokfor.contributions = {
     bulkaction: function(command, data, callback) {
-      console.log(command, data, callback);
+      //console.log(command, data, callback);
       $.rokfor.post(command, data, callback);      
     }
   }  
@@ -328,7 +330,7 @@
       scrollpos = scrollpos || false;
       /* Executes a ajax call, updates csrf globals on success, injects form */
       $.rokfor.get('/rf/contribution/' + id + (fromid ? '?back='+fromid: ''), function (data) {
-        console.log("Edit: ", id);
+        //console.log("Edit: ", id);
         $('.content-wrapper#detail').html(data);
         $.rokfor.showDetail(scrollpos);
 
@@ -372,14 +374,15 @@
   /* recursively opens the tree from a child element, returns false if no string is passed */
   $.rokfor.recursivetree = function(d) {
     if (d == undefined) return false;
-    var e = $('#chapter_' + d.replace(/\//gi,'_'));
+    var _d = d.split("/");
+    var _e_id = '#chapter__' + _d[1] + '_' + _d[2] + '_' + _d[3] + '_' + _d[4] + '_' + _d[5];
+    var e = $(_e_id);
     var m = e.parents('ul#rfmenu');
     if (!e.hasClass('active')) {
       m.find('li').removeClass('active');
       m.find('ul.treeview-menu').removeClass('menu-open').css('display','none');
       e = e.parents('li');
       do {
-        console.log("add", e, "active")
         e.addClass('active');
         e.parents('ul.treeview-menu').addClass('menu-open').css('display','block');
         e = e.parents('li');        
@@ -390,7 +393,6 @@
   // Ajax Load Actions: turn all links with the class .ajaxload
   // into xhr get calls
   $(document).on('click', '.ajaxload', function (e) {
-    console.log(this);
     e.preventDefault();
     var target = $($(this).attr('target'));
     var detail = $(this).attr('target') == '.content-wrapper#detail';

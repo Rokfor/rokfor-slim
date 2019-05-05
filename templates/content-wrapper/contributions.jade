@@ -18,13 +18,25 @@ section.content(data-path=base_path)
     .col-xs-12
       .box
         .box-header
-          .input-group.col-md-6(style="float: left;")
+          .input-group.col-md-8(style="float: left;")
+            if paginated
+              :php
+                $n = 0;
+              .btn.label.label-default(style="float: left; padding: 7px; margin-right: 1em;")
+                span Page: 
+                select#pagechange
+                  while $n < ceil($max/$pagesize)
+                    option(value=n selected=($page==$n?true:false))=(n+1)
+                      :php
+                        $n++;
+                span!=' of ' . ceil($max/$pagesize)
+
             if (is_array($templates))
-              button.margin.btn.btn-success#add_contribution(style="float: left; width: 150px;")
+              button.btn.btn-success#add_contribution(style="float: left; width: 150px; margin-right: 1em;")
                 i.fa.fa-edit &nbsp;
                 span=translations['new_document']
             .input-group
-              button.btn.btn-primary.dropdown-toggle.disabled.margin.col-xs-2(style="width: 150px;", id="rf_bulk_action", type="button", data-toggle="dropdown", aria-expanded="false")
+              button.btn.btn-primary.dropdown-toggle.disabled.col-xs-2(style="float: left; width: 150px; margin-right: 1em;", id="rf_bulk_action", type="button", data-toggle="dropdown", aria-expanded="false")
                 i.fa.fa-caret-down &nbsp;
                 span=$translations["contribution_actions"]
               ul.dropdown-menu.rfselector(bulk="contributions")
@@ -43,31 +55,34 @@ section.content(data-path=base_path)
                 li
                   a.bg-red(data-alert-message=$translations["alert_destroy"] href="/rf/contributions/Trash")=$translations["status_destroy"]
 
-          .input-group.col-md-5.margin(style="float: right;")
-            span.input-group-btn
-              button.btn.btn-default
-                i.fa.fa-search
-            input.form-control(id='table_search', type='text', name='table_search', placeholder='Search')
+          .col-md-4(style="float: right; padding: 0px;")
+            .input-group
+              span.input-group-btn
+                button.btn.btn-default
+                  i.fa.fa-search
+              if paginated
+                form(id="subsearch" action=base_path method="get")
+                  input.form-control(type='text', name='q', placeholder='Search', value=searchterm)
+              else
+                input.form-control(id='table_search', type='text', name='table_search', placeholder='Filter')
 
 
         // /.box-header
         .box-body
           .row
             .col-sm-12
-              table(style="width:100%")#rftable.table.table-bordered.table-striped.dataTable
+              table(style="width:100%", id=($paginated?"ptable":"rftable")).table.table-bordered.table-striped.dataTable
                 thead
                   tr
-                    th(id="refresh_man", colspan=2, style="min-width:80px; width:80px;")
-                      span=translations['contrib_th_seq']
-                      span &nbsp;
-                      span.label.label-default
-                        a.fa.fa-refresh(href="/rf/contributions/ReSort")
-                    th(style="min-width:30px; width:30px;")=translations['contrib_th_id']
+                    th(style="min-width:35px; width:35px;")=translations['contrib_th_seq']
+                    th(id="refresh_man", style="min-width:35px; width:35px;")
+                      a.fa.fa-refresh(href="/rf/contributions/ReSort", data-alert-message=$translations['contrib_th_resort'])
+                    th(style="min-width:40px; width:40px;")=translations['contrib_th_id']
                     th(style="min-width:60px; width:60px;")=translations['contrib_th_autor']
                     th(style="min-width:70px; width:70px;")=translations['contrib_th_datum']
                     th=translations['contrib_th_name']
                     th(style="min-width:50px; width:50px;")=translations['contrib_th_status']
-                    th(style="min-width:100px; width:100px;")=translations['contrib_th_lock']
+                    th(style="min-width:120px; width:120px;")=translations['contrib_th_lock']
                 tbody
                   each contribution in contributions
                     :php
@@ -76,12 +91,16 @@ section.content(data-path=base_path)
                       td=contribution->getSort()
                       td
                         .btn-group.btn-group-sm
-                          button.btn.btn-default.opencontribution
+                          button.btn.opencontribution
                             i.fa.fa-pencil
                       td=contribution->getId()
                       td=($contribution->getuserSysRef() ? $contribution->getuserSysRef()->getUsername() : '-')
                       td=strftime($translations['day_locale'],$contribution->getNewdate())
-                      td=contribution->getName()
+                      if paginated
+                        td
+                          input(class="form-control nameedit" type="text" rows="1" value=contribution->getName())
+                      else
+                        td=contribution->getName()
                       td
                         a.btn.btn-xs(
                           data-status=json_encode(["Open"=>$translations["status_open"],"Draft"=>$translations["status_draft"],"Close"=>$translations["status_close"],"Deleted"=>$translations["status_deleted"]]),
