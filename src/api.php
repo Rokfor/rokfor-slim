@@ -10,8 +10,13 @@ $app->group('/api', function () {
    * Pretty Print JSON
    */
 
-//    define('JSON_CONSTANTS', JSON_PRETTY_PRINT);
-    define('JSON_CONSTANTS', 0);
+  define('JSON_CONSTANTS', 0);
+
+  /*
+   * Hardcoded max Contributions Limit per Request
+   */
+
+  define('MAXLIMIT_PER_REQUEST', 1000);
 
   /*  Contributions Access
    *
@@ -49,7 +54,7 @@ $app->group('/api', function () {
 
     $compact = $request->getQueryParams()['verbose'] == "true" ? false : true;
     $follow_references = $request->getQueryParams()['references'] == "false" ? false : true;
-    $_limit    = isset($request->getQueryParams()['limit']) ? intval($request->getQueryParams()['limit']) : null;
+    $_limit    = isset($request->getQueryParams()['limit']) ? intval($request->getQueryParams()['limit']) : MAXLIMIT_PER_REQUEST;
     $_offset   = isset($request->getQueryParams()['offset']) ? intval($request->getQueryParams()['offset']) : null;
     $_query    = isset($request->getQueryParams()['query']) ? $request->getQueryParams()['query'] : false;
     $_template = isset($request->getQueryParams()['template']) ? (int)$request->getQueryParams()['template'] : false;
@@ -138,7 +143,7 @@ $app->group('/api', function () {
         json_encode(
                     array("Documents" => $j,
                           "NumFound"  => $_count,
-                          "Limit"     => count($c),
+                          "Limit"     => count($j),
                           "CachePerc" => (count($j) > 0 ? round(100 / count($j) * $_cache_count) : 0),
                           "Offset"    =>  $_offset,
                           "QueryTime" => (microtime(true) - $qt),
