@@ -717,10 +717,6 @@ $app->group('/rf', function () {
         $this->db->ChangeStateContributions($data['id'], $data['action']);
       break;
       case 'Trash':
-        foreach ($data['id'] as $value) {
-          $contribution = $this->db->getContribution($value);
-          $contribution->updateCache();
-        }
         $this->db->DeleteContributions($data['id']);
       break;
       case 'reorder':
