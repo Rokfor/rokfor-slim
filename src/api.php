@@ -1381,6 +1381,8 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
       if ($s3 === true) {
         if ($_isnginx === true) {
           header('X-Accel-Redirect: /cdn/' . str_replace('https://', '', $this->db->presign_file($args['file'])));
+          header('Access-Control-Allow-Methods "GET, HEAD, OPTIONS"');
+          header('Access-Control-Allow-Origin "*"');
         }
         else {
           header('Location: ' . $this->db->presign_file($args['file']));
@@ -1478,6 +1480,8 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
     if ($s3 === true) {
       if ($_isnginx === true) {
         header('X-Accel-Redirect: /cdn/' . str_replace('https://', '', $this->db->presign_file($args['file'])));
+        header('Access-Control-Allow-Methods "GET, HEAD, OPTIONS"');
+        header('Access-Control-Allow-Origin "*"');
       }
       else {
         header('Location: ' . $this->db->presign_file($args['file']));
