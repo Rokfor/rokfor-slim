@@ -1666,12 +1666,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Rokfor/rokfor-php-db.git",
-                "reference": "b7b91eefe7840c6f3e192ebd9d30c176e4feffd5"
+                "reference": "77a343da1a83275bfa1446fc8b2dda33092a29d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Rokfor/rokfor-php-db/zipball/b7b91eefe7840c6f3e192ebd9d30c176e4feffd5",
-                "reference": "b7b91eefe7840c6f3e192ebd9d30c176e4feffd5",
+                "url": "https://api.github.com/repos/Rokfor/rokfor-php-db/zipball/77a343da1a83275bfa1446fc8b2dda33092a29d3",
+                "reference": "77a343da1a83275bfa1446fc8b2dda33092a29d3",
                 "shasum": ""
             },
             "require": {
@@ -1689,7 +1689,6 @@
                     "config/generated-classes/"
                 ]
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1707,7 +1706,11 @@
                 "rokfor",
                 "slim"
             ],
-            "time": "2019-02-15T19:08:17+00:00"
+            "support": {
+                "source": "https://github.com/Rokfor/rokfor-php-db/tree/versioning-redis",
+                "issues": "https://github.com/Rokfor/rokfor-php-db/issues"
+            },
+            "time": "2019-05-23T12:55:55+00:00"
         },
         {
             "name": "slim/csrf",
