@@ -83,10 +83,22 @@ section.content(data-path=base_path)
                     th=translations['contrib_th_name']
                     th(style="min-width:50px; width:50px;")=translations['contrib_th_status']
                     th(style="min-width:120px; width:120px;")=translations['contrib_th_lock']
+                    th(style="min-width:70px; width: 70px;")=translations['contrib_th_preview']
+
                 tbody
                   each contribution in contributions
                     :php
                       $configuration = json_decode($contribution->getConfigSys());
+                      if ($previewstrings[$contribution->getFortemplate()]) {
+                        $preview = helpers::createPreviewLinks (
+                          $previewstrings[$contribution->getFortemplate()], 
+                          $book,
+                          $issue,
+                          $chapter,
+                          $contribution->getId()
+                        );
+                      }
+                      
                     tr(id=contribution->getId())
                       td=contribution->getSort()
                       td
@@ -120,6 +132,15 @@ section.content(data-path=base_path)
                         :php
                           $d = helpers::timeFormatHelper($configuration->lockdate ? $configuration->lockdate : time(), 'd/m/Y H:i');
                         input.form-control.rfreleasemask(id=$contribution->getId(), type="text", value=d.value, data-inputmask=d.mask, data-inputmask-placeholder=d.placeholder)
+                      td
+                        if preview
+                          each p in preview
+                            small
+                              span.label.label-default
+                                a(href=$p[0] target="_blank")=$p[1]
+                            br
+                        else
+                          span –
 
                           
       // /.box-body

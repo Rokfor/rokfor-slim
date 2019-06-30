@@ -42,6 +42,16 @@ section.content-header
     small
       span.label.label-default
         a(href="/api/contribution/".$contribution->getId()."?access_token=".$apikey target="_blank") API GET
+
+  if preview
+    each p in preview
+      span &nbsp;
+      small
+        span.label.label-default
+          a(href=$p[0] target="_blank")=$p[1]
+
+
+
   ol.breadcrumb
     each crumb in breadcrumb
       li

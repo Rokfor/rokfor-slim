@@ -88,7 +88,7 @@
               .form-group
                 label.col-sm-2.control-label(for="image".$template->getId())=$translations['template_label_image']
                 .col-sm-10
-                  input.form-control(name="Helpimage", type="text" id="image".$template->getId(), value=$template->getHelpimage())
+                  input.form-control(name="Helpimage", type="text" id="image".$template->getId(), placeholder=$translations['template_label_image_ph'] value=$template->getHelpimage())
               .form-group
                 label.col-sm-2.control-label(for="public".$template->getId())=$translations['template_label_public']
                 .col-sm-10

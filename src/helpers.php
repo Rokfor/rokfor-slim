@@ -160,6 +160,37 @@ class helpers
   }
 
   /**
+   * prepares preview links from getHelpImage
+   *
+   * @param \Childobject\Contributions &$_c
+   * @return mixed
+   *
+   * @author Urs Hofer
+   */
+  public function createPreviewLinks($_string, $_book, $_issue, $_chapter, $_id) {
+    $_previewstring = [];
+    if ($_rawpreviewstring = explode(';', $_string)) {
+      foreach ($_rawpreviewstring as $_p) {
+        if ($_p != "") {
+          $__identifier = [];
+          preg_match('/\[(.*?)\]/', $_p, $__identifier);
+          $_p = preg_replace('/\[(.*?)\]/', '', $_p);
+          $__url = str_replace(
+            [':book', ':issue',':chapter', ':id'], 
+            [
+              $_book,
+              $_issue,
+              $_chapter,
+              $_id
+            ],$_p);
+          $_previewstring[] = [$__url, $__identifier[1] ? $__identifier[1] : 'PREVIEW'];
+        }
+      }
+    }
+    return (count($_previewstring)>0 ? $_previewstring : false);
+  }
+
+  /**
    * prepares the args for the contribution template
    * populates the args array which is passed as a reference.
    *
@@ -173,6 +204,7 @@ class helpers
       list($_p, $_n) = $this->PrevNextContribution($_c);
       list($_ddc, $_ddt, $_ddf) = $this->ContributionDropdownHelper($_c);
       $difftime = $this->diffTime(time() - $_c->getModdate());
+
       $args = array_merge($args,
       [
         'contribution' => $_c,
@@ -188,7 +220,14 @@ class helpers
         'apikey'  => $_c->getuserSysRef() ? $_c->getuserSysRef()->getRoapikey() : false,
         'private' =>  $_c->getTemplatenames()->getPublic() == 1 ? false : true,
         's3'      => $this->container->paths['s3'] === true,
-        'db' => &$this->container->db
+        'db' => &$this->container->db,
+        'preview' => $this->createPreviewLinks(
+              $_c->getTemplatenames()->getHelpimage(), 
+              $_c->getIssues()->getForbook(),
+              $_c->getForissue(),
+              $_c->getForchapter(),
+              $_c->getId()
+        )
       ]
     );
   }
