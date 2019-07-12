@@ -212,6 +212,7 @@ $app->group('/api', function () {
    *
    *  - populate=true|false              (default: false)
    *  - verbose=true|false               (default: false)
+   *  - references=true|false            (default: true)
    *  - data=[Fieldname|...]             (default: empty)
    */
   $this->options('/books[/{id:[0-9]*}]',
@@ -223,6 +224,7 @@ $app->group('/api', function () {
       $qt = microtime(true);
       $b = $this->db->getStructure("", $args['id']);
       $compact = $request->getQueryParams()['verbose'] == "true" ? false : true;
+      $references = $request->getQueryParams()['references'] == "false" ? false : true;
 
       if ($b) {
         $j = [];
@@ -230,12 +232,12 @@ $app->group('/api', function () {
           $_chapters = [];
           $_issues = [];
           foreach ($_book["chapters"] as $_chapter) {
-             $_chapters[] = $this->helpers->prepareApiStructureInfo($_chapter["chapter"], true, $compact, $request);
+             $_chapters[] = $this->helpers->prepareApiStructureInfo($_chapter["chapter"], $references, $compact, $request);
           }
           foreach ($_book["issues"] as $_issue) {
-            $_issues[] = $this->helpers->prepareApiStructureInfo($_issue["issue"], true, $compact, $request);
+            $_issues[] = $this->helpers->prepareApiStructureInfo($_issue["issue"], $references, $compact, $request);
           }
-          $j[] = array_merge($this->helpers->prepareApiStructureInfo($_book["book"], true, $compact, $request), ["Chapters" => $_chapters, "Issues" => $_issues]);
+          $j[] = array_merge($this->helpers->prepareApiStructureInfo($_book["book"], $references, $compact, $request), ["Chapters" => $_chapters, "Issues" => $_issues]);
         }
         $response->getBody()->write(json_encode([
           "Books"                     => $j,
