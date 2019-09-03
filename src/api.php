@@ -1449,11 +1449,17 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
   $_current_data_in_db = "";
   try {
     $f = $this->db->getField($args['field']);
-    $_current_data_in_db = $f->getContent();
   } 
   catch (Exception $e) {
     throw new \Slim\Exception\NotFoundException($request, $response);
   }
+  if ($f == null) {
+    throw new \Slim\Exception\NotFoundException($request, $response);  
+  } else {
+    $_current_data_in_db = $f->getContent();
+  }
+    
+
 
 
   // Check for Authentification if Public = 0
