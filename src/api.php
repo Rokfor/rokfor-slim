@@ -1446,7 +1446,14 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
   $public = $c->getTemplatenames()->getPublic() === "1";
 
   // Check for field
-  $f = $this->db->getField($args['field']);
+  $_current_data_in_db = "";
+  try {
+    $f = $this->db->getField($args['field']);
+    $_current_data_in_db = $f->getContent();
+  } 
+  catch (Exception $e) {
+    throw new \Slim\Exception\NotFoundException($request, $response);
+  }
 
 
   // Check for Authentification if Public = 0
@@ -1474,7 +1481,7 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
   }
 
   // Do the presigining if contribution
-  if (($public || $access || $logged_in) && stristr($f->getContent(), $args['file'])) {
+  if (($public || $access || $logged_in) && stristr($_current_data_in_db, $args['file'])) {
     if ($this->get('redis')['client'] && $public === true) {
       $this->redis['client']->set('%%asset%%'.$args['field'], "public");
     }
