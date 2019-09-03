@@ -1487,7 +1487,7 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
   }
 
   // Do the presigining if contribution
-  if (($public || $access || $logged_in) && stristr($_current_data_in_db, $args['file'])) {
+  if (($public || $access || $logged_in) && stristr($_current_data_in_db, $args['file']) !== false) {
     if ($this->get('redis')['client'] && $public === true) {
       $this->redis['client']->set('%%asset%%'.$args['field'], "public");
     }
