@@ -974,8 +974,23 @@ $app->group('/rf', function () {
 
           // Resetting Redis Cache here
           if ($this->get('redis')['client']) {
-            $c = $this->redis['client']->set('%%asset%%'.$args['id'], "");
+            $prefix = $this->redis['client']->getOptions()->__get('prefix')->getPrefix();
+            if ($this->redis['cluster']) {
+              // Cluster Delete not implemented!
+            }
+            else {
+              $keys = $this->redis['client']->keys('%%asset%%'.$args['id'].'*');
+              foreach ($keys as $key) {
+                if (substr($key, 0, strlen($prefix)) == $prefix) {
+                  $key = substr($key, strlen($prefix));
+                  $this->redis['client']->del($key);
+                }
+              }
+            }
           }
+
+
+
 
           $file = $request->getUploadedFiles()['file'];
           $data = json_decode($request->getParsedBody()['data'], true);
