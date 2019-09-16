@@ -107,7 +107,7 @@ section.content(data-path=base_path)
                             i.fa.fa-pencil
                       td=contribution->getId()
                       td=($contribution->getuserSysRef() ? $contribution->getuserSysRef()->getUsername() : '-')
-                      td=strftime($translations['day_locale'],$contribution->getNewdate())
+                      td(data-sort=$contribution->getNewdate())=strftime($translations['day_locale'],$contribution->getNewdate())
                       if paginated
                         td
                           input(class="form-control nameedit" type="text" rows="1" value=contribution->getName())
