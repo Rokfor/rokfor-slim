@@ -43,6 +43,11 @@ class helpers
     public function GetVersionInfo(&$args) {
       $composer = json_decode(file_get_contents(__DIR__ . '/../composer.json'));
       $args['commit']  = file_get_contents(__DIR__ . '/../version.txt');
+      $args['release_notification'] = [];
+      foreach ($_SESSION["releasenotification"] as $_notification=>$_active) {
+        if ($_active === true)
+          $args['release_notification'][]  = $this->Parsedown->text($this->container->translations[$_notification]);
+      }
       $args['version'] = 'git';
       $args['copy'] = '&copy; <a href="'.
         $composer->homepage.
@@ -51,6 +56,20 @@ class helpers
         "</a> ".
         date('Y').
         ". All rights reserved.";
+    }
+
+
+    /**
+     * adds copyright notices and version info to args array for template rendering
+     *
+     * @param string $args
+     * @return void
+     * @author Urs Hofer
+     */    
+    public function removeNotificationFromSession($key) {
+      if (is_array($_SESSION["releasenotification"]) && $_SESSION["releasenotification"][$key] !== false) {
+        unset($_SESSION["releasenotification"][$key]);
+      }
     }
 
   /**

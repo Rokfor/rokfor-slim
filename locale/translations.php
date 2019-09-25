@@ -298,6 +298,7 @@ return [
         'CORS_get'                                => 'Get',
         'CORS_postputdel'                         => 'Post/Del/Put',
         'CORS_infotext'                           => 'CORS Settings des Api Zugangs. Kommaseparierte Liste mit Domains. Leer oder * für keine Beschränkung.',
+        'notification_pwcrypt'                    => "> Änderung der Passwortverschlüsselung: Das Verschlüsselungsverfahren wurde mit dieser Version dem neusten technolgischen Stand angepasst. Passwörter werden in der Datenbank nie unverschlüsselt gespeichert, sondern immer als verschlüsselter Hash, der nicht entschlüsselt werden kann.\n> **Um das Passwort neu zu verschlüsseln, müssen Sie im Profil (oben rechts) das Passwort neu setzen. Ausnahmsweise dürfen sie das alte nochmals verwenden.**"
     ],
 
     'en_EN.utf8' => [
@@ -599,6 +600,7 @@ return [
         'user_not_found'                          => "User not found",
         'user_email_exists'                       => "Username or email already existing.",
 
+        'notification_pwcrypt'                    => "> It is necessary that you run the **'Change password'** function.\n\n> Reason: Updated password encryption algorithm. Please navigate to your profile (upper right corner) and set a new password. You can also reuse your old password this time."
     ],
 
 ];

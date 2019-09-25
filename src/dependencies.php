@@ -284,7 +284,11 @@ $container['authAdapter'] = function ($c) {
   // Example callback to validate a sha512 hashed password
   $callback = function ($password, $passwordHash, $salt) {
       if (hash('md5', $password ) === $passwordHash) {
+          $_SESSION["releasenotification"]["notification_pwcrypt"] = true;  // Add a deprecation note.
           return true;
+      }
+      if (password_verify ( $password , $passwordHash )  === true ) {
+        return true;
       }
       return false;
   };

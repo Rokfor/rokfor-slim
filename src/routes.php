@@ -116,6 +116,7 @@ $app->group('/rf', function () {
         if ($this->db->updatePassword($form[0]['value'], $form[1]['value'], $form[2]['value'], $errors)) {
           $json['success'] = $this->translations['general_success'];
           $json['message'] = $this->translations['profile_pw_updated'];
+          $this->helpers->removeNotificationFromSession('notification_pwcrypt');    // Remove MD5 Notification
         }
         else {
           $json['error']   = $this->translations['general_error'];
@@ -226,7 +227,7 @@ $app->group('/rf', function () {
             ->setRightss($this->db->getRights()->filterById($data["group"])->find())
             ->setEmail($data["email"]);
           if ($data["password"]) {
-            $u->setPassword(md5($data["password"]));
+            $u->setPassword(password_hash($data["password"], PASSWORD_DEFAULT));
           }
           $u->setRoapikey($data["api"]);
           $u->setRwapikey($data["rwapi"]);
@@ -454,7 +455,9 @@ $app->group('/rf', function () {
 
   $this->map(['GET', 'POST'], '/login', function ($request, $response, $args) {
     $args["message"] = $this->translations['loginIntro'];
+
     $this->helpers->GetVersionInfo($args);
+    
 
     if ($request->isPost()) {
             $username = $request->getParsedBody()['username'];

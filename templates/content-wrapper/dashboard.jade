@@ -1,5 +1,12 @@
 section.content
-
+  each note in release_notification
+    .row
+      .col-lg-12
+        .info-box
+          span.info-box-icon(style="background: white;")
+            i.fa.fa-info-circle
+          .info-box-content
+            .info-box-text(style="white-space: normal")!=$note
   if (is_array($contribution))
     h4=$translations['last_access_contribution']
     .row
