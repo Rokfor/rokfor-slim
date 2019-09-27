@@ -980,7 +980,13 @@ class helpers
   private function parse_tags($template, $contribid) {
 
     // Prefixing, unless it is not private and s3 has public pages
-    $_protocol = ($this->container->paths['enforce_https'] ? 'https://' : '//' ).$_SERVER['HTTP_HOST'];
+
+    if ($this->container->db->getUser()['config']->assetdomain && filter_var($this->container->db->getUser()['config']->assetdomain, FILTER_VALIDATE_URL) !== false) {
+      $_protocol = $this->container->db->getUser()['config']->assetdomain;
+    }
+    else {
+      $_protocol = ($this->container->paths['enforce_https'] ? 'https://' : '//' ).$_SERVER['HTTP_HOST'];
+    }
 
 
     if (preg_match_all("/{{(.*?)}}/", $template, $m)) {
