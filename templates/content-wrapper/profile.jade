@@ -85,8 +85,19 @@ section.content
                 .form-group                    
                   .col-sm-4 &nbsp;
                   .col-sm-8=$translations['CORS_infotext']
-                  
 
+                .form-group
+                .form-group
+                  .col-sm-4
+                  .col-sm-8
+                    h4=$translations['ASSETDOMAIN_title']
+                .form-group
+                  label.col-sm-4.control-label=$translations['ASSETDOMAIN_label']
+                  .col-sm-8
+                    input.form-control#acl(value=user.config.assetdomain, name="assetdomain", type="text")   
+                .form-group                    
+                  .col-sm-4 &nbsp;
+                  .col-sm-8=$translations['ASSETDOMAIN_infotext']
           .box-footer
             input(type="hidden", name="action", value="profile")
             button.btn.btn-success=$translations['profile_submit']

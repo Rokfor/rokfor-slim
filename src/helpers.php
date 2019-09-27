@@ -1076,7 +1076,14 @@ class helpers
       if (is_array($_content)) {
 
         $this->container->db->sign_request($_content, $private, $field->getForcontribution(), $field_id);
-        $_protocol = ($this->container->paths['enforce_https'] ? 'https://' : '//' ).$_SERVER['HTTP_HOST'];
+        
+        if ($this->container->db->getUser()['config']->assetdomain && filter_var($this->container->db->getUser()['config']->assetdomain, FILTER_VALIDATE_URL) !== false) {
+          $_protocol = $this->container->db->getUser()['config']->assetdomain;
+        }
+        else {
+          $_protocol = ($this->container->paths['enforce_https'] ? 'https://' : '//' ).$_SERVER['HTTP_HOST'];
+        }
+
         foreach ($_content as &$_row) {
           $_versions = [];
           $_versions['Thumbnail'] = $_protocol.$_row[2]->thumbnail;

@@ -82,6 +82,8 @@
       $(this).find('#corsget').val(data.corsget || "");
       $(this).find('#corspostdelput').val(data.corspostdelput || "");
 
+      $(this).find('#assetdomain').val(data.assetdomain || "");
+
       $(this).find('#role option').each(function() {
         $(this).prop('selected', data.role && (data.role == $(this).attr('value')));
       })

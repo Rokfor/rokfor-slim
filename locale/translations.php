@@ -298,6 +298,11 @@ return [
         'CORS_get'                                => 'Get',
         'CORS_postputdel'                         => 'Post/Del/Put',
         'CORS_infotext'                           => 'CORS Settings des Api Zugangs. Kommaseparierte Liste mit Domains. Leer oder * für keine Beschränkung.',
+        
+        'ASSETDOMAIN_title'                       =>  'CDN',
+        'ASSETDOMAIN_label'                       =>  'Domain',
+        'ASSETDOMAIN_infotext'                    =>  'Benutzerdefinierte Domain bei der Verwendung von Assets. Es muss eine passende Caching Strategie entwickelt werden, um auf die Originaldaten zu verweisen (CDN)',
+        
         'notification_pwcrypt'                    => "> Änderung der Passwortverschlüsselung: Das Verschlüsselungsverfahren wurde mit dieser Version dem neusten technolgischen Stand angepasst. Passwörter werden in der Datenbank nie unverschlüsselt gespeichert, sondern immer als verschlüsselter Hash, der nicht entschlüsselt werden kann.\n> **Um das Passwort neu zu verschlüsseln, müssen Sie im Profil (oben rechts) das Passwort neu setzen. Ausnahmsweise dürfen sie das alte nochmals verwenden.**"
     ],
 
@@ -306,6 +311,10 @@ return [
         'CORS_get'                                => 'Get',
         'CORS_postputdel'                         => 'Post/Del/Put',
         'CORS_infotext'                           => 'CORS settings for the api access. Comma separated list of domains. Leave empty or use the wildcard (*) to enable cors access for everybody.',
+        
+        'ASSETDOMAIN_title'                       =>  'CDN',
+        'ASSETDOMAIN_label'                       =>  'Domain',
+        'ASSETDOMAIN_infotext'                    =>  'Set a custom domain for assets. You need to implement your own caching routine to redirect to the original asset url (CDN)',
 
         'remember-me'                             => "Remember login on this computer.",
         'login'                                   => "Sign in",

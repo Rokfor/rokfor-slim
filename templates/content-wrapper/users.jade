@@ -79,9 +79,6 @@ section.content
                 .col-sm-8
                   input.form-control#npassword(name="password", type="text")
                     
-                    
-                    
-              .form-group
               .form-group
                 .col-sm-4
                 .col-sm-8
@@ -103,7 +100,6 @@ section.content
                       a.btn.btn-danger.apigen=$translations['profile_newapi']
 
               .form-group
-              .form-group
                 .col-sm-4
                 .col-sm-8
                   h4=$translations['profile_acl_title']
@@ -112,16 +108,15 @@ section.content
                 label.col-sm-4.control-label=$translations['profile_acl']
                 .col-sm-8
                   input.form-control#acl(value="", name="acl", type="text")                        
+
               .form-group
                 .col-sm-4 &nbsp;
                 .col-sm-8=$translations['profile_acl_text']
                 
               .form-group
-              .form-group
                 .col-sm-4
                 .col-sm-8
                   h4=$translations['CORS_title']
-                
               .form-group
                 label.col-sm-4.control-label=$translations['CORS_get']
                 .col-sm-8
@@ -133,7 +128,18 @@ section.content
               .form-group                    
                 .col-sm-4 &nbsp;
                 .col-sm-8=$translations['CORS_infotext']                    
-                    
+
+              .form-group
+                .col-sm-4
+                .col-sm-8
+                  h4=$translations['ASSETDOMAIN_title']
+              .form-group
+                label.col-sm-4.control-label=$translations['ASSETDOMAIN_label']
+                .col-sm-8
+                  input.form-control#assetdomain(value="", name="assetdomain", type="text")                        
+              .form-group                    
+                .col-sm-4 &nbsp;
+                .col-sm-8=$translations['ASSETDOMAIN_infotext']       
                     
                     
                     

@@ -130,12 +130,15 @@ $app->group('/rf', function () {
         $errors =[];
 
         $config = $this->db->getUser()['config'];
-        if (!$config)
+        if (!$config) {
           $config = new stdClass;
+        }
         $config->cors = [
           get => $form[5]['value'],
           postputdel => $form[6]['value'],
         ];
+        $config->assetdomain = $form[7]['value'];
+
         if ($this->db->updateProfile($form[0]['value'], $form[1]['value'], $form[2]['value'], $errors, $form[3]['value'], $form[4]['value'], json_encode($config))) {
           $json['success'] = $this->translations['general_success'];
           $json['message'] = $this->translations['profile_updated'];
@@ -237,6 +240,8 @@ $app->group('/rf', function () {
           if (!$_config->cors) $_config->cors = new stdClass;
           $_config->cors->get = $data["corsget"] ? $data["corsget"] : "";
           $_config->cors->postputdel = $data["corspostdelput"] ? $data["corspostdelput"] : "";
+          $_config->assetdomain = $data["assetdomain"] ? $data["assetdomain"] : "";
+
           $u->setConfigSys(json_encode($_config));
           $u->save();
         }
@@ -282,7 +287,10 @@ $app->group('/rf', function () {
           "rwapi"     => $u->getRwapikey(),
           "acl"       => $u->getIp(),
           "corsget"   => $_config->cors->get,
-          "corspostdelput" => $_config->cors->postputdel
+          "corspostdelput" => $_config->cors->postputdel,
+
+          "assetdomain"  => $_config->assetdomain
+
         ];
       }
       $r->getBody()->write(json_encode($json));
