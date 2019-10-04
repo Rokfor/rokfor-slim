@@ -185,8 +185,8 @@ $app->group('/api', function () {
         }
         else {
           if ($follow_references === false) {
-            $jc = $this->helpers->prepareApiContribution($c, $compact, $request, [], false, false);
-            $j  = $this->helpers->prepareApiContributionData($c, $compact, $request, false);
+            $jc = $this->helpers->prepareApiContribution($c, $compact, null, [], false, false);
+            $j  = $this->helpers->prepareApiContributionData($c, $compact, null, false);
           }
           else {
             $jc = $this->helpers->prepareApiContribution($c, $compact);
