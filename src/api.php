@@ -174,16 +174,24 @@ $app->group('/api', function () {
       $j = [];
       $qt = microtime(true);
       $compact = $request->getQueryParams()['verbose'] ? false : true;
+      $follow_references = $request->getQueryParams()['references'] == "false" ? false : true;
+
       $c = $this->db->getContribution($args['id']);
       if ($c && ($c->getStatus()=="Close" || $c->getStatus()=="Draft")) {
-        $signature = md5($this->db->getUser()['username'].'-'.$compact);
+        $signature = md5($this->db->getUser()['username'].'-'.$compact.($follow_references===false?'-noref':''));
         if ($h = $c->checkCache($signature)) {
           $jc = $h->Contribution;
           $j  = $h->Data;
         }
         else {
-          $jc = $this->helpers->prepareApiContribution($c, $compact);
-          $j  = $this->helpers->prepareApiContributionData($c, $compact);
+          if ($follow_references === false) {
+            $jc = $this->helpers->prepareApiContribution($c, $compact, $request, [], false, false);
+            $j  = $this->helpers->prepareApiContributionData($c, $compact, $request, false);
+          }
+          else {
+            $jc = $this->helpers->prepareApiContribution($c, $compact);
+            $j  = $this->helpers->prepareApiContributionData($c, $compact);
+          }
           $this->db->NewContributionCache($c, ["Contribution" => $jc, "Data" => $j], $signature);
         }
         $response->withHeader('Content-type', 'application/json')->getBody()->write(json_encode([
