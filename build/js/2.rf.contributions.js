@@ -52,7 +52,7 @@
                         {
                           "targets": 5,
                           "render": function(data) {
-                            return ('<input class="form-control nameedit" type="text" rows="1" value="' + data + '"><span style="display:none;">' + data + '</span>');
+                            return ('<input class="form-control nameedit" type="text" rows="1" value="' + data + '">');
                           },
                           "orderDataType": "dom-text", 
                           type: 'string' 
@@ -263,8 +263,14 @@
         return false;    
       })
       .on('keyup', 'input.nameedit', function(e) {
-        $(this).next().html($(this).val());
         $.rokfor.contribution.rename($(this).parents('tr').attr('id'),$(this).val());
+        if ($('#ptable').length) {
+            $(this).next().html($(this).val());
+        }
+        else {
+          var _self = this;
+          $.rokfor.delay(function(){table.cell($(_self).parent('td')).data($(_self).val());}, 1000, 't_'+$(this).parents('tr').attr('id') );
+        }        
       })
 
   

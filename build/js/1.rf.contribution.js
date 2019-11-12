@@ -929,12 +929,20 @@
             .text(translations[action]);
             // This does not work - list not visible $.rokfor.refreshList();
           try {          
-            var _new = $('#statebutton_list_' + id).clone();
-            _new.attr('href', '/rf/contributions/'+ action)
+            if ($('#ptable').length) {
+              $('#statebutton_list_' + id).attr('href', '/rf/contributions/'+ action)
               .removeClass('btn-success btn-primary btn-warning btn-danger')
               .addClass(bt_class_bg)
               .text(translations[action]);
-            $('#rftable').DataTable().cell( $('#statebutton_list_' + id).parent('td') ).data(_new[0].outerHTML);              
+            } 
+            else {
+              var _new = $('#statebutton_list_' + id).clone();
+              _new.attr('href', '/rf/contributions/'+ action)
+                .removeClass('btn-success btn-primary btn-warning btn-danger')
+                .addClass(bt_class_bg)
+                .text(translations[action]);
+              $('#rftable').DataTable().cell( $('#statebutton_list_' + id).parent('td') ).data(_new[0].outerHTML);                
+            }
           } catch(e) {
             console.log(e)
           }
