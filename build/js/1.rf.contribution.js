@@ -895,21 +895,26 @@
       var translations = JSON.parse($(this).attr('data-status'));
       var action = $(this).attr('data-action');      
       var bt_class = false;
+      var bt_class_bg = false;
       switch (action) {
         case 'Deleted':
           bt_class = 'label-primary';
+          bt_class_bg = 'btn-primary';
           action = 'Open';
         break;          
         case 'Close':
           bt_class = 'label-danger';
+          bt_class_bg = 'btn-danger';
           action = 'Deleted';
         break;
         case 'Draft':
           bt_class = 'label-success';
+          bt_class_bg = 'btn-success';
           action = 'Close';
         break;          
         case 'Open':
           bt_class = 'label-warning';
+          bt_class_bg = 'btn-warning';
           action = 'Draft';
         break;
 
@@ -922,7 +927,18 @@
             .removeClass('label-success label-primary label-warning label-danger')
             .addClass(bt_class)
             .text(translations[action]);
-            $.rokfor.refreshList();
+            // This does not work - list not visible $.rokfor.refreshList();
+          try {          
+            var _new = $('#statebutton_list_' + id).clone();
+            _new.attr('href', '/rf/contributions/'+ action)
+              .removeClass('btn-success btn-primary btn-warning btn-danger')
+              .addClass(bt_class_bg)
+              .text(translations[action]);
+            $('#rftable').DataTable().cell( $('#statebutton_list_' + id).parent('td') ).data(_new[0].outerHTML);              
+          } catch(e) {
+            console.log(e)
+          }
+          
         }
       }
       return false;

@@ -2,12 +2,12 @@ doctype html
 html
   include parts/layout.meta.jade
   body.hold-transition.skin-rokfor.sidebar-mini.fixed
-    .progress#loadbar(style="position: absolute; z-index: 10000").progress-xxs
+    .progress#loadbar.progress-xxs
       .progress-bar.progress-bar-danger.progress-bar-striped(style="width: 0%", role="progressbar",aria-valuenow="0",aria-valuemin="0",aria-valuemax="100")
         .span.sr-only 60% Complete (warning)
     .overlay-wrapper.hidden#ovw
-      .overlay
-        i.fa.fa-refresh.fa-spin
+      .overlay.dark
+        i.fa.fa-spinner.fa-spin
     .wrapper
       include parts/layout.header.jade
       include parts/layout.menu.jade

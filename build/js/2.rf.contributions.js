@@ -1,6 +1,22 @@
 // Contributions Stuff
 
 (function ($) {
+
+  /* Create an array with the values of all the input boxes in a column */
+  $.fn.dataTable.ext.order['dom-text'] = function  ( settings, col )
+  {
+      return this.api().column( col, {order:'index'} ).nodes().map( function ( td, i ) {
+          return $('input', td).val();
+      } );
+  }
+  /* Create an array with the values of all the input boxes in a column */
+  $.fn.dataTable.ext.order['dom-href'] = function  ( settings, col )
+  {
+      return this.api().column( col, {order:'index'} ).nodes().map( function ( td, i ) {
+          return $('a', td).text();
+      } );
+  }
+
   $.rokfor.initContributions = function() {
   
     var selection = {
@@ -37,7 +53,14 @@
                           "targets": 5,
                           "render": function(data) {
                             return ('<input class="form-control nameedit" type="text" rows="1" value="' + data + '"><span style="display:none;">' + data + '</span>');
-                          }
+                          },
+                          "orderDataType": "dom-text", 
+                          type: 'string' 
+                        },
+                        {
+                          "targets": 6,
+                          "orderDataType": "dom-href", 
+                          type: 'string' 
                         }
                       ]    
       });
@@ -223,11 +246,14 @@
         if (bt_class) {
           if ($(this).parents('section.content').attr('data-path')) {
             $.rokfor.contributions.bulkaction($(this).parents('section.content').attr('data-path') , {action: action, id: [id]});
-            $(this)
+            var _new = $(this).clone();
+            _new
               .attr('href', '/rf/contributions/'+ action)
               .removeClass('btn-success btn-primary btn-warning btn-danger')
               .addClass(bt_class)
               .text(translations[action]);
+            table.cell( $(this).parent('td') ).data(_new[0].outerHTML);              
+            
           }
         }
         return false;
@@ -289,12 +315,12 @@
         if (bt_class) {
           for (var n in selection.rows[0]) {
             if (selection.rows[0].hasOwnProperty(n)) {
-              $(table.cell( selection.rows[0][n], 6 ).node()).children('a')
-                .attr('href', '/rf/contributions/'+ action)
+              var _new = $(table.cell( selection.rows[0][n], 6 ).node()).children('a').clone();
+              _new.attr('href', '/rf/contributions/'+ action)
                 .removeClass('btn-primary btn-success btn-danger btn-warning')
                 .addClass(bt_class)
                 .text(text);
-  //            table.draw();
+              table.cell( selection.rows[0][n], 6 ).data(_new[0].outerHTML);
             }
           }
           table
@@ -308,6 +334,7 @@
     
       //Perform ajax call
       if ($(this).parents('section.content').attr('data-path')) {
+        $.rokfor.spinner.show();
         $.rokfor.contributions.bulkaction($(this).parents('section.content').attr('data-path') , {action: action, id: selection.contributions}, cb);
       }
 

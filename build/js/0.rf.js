@@ -116,15 +116,21 @@
   
   // Load Spinner for Blocking Calls
 
-  $.rokfor.spinner = {  
+  $.rokfor.spinner = { 
+    visible: false, 
     show: function() {
       $('#ovw').removeClass('hidden').addClass('show');
+      this.visible = true;
     },
     hide: function() {
       $('#ovw').removeClass('show');     
       setTimeout(function() {
           $('#ovw').addClass('hidden');
+          this.visible = false;
       }, 500);
+    },
+    isVisible: function() {
+      return this.visible;
     }
   };
 
@@ -177,6 +183,9 @@
           },
           success: function(data){
             $.rokfor.progressbar.hide();
+            if ($.rokfor.spinner.isVisible() === true) {
+              $.rokfor.spinner.hide();
+            }
           }
         }).done(function( data ) {
             //if (typeof data == "string") {
@@ -235,6 +244,8 @@
         list.html(data);
         cb();
       });
+    } else {
+      console.log("list not found")
     }
   };
   

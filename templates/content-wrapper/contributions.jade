@@ -116,6 +116,7 @@ section.content(data-path=base_path)
                       td
                         a.btn.btn-xs(
                           data-status=json_encode(["Open"=>$translations["status_open"],"Draft"=>$translations["status_draft"],"Close"=>$translations["status_close"],"Deleted"=>$translations["status_deleted"]]),
+                          id=("statebutton_list_".$contribution->getId())
                           class=(
                             $contribution->getStatus()=='Open'?
                               "btn-primary":
