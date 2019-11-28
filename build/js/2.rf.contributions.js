@@ -51,8 +51,8 @@
                         },
                         {
                           "targets": 5,
-                          "render": function(data) {
-                            return ('<input class="form-control nameedit" type="text" rows="1" value="' + data + '">');
+                          "render": function(data, type, row, meta) {
+                            return ('<input class="form-control nameedit" type="text" rows="1" value="' + data + '"><span style="display: none">' + data + '</span>');
                           },
                           "orderDataType": "dom-text", 
                           type: 'string' 
@@ -89,7 +89,12 @@
   
     $('#table_search').keyup(function(){
       table.bulkaction = true;
-      table.search($(this).val()).draw() ;
+
+      var val = $.fn.dataTable.util.escapeRegex(
+        $(this).val()
+      );
+
+      table.search(val, true, false).draw() ;
     });
 
     // Real Search Field
