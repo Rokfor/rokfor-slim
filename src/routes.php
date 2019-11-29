@@ -626,10 +626,10 @@ $app->group('/rf', function () {
 
       if ($this->db->getUser()['config']->assetdomain && filter_var($this->db->getUser()['config']->assetdomain, FILTER_VALIDATE_URL) !== false) {
         $this->helpers->apiCall(
-          $this->container->db->getUser()['config']->assetdomain.'/asset',
+          $this->db->getUser()['config']->assetdomain.'/asset',
           'POST',
           [
-            "Token"        => $this->container->db->getUser()['config']->assetkey,
+            "Token"        => $this->db->getUser()['config']->assetkey,
             "Contribution" => $data['id']
           ]
         );
@@ -822,10 +822,10 @@ $app->group('/rf', function () {
 
     if ($data['id'] && $this->db->getUser()['config']->assetdomain && filter_var($this->db->getUser()['config']->assetdomain, FILTER_VALIDATE_URL) !== false) {
       $this->helpers->apiCall(
-        $this->container->db->getUser()['config']->assetdomain.'/asset',
+        $this->db->getUser()['config']->assetdomain.'/asset',
         'POST',
         [
-          "Token"        => $this->container->db->getUser()['config']->assetkey,
+          "Token"        => $this->db->getUser()['config']->assetkey,
           "Contribution" => $data['id']
         ]
       );
@@ -1038,10 +1038,10 @@ $app->group('/rf', function () {
 
           if ($this->db->getUser()['config']->assetdomain && filter_var($this->db->getUser()['config']->assetdomain, FILTER_VALIDATE_URL) !== false) {
             $this->helpers->apiCall(
-              $this->container->db->getUser()['config']->assetdomain.'/asset',
+              $this->db->getUser()['config']->assetdomain.'/asset',
               'POST',
               [
-                "Token" => $this->container->db->getUser()['config']->assetkey,
+                "Token" => $this->db->getUser()['config']->assetkey,
                 "Contribution" => $this->db->getField($args['id'])->getForcontribution(),
                 "Id"    => (int)$args['id']
               ]

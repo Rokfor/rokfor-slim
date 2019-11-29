@@ -961,10 +961,10 @@ $app->group('/api', function () {
 
                       if ($this->db->getUser()['config']->assetdomain && filter_var($this->db->getUser()['config']->assetdomain, FILTER_VALIDATE_URL) !== false) {
                         $this->helpers->apiCall(
-                          $this->container->db->getUser()['config']->assetdomain.'/asset',
+                          $this->db->getUser()['config']->assetdomain.'/asset',
                           'POST',
                           [
-                            "Token" => $this->container->db->getUser()['config']->assetkey,
+                            "Token" => $this->db->getUser()['config']->assetkey,
                             "Contribution" => $field->getForcontribution(),
                             "Id"    => $field->getId()
                           ]
@@ -1037,10 +1037,10 @@ $app->group('/api', function () {
         // Clear CDN
         if ($this->db->getUser()['config']->assetdomain && filter_var($this->db->getUser()['config']->assetdomain, FILTER_VALIDATE_URL) !== false) {
           $this->helpers->apiCall(
-            $this->container->db->getUser()['config']->assetdomain.'/asset',
+            $this->db->getUser()['config']->assetdomain.'/asset',
             'POST',
             [
-              "Token" => $this->container->db->getUser()['config']->assetkey,
+              "Token" => $this->db->getUser()['config']->assetkey,
               "Contribution"    => $args['id']
             ]
           );
