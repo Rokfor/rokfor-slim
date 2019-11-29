@@ -77,11 +77,11 @@ section.content
                 .form-group
                   label.col-sm-4.control-label=$translations['CORS_get']
                   .col-sm-8
-                    input.form-control#acl(value=user.config.cors.get, name="corsget", type="text")                        
+                    input.form-control#corsget(value=user.config.cors.get, name="corsget", type="text")                        
                 .form-group
                   label.col-sm-4.control-label=$translations['CORS_postputdel']
                   .col-sm-8
-                    input.form-control#acl(value=user.config.cors.postputdel, name="corspostdelput", type="text")                                            
+                    input.form-control#corspostdelput(value=user.config.cors.postputdel, name="corspostdelput", type="text")                                            
                 .form-group                    
                   .col-sm-4 &nbsp;
                   .col-sm-8=$translations['CORS_infotext']
@@ -94,10 +94,17 @@ section.content
                 .form-group
                   label.col-sm-4.control-label=$translations['ASSETDOMAIN_label']
                   .col-sm-8
-                    input.form-control#acl(value=user.config.assetdomain, name="assetdomain", type="text")   
+                    input.form-control#assetdomain(value=user.config.assetdomain, name="assetdomain", type="text")   
                 .form-group                    
                   .col-sm-4 &nbsp;
                   .col-sm-8=$translations['ASSETDOMAIN_infotext']
+                .form-group
+                  label.col-sm-4.control-label=$translations['ASSETKEY_label']
+                  .col-sm-8
+                    input.form-control#assetkey(value=user.config.assetkey, name="assetkey", type="text")   
+                .form-group                    
+                  .col-sm-4 &nbsp;
+                  .col-sm-8=$translations['ASSETKEY_infotext']                  
           .box-footer
             input(type="hidden", name="action", value="profile")
             button.btn.btn-success=$translations['profile_submit']

@@ -956,7 +956,20 @@ $app->group('/api', function () {
                       }
 
 
+                      // Resetting CDN on every change
+                      // Post Call
 
+                      if ($this->db->getUser()['config']->assetdomain && filter_var($this->db->getUser()['config']->assetdomain, FILTER_VALIDATE_URL) !== false) {
+                        $this->helpers->apiCall(
+                          $this->container->db->getUser()['config']->assetdomain.'/asset',
+                          'POST',
+                          [
+                            "Token" => $this->container->db->getUser()['config']->assetkey,
+                            "Contribution" => $field->getForcontribution(),
+                            "Id"    => $field->getId()
+                          ]
+                        );
+                      }
 
                       /*
                       $data = json_decode($request->getParsedBody()['data'], true);
@@ -1021,6 +1034,17 @@ $app->group('/api', function () {
         $_error = "No access for this contribution.";
       else {
         $this->db->DeleteContributions([$args['id']]);
+        // Clear CDN
+        if ($this->db->getUser()['config']->assetdomain && filter_var($this->db->getUser()['config']->assetdomain, FILTER_VALIDATE_URL) !== false) {
+          $this->helpers->apiCall(
+            $this->container->db->getUser()['config']->assetdomain.'/asset',
+            'POST',
+            [
+              "Token" => $this->container->db->getUser()['config']->assetkey,
+              "Contribution"    => $args['id']
+            ]
+          );
+        }
         $r->getBody()->write(json_encode(["Id" => $args['id']]));
         return $r;
       }

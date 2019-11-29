@@ -139,7 +139,14 @@ section.content
                   input.form-control#assetdomain(value="", name="assetdomain", type="text")                        
               .form-group                    
                 .col-sm-4 &nbsp;
-                .col-sm-8=$translations['ASSETDOMAIN_infotext']       
+                .col-sm-8=$translations['ASSETDOMAIN_infotext']
+              .form-group
+                label.col-sm-4.control-label=$translations['ASSETKEY_label']
+                .col-sm-8
+                  input.form-control#assetkey(value=user.config.assetkey, name="assetkey", type="text")   
+              .form-group                    
+                .col-sm-4 &nbsp;
+                .col-sm-8=$translations['ASSETKEY_infotext']                  
                     
                     
                     

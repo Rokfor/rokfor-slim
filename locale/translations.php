@@ -303,6 +303,10 @@ return [
         'ASSETDOMAIN_label'                       =>  'Domain',
         'ASSETDOMAIN_infotext'                    =>  'Benutzerdefinierte Domain bei der Verwendung von Assets. Es muss eine passende Caching Strategie entwickelt werden, um auf die Originaldaten zu verweisen (CDN)',
         
+        'ASSETKEY_label'                          =>  'Schlüssel',
+        'ASSETKEY_infotext'                       =>  'Bearer token, der als Authorization Header mitgelierfert wird, um den Cache zu leeren.',
+
+        
         'notification_pwcrypt'                    => "> Änderung der Passwortverschlüsselung: Das Verschlüsselungsverfahren wurde mit dieser Version dem neusten technolgischen Stand angepasst. Passwörter werden in der Datenbank nie unverschlüsselt gespeichert, sondern immer als verschlüsselter Hash, der nicht entschlüsselt werden kann.\n> **Um das Passwort neu zu verschlüsseln, müssen Sie im Profil (oben rechts) das Passwort neu setzen. Ausnahmsweise dürfen sie das alte nochmals verwenden.**"
     ],
 
@@ -314,7 +318,11 @@ return [
         
         'ASSETDOMAIN_title'                       =>  'CDN',
         'ASSETDOMAIN_label'                       =>  'Domain',
-        'ASSETDOMAIN_infotext'                    =>  'Set a custom domain for assets. You need to implement your own caching routine to redirect to the original asset url (CDN)',
+        'ASSETDOMAIN_infotext'                    =>  'Set a custom domain for assets. You need to implement your own caching routine to redirect to the original asset url  (GET [cdn-url]/asset/contribution/field/assetname)',
+
+        'ASSETKEY_label'                          =>  'Key',
+        'ASSETKEY_infotext'                       =>  'Bearer token, which is sent along a POST call to the CDN to purge assets (POST [cdn-url]/asset/contribution/field)',
+
 
         'remember-me'                             => "Remember login on this computer.",
         'login'                                   => "Sign in",

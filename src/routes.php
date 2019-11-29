@@ -138,6 +138,7 @@ $app->group('/rf', function () {
           postputdel => $form[6]['value'],
         ];
         $config->assetdomain = $form[7]['value'];
+        $config->assetkey    = $form[8]['value'];
 
         if ($this->db->updateProfile($form[0]['value'], $form[1]['value'], $form[2]['value'], $errors, $form[3]['value'], $form[4]['value'], json_encode($config))) {
           $json['success'] = $this->translations['general_success'];
@@ -241,6 +242,8 @@ $app->group('/rf', function () {
           $_config->cors->get = $data["corsget"] ? $data["corsget"] : "";
           $_config->cors->postputdel = $data["corspostdelput"] ? $data["corspostdelput"] : "";
           $_config->assetdomain = $data["assetdomain"] ? $data["assetdomain"] : "";
+          $_config->assetkey    = $data["assetkey"] ? $data["assetkey"] : "";
+
 
           $u->setConfigSys(json_encode($_config));
           $u->save();
@@ -289,7 +292,8 @@ $app->group('/rf', function () {
           "corsget"   => $_config->cors->get,
           "corspostdelput" => $_config->cors->postputdel,
 
-          "assetdomain"  => $_config->assetdomain
+          "assetdomain"  => $_config->assetdomain,
+          "assetkey"     => $_config->assetkey
 
         ];
       }
@@ -617,6 +621,20 @@ $app->group('/rf', function () {
           $this->db->CloneContributions($data['id'], $this->translations["copy"]);
         break;
       }
+      // Resetting CDN on every change
+      // Post Call
+
+      if ($this->db->getUser()['config']->assetdomain && filter_var($this->db->getUser()['config']->assetdomain, FILTER_VALIDATE_URL) !== false) {
+        $this->helpers->apiCall(
+          $this->container->db->getUser()['config']->assetdomain.'/asset',
+          'POST',
+          [
+            "Token"        => $this->container->db->getUser()['config']->assetkey,
+            "Contribution" => $data['id']
+          ]
+        );
+      }
+      
       $r = $response->withHeader('Content-type', 'application/json');
       $json = $this->view->offsetGet('csrf');
       $json['action']  = $data['action'];
@@ -798,6 +816,21 @@ $app->group('/rf', function () {
         # code...
         break;
     }
+
+    // Resetting CDN on every change
+    // Post Call
+
+    if ($data['id'] && $this->db->getUser()['config']->assetdomain && filter_var($this->db->getUser()['config']->assetdomain, FILTER_VALIDATE_URL) !== false) {
+      $this->helpers->apiCall(
+        $this->container->db->getUser()['config']->assetdomain.'/asset',
+        'POST',
+        [
+          "Token"        => $this->container->db->getUser()['config']->assetkey,
+          "Contribution" => $data['id']
+        ]
+      );
+    }
+
     $r = $response->withHeader('Content-type', 'application/json');
     $json = $this->view->offsetGet('csrf');
     $json['action']  = $data['action'];
@@ -1000,7 +1033,20 @@ $app->group('/rf', function () {
             }
           }
 
+          // Resetting CDN on every change
+          // Post Call
 
+          if ($this->db->getUser()['config']->assetdomain && filter_var($this->db->getUser()['config']->assetdomain, FILTER_VALIDATE_URL) !== false) {
+            $this->helpers->apiCall(
+              $this->container->db->getUser()['config']->assetdomain.'/asset',
+              'POST',
+              [
+                "Token" => $this->container->db->getUser()['config']->assetkey,
+                "Contribution" => $this->db->getField($args['id'])->getForcontribution(),
+                "Id"    => (int)$args['id']
+              ]
+            );
+          }
 
 
           $file = $request->getUploadedFiles()['file'];
