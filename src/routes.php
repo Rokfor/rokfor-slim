@@ -624,7 +624,7 @@ $app->group('/rf', function () {
       // Resetting CDN on every change
       // Post Call
 
-      if ($this->db->getUser()['config']->assetdomain && filter_var($this->db->getUser()['config']->assetdomain, FILTER_VALIDATE_URL) !== false) {
+      if ($this->db->getUser()['config']->assetkey && $this->db->getUser()['config']->assetdomain && filter_var($this->db->getUser()['config']->assetdomain, FILTER_VALIDATE_URL) !== false) {
         $this->helpers->apiCall(
           $this->db->getUser()['config']->assetdomain.'/asset',
           'POST',
@@ -820,7 +820,7 @@ $app->group('/rf', function () {
     // Resetting CDN on every change
     // Post Call
 
-    if ($data['id'] && $this->db->getUser()['config']->assetdomain && filter_var($this->db->getUser()['config']->assetdomain, FILTER_VALIDATE_URL) !== false) {
+    if ($this->db->getUser()['config']->assetkey && $data['id'] && $this->db->getUser()['config']->assetdomain && filter_var($this->db->getUser()['config']->assetdomain, FILTER_VALIDATE_URL) !== false) {
       $this->helpers->apiCall(
         $this->db->getUser()['config']->assetdomain.'/asset',
         'POST',
