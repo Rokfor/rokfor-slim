@@ -57,6 +57,14 @@ module.exports = function(grunt) {
           'bower_components/AdminLTE/plugins/ionslider/img/*'
   		  ], 
   		  dest: 'public/assets/img'
+      },
+      favicon: {
+  		  expand: true,
+        flatten: true,
+  		  src: [
+          'build/img/favicon/*'
+  		  ], 
+  		  dest: 'public/assets/img/favicon'
   	  },
   	  fonts: {
   		  expand: true,
