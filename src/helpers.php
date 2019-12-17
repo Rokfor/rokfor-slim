@@ -1075,7 +1075,7 @@ class helpers
     // Parse & Prepare Image Content
     $_fieldsettings = json_decode($t->getConfigSys());
 
-    $_nc = false;
+    $_nc = [];
     $_parsed = false;
 
     if ($t->getFieldtype() == "Bild") {
@@ -1130,7 +1130,7 @@ class helpers
             if ($related_object)
               $_nc[$related_object->getId()] = $this->prepareApiStructureInfo($related_object);
           }
-          $_content = $_nc ? array_keys($_nc) : $_content;
+          $_content = count($_nc)>0 ? array_keys($_nc) : $_content;
           break;
         // Self is plain Text. For compatibility purposes cloning content into refereneces
         case 'self':
@@ -1150,7 +1150,7 @@ class helpers
             if ($related_object)
               $_nc[$related_object->getId()] = $this->prepareApiData($related_object, $compact, $_recursion_check, $_fieldlist, $_recursion, $_recursion == true ? true : false);
           }
-          $_content = $_nc ? array_keys($_nc) : $_content;
+          $_content = count($_nc)>0 ? array_keys($_nc) : $_content;
           break;
         // Resolve Complete
         case 'contributional':
@@ -1169,9 +1169,9 @@ class helpers
             }
           }
           //$_content = $_nc ? array_keys($_nc) : $_content;
+          $_needs_update = false;
 
-          if (is_array($_content) && $_nc) {
-            $_needs_update = false;
+          if (is_array($_content)) {
             // Check for non existent values in _content - add to _content          
             foreach (array_keys($_nc) as $_indb) {
               if (!in_array($_indb, $_content)) {
@@ -1186,14 +1186,30 @@ class helpers
                 $_needs_update = true;
               }
             }
-            if ($_needs_update) {
-              $field->setContent(json_encode($_content))->save();
-            }
           }
           else {
-            $_content = $_nc ? array_keys($_nc) : $_content;
+            if (array_keys($_nc)[0] != $_content) {
+              $_content = "-1";
+              $_needs_update = true;
+            }
           }
-          break;
+          if ($_needs_update) {
+            if ($_content != "-1") {
+              $_content = array_values($_content);
+            }
+            $field->setContent(json_encode($_content))->save();
+          }
+
+          if (!is_array($_content) && $_content != "-1") {
+            $_content = [$_content];
+            foreach ($_content as &$__c) {
+              $__c = intval($__c);
+            }
+          }
+
+          //$_content = count($_nc)>0 ? array_keys($_nc) : $_content;
+
+        break;
       }
     }
 
@@ -1247,7 +1263,7 @@ class helpers
         ]
       ];
     }
-    if ($_nc) {
+    if (count($_nc)>0) {
       $r['Reference'] = $_nc;
       $r['ReferenceType'] = ucfirst($_fieldsettings->history_command);
     }
