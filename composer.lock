@@ -147,6 +147,7 @@
             ],
             "description": "Promoting the interoperability of container objects (DIC, SL, etc.)",
             "homepage": "https://github.com/container-interop/container-interop",
+            "abandoned": "psr/container",
             "time": "2017-02-14T19:40:03+00:00"
         },
         {
@@ -1659,12 +1660,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Rokfor/rokfor-php-db.git",
-                "reference": "36b85512d2d535926958b31d4889a66001744c7d"
+                "reference": "b944d4d61ed0db950a249789a393a88be1518723"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Rokfor/rokfor-php-db/zipball/36b85512d2d535926958b31d4889a66001744c7d",
-                "reference": "36b85512d2d535926958b31d4889a66001744c7d",
+                "url": "https://api.github.com/repos/Rokfor/rokfor-php-db/zipball/b944d4d61ed0db950a249789a393a88be1518723",
+                "reference": "b944d4d61ed0db950a249789a393a88be1518723",
                 "shasum": ""
             },
             "require": {
@@ -1703,7 +1704,7 @@
                 "source": "https://github.com/Rokfor/rokfor-php-db/tree/versioning-redis",
                 "issues": "https://github.com/Rokfor/rokfor-php-db/issues"
             },
-            "time": "2019-09-24T21:16:46+00:00"
+            "time": "2019-12-18T10:35:12+00:00"
         },
         {
             "name": "slim/csrf",

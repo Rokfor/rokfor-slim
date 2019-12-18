@@ -1046,6 +1046,45 @@ class helpers
     return $template;
   }
 
+  private function updateContentFromReferences(&$_content, &$_nc, &$field) {
+    $_needs_update = false;
+    if (is_array($_content)) {
+      // Check for non existent values in _content - add to _content          
+      foreach (array_keys($_nc) as $_indb) {
+        if (!in_array($_indb, $_content)) {
+          $_content[] = $_indb;
+          $_needs_update = true;
+        }
+      }
+      // Check for non existent values in relations - delete from _content
+      foreach ($_content as $__key => $__vals) {
+        if (!in_array($__vals, array_keys($_nc))) {
+          unset($_content[$__key]);
+          $_needs_update = true;
+        }
+      }
+    }
+    else {
+      if (array_keys($_nc)[0] != $_content) {
+        $_content = "-1";
+        $_needs_update = true;
+      }
+    }
+    if ($_needs_update) {
+      // always create flat array, only if disabled set to "-1"
+      if ($_content != "-1") {
+        $_content = array_values($_content);
+      }
+      $field->setContent(json_encode($_content))->save();
+    }
+    if (!is_array($_content) && $_content != "-1") {
+      $_content = [$_content];
+      foreach ($_content as &$__c) {
+        $__c = intval($__c);
+      }
+    }
+  }
+
 
   /**
    * prepares the return array for a field if accessed over the json api
@@ -1168,47 +1207,7 @@ class helpers
               $_nc[$_c->getId()] = $_temp;
             }
           }
-          //$_content = $_nc ? array_keys($_nc) : $_content;
-          $_needs_update = false;
-
-          if (is_array($_content)) {
-            // Check for non existent values in _content - add to _content          
-            foreach (array_keys($_nc) as $_indb) {
-              if (!in_array($_indb, $_content)) {
-                $_content[] = $_indb;
-                $_needs_update = true;
-              }
-            }
-            // Check for non existent values in relations - delete from _content
-            foreach ($_content as $__key => $__vals) {
-              if (!in_array($__vals, array_keys($_nc))) {
-                unset($_content[$__key]);
-                $_needs_update = true;
-              }
-            }
-          }
-          else {
-            if (array_keys($_nc)[0] != $_content) {
-              $_content = "-1";
-              $_needs_update = true;
-            }
-          }
-          if ($_needs_update) {
-            if ($_content != "-1") {
-              $_content = array_values($_content);
-            }
-            $field->setContent(json_encode($_content))->save();
-          }
-
-          if (!is_array($_content) && $_content != "-1") {
-            $_content = [$_content];
-            foreach ($_content as &$__c) {
-              $__c = intval($__c);
-            }
-          }
-
-          //$_content = count($_nc)>0 ? array_keys($_nc) : $_content;
-
+          $this->updateContentFromReferences($_content, $_nc, $field);
         break;
       }
     }
