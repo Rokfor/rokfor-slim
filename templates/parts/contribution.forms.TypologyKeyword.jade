@@ -13,7 +13,7 @@
       .form-group
         :php
           $data = $field->getRelationsAsArray($config['history_command']);
-          $sort = @json_decode($field->getContent());
+          $sort = @json_decode($field->getContent(), true);
 
           if (is_array($sort)) {
             foreach ($data as $_indb) {

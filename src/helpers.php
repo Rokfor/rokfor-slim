@@ -1048,7 +1048,10 @@ class helpers
 
   private function updateContentFromReferences(&$_content, &$_nc, &$field) {
     $_needs_update = false;
-    if (is_array($_content)) {
+    if (is_array($_content) || is_object($_content)) {
+      if (is_object($_content)) {
+        $_content = array_values((array)$_content);
+      }
       // Check for non existent values in _content - add to _content          
       foreach (array_keys($_nc) as $_indb) {
         if (!in_array($_indb, $_content)) {
@@ -1077,10 +1080,10 @@ class helpers
       }
       $field->setContent(json_encode($_content))->save();
     }
-    if (!is_array($_content) && $_content != "-1") {
+    if (!is_array($_content) && $_content != "-1" && $_content != null) {
       $_content = [$_content];
       foreach ($_content as &$__c) {
-        $__c = intval($__c);
+        if ($__c) $__c = intval($__c);
       }
     }
   }
