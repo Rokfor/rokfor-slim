@@ -28,7 +28,7 @@
         }
     ],
     "require": {
-        "php": "7.3.12",
+        "php": "~7.3.0",
         "slim/slim": "~3.0",
         "jlndk/slim-jade": "dev-pug",
         "rokfor/db": "dev-versioning-redis",
