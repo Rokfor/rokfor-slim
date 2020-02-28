@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7ae19ccfb44efff771b0fb1247cf3344",
+    "content-hash": "cc9242d262cf3ff310aaf0d6a9c9ae78",
     "packages": [
         {
             "name": "akrabat/rka-ip-address-middleware",
@@ -4503,7 +4503,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.3.0",
+        "php": "~7.3.0",
         "ext-imagick": "*",
         "ext-gd": "*",
         "ext-redis": "*"
