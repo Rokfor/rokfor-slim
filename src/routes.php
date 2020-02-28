@@ -89,12 +89,11 @@ $app->group('/rf', function () {
     if ($this->get('redis')['client']) {
       $userlist = unserialize($this->redis['client']->get("%%asset%%__userlist__"));
       $userlist = array_filter($userlist, function($e){return time()-$e<120;});
+      if ($this->db->getUser()) {
+        $userlist[$this->db->getUser()["username"]] = time();
+        $this->redis['client']->set("%%asset%%__userlist__", serialize($userlist));
+      }
     }
-    if ($this->db->getUser()) {
-      $userlist[$this->db->getUser()["username"]] = time();
-      $this->redis['client']->set("%%asset%%__userlist__", serialize($userlist));
-    }
-
     $r->getBody()->write(json_encode($userlist));
     return $r;
   });
