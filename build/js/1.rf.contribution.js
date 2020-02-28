@@ -121,7 +121,8 @@
                             return ('<span class="rowhandle btn btn-xs fa fa-bars">' + data + '</span>');
                           },
                           "orderDataType": "dom-span-text",
-                          "width": "0.1em"
+                          "width": "0.1em",
+                          "orderable": false
                         },
                         {
                           "targets": 1,
@@ -129,7 +130,8 @@
                           "render": function(data) {
                             return (data);
                           },
-                          "width": "80px"
+                          "width": "80px",
+                          "orderable": false
                         },
                         {
                           "targets": -1,
@@ -137,7 +139,8 @@
                           "render": function(data) {
                             return ('<a class="btn btn-xs btn-danger"><i class="fa fa-minus"></i></a>');
                           },
-                          "width": "0.1em"
+                          "width": "0.1em",
+                          "orderable": false
                         },
                         {
                           "targets": '_all',
@@ -145,7 +148,8 @@
                           "render": function(data) {
                             return ('<textarea name="caption[][]" class="rowedit">' + data + '</textarea>');
                           },
-                          "width": "auto"
+                          "width": "auto",
+                          "orderable": false
                         }
                       ]
         })

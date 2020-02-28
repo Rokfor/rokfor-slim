@@ -22,6 +22,7 @@ class Acl extends ZendAcl
         $_rf_routes['guest'][] = ['/rf',                                                                    'GET'];
         $_rf_routes['guest'][] = ['/rf/login',                                                              ['GET','POST']];
         $_rf_routes['guest'][] = ['/rf/forgot',                                                             ['GET','POST']];
+        $_rf_routes['guest'][] = ['/rf/ping',                                                               'GET'];
 
         // Regular Users: Backend functions, File Proxy, Profile and Exporters
         $_rf_routes['user'][] = ['/rf/logout',                                                              'GET'];

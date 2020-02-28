@@ -449,6 +449,17 @@
     return false;
   });
   
+  // Ping Interval - Keep Alive
+  var __ping = function(){$.rokfor.get('/rf/ping', function(data){
+    var _html = "";
+    for (var u in data) if (data.hasOwnProperty(u)) {
+      _html += '<u>'+u+'</u> ';
+    }
+    $('#otherUserContainer').html(_html);
+  })};
+  setInterval(__ping, 30000);
+  __ping();
+
   // Direct add function
   $(document).on('click', 'input#directname', function(e) {
     e.stopPropagation();
