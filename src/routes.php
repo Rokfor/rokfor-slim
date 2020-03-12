@@ -1394,7 +1394,10 @@ $app->group('/rf', function () {
   $this->get('/ajax/{action:contribution}', function ($request, $response, $args) {
     $r = $response->withHeader('Content-type', 'application/json');
     $options = json_decode($request->getQueryParams()['s'], true);
-    $results = [];
+    $results[] = [
+      "id" => -1,
+      "text" => "* Disabled * (-1)"
+    ];
     if ($request->getQueryParams()['q']) {
       $contribs = $this->db->searchContributions(
         $request->getQueryParams()['q'], 
@@ -1414,10 +1417,6 @@ $app->group('/rf', function () {
           "text" => $contribution->getName()." (".$contribution->getId().")"
         ];
       }
-      $results[] = [
-        "id" => -1,
-        "text" => "* Disabled * (-1)"
-      ];
     }
     $r->getBody()->write(json_encode(["results" => $results]));
     return $r;
