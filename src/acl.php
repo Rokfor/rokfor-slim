@@ -35,7 +35,10 @@ class Acl extends ZendAcl
         $_rf_routes['user'][] = ['/rf/field/{id:[0-9]*}',                                                   'POST'];
         $_rf_routes['user'][] = ['/rf/profile',                                                             ['GET','POST']];
         $_rf_routes['user'][] = ['/rf/exporters[/{id:[0-9]*}[/{mode}/{sub:[0-9]*}]]',                       ['GET','POST']];
-        //$_rf_routes['user'][] = ['/rf/proxy',                                                               'GET'];
+        
+        // Regular Users: Ajax Calls for Select Boxes
+        $_rf_routes['user'][] = ['/rf/ajax/{action:contribution}',                                           'GET'];
+
 
 
         // Administrators: Structure and template management

@@ -326,6 +326,26 @@
         populateJumpList($(this).attr('id'), $(this).val());
       });
 
+    // TypologySelect
+    $(".rfselect-ajax")
+      .select2({
+        ajax: {
+          delay: 500,
+          url: '/rf/ajax/contribution',
+          data: function (params) {
+            var queryParameters = {
+              q: params.term,
+              s: $(this).attr('data-ajax-params')
+            }
+            return queryParameters;
+          },
+        }
+      })
+      .on("change", function(){
+        $.rokfor.contribution.store($(this).attr('id'), JSON.stringify($(this).val()));
+        populateJumpList($(this).attr('id'), $(this).val());
+      });      
+
     var populateJumpList = function(id, val) {
       val = val instanceof Array ? val : [val];
       var container = $('#relationjump-'+id).length > 0 ? $('#relationjump-'+id) : false;

@@ -206,7 +206,8 @@ $container['db'] = function ($c) {
         $c->paths,
         $settings['socket'],
         $settings['port'],
-        $settings['versioning']
+        $settings['versioning'],
+        $settings['pdo_emulate_prepare'] ? $settings['pdo_emulate_prepare'] : false
       );
   } catch (\PDOException $e) {
     _mailer($c, "MYSQL:\n". $e->getMessage(), true);

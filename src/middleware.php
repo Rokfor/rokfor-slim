@@ -22,7 +22,7 @@ $app->add(function ($request, $response, $next) {
   if ($route) {
     $uri = $route->getPattern();
   }*/
-  if ($request->isOptions() || stristr($uri, "/api") || stristr($uri, "/asset/")) {
+  if ($request->isOptions() || stristr($uri, "/api") || stristr($uri, "/asset/") || $this->settings['skip_database_check'] === true) {
     return $next($request, $response);
   }
   
@@ -41,23 +41,31 @@ $app->add(function ($request, $response, $next) {
 
   // Check for Correct Database Setup
   try {
-    $stmt = $_p->prepare("SELECT * FROM users");
-    $stmt->execute();
-  } catch (Exception $e) {
-
-    $_messages = [];
-    if ($this->db->insertSql($_messages)) {
-      return $next($request, $response);
+    $stmt = $_p->prepare("SHOW TABLES like 'users'");
+    if ($stmt->execute()) {
+      if ($stmt->fetchColumn()=='users') {
+        return $next($request, $response);
+      } else {
+        $_messages = [];
+        if ($this->db->insertSql($_messages)) {
+          _mailer($this, "MYSQL:\nInitialized");
+          return $next($request, $response);
+        }
+        _mailer($this, "MYSQL:\n". join('<br>', $_messages));
+        return $this->view->render($response->withStatus(404), 'error.jade', [
+          "message" => "Your database failed to initialize",
+          "help"    => "Run <i>$ propel sql:insert</i> manually from the command line."
+        ]);
+      }
     }
-
-    $_help = "Your database exists but cannot be initialized. Run <i>$ propel sql:insert</i> manually from the command line.";
-    _mailer($this, "MYSQL:\n". $_help);
+  } catch (Exception $e) {
+    _mailer($this, "MYSQL:\n". $e->getMessage());
     return $this->view->render($response->withStatus(404), 'error.jade', [
-      "message" => join('<br>', $_messages),
-      "help"    => $_help
+      "message" => "Could not check the database",
+      "help"    => "A Message has been sent to the administrator."
     ]);
   }
-  return $next($request, $response);
+  
 });
 $GLOBALS[timers]['e1'] = microtime(true) - $GLOBALS[starttime];
 

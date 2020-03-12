@@ -711,6 +711,12 @@ class helpers
               'propertyOrder' => 0,
               'format' => 'checkbox'
             ],
+            'ajax' => [
+              'title'  => $this->container->translations['field_config'.'ajax'],
+              'type' => 'boolean',
+              'propertyOrder' => 0,
+              'format' => 'checkbox'
+            ],            
             //cloud
             'threeDee' => [
               'title'  => $this->container->translations['field_config'.'threeDee'],

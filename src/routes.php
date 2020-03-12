@@ -1385,6 +1385,44 @@ $app->group('/rf', function () {
     return $r;
   });
 
+  /* Ajax Call:
+   *
+   * GET options for select2 boxes
+   *
+   *
+   */
+  $this->get('/ajax/{action:contribution}', function ($request, $response, $args) {
+    $r = $response->withHeader('Content-type', 'application/json');
+    $options = json_decode($request->getQueryParams()['s'], true);
+    $results = [];
+    if ($request->getQueryParams()['q']) {
+      $contribs = $this->db->searchContributions(
+        $request->getQueryParams()['q'], 
+        $options['fromissue'] && $options['restrict_to_issue'] == true ? (int)$options['fromissue'] : false, 
+        $options['fromchapter'] && $options['restrict_to_chapter'] == true ? (int)$options['fromchapter'] : false,
+        $options['restrict_to_open'] == true ? 'Open' : false,
+        20, 
+        false, 
+        false, 
+        'like', 
+        'asc',
+        $options['fromtemplate'] && $options['restrict_to_template'] == true ? (int)$options['fromtemplate'] : false
+      );
+      foreach ($contribs as $contribution) {
+        $results[] = [
+          "id" => $contribution->getId(),
+          "text" => $contribution->getName()." (".$contribution->getId().")"
+        ];
+      }
+      $results[] = [
+        "id" => -1,
+        "text" => "* Disabled * (-1)"
+      ];
+    }
+    $r->getBody()->write(json_encode(["results" => $results]));
+    return $r;
+  });
+
 
   /* Exporters
    *

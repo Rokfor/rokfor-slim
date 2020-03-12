@@ -13,8 +13,15 @@
          i.fa.fa-minus      
     .box-body
       .form-group
-        select.form-control.rfselect(id=field->getId(), style='width: 100%;', multiple=($config['multiple']==1?'multiple':false))
-          each select in field->getHistory()
-            option(value=select.id, selected=(in_array($select['id'], $data)?'selected':false))!=select.value."&nbsp;(".$select['id'].")"
+        if ($config['ajax']==1 && $config['history_command'] == 'contributional')
+          select.form-control.rfselect-ajax(id=field->getId(), data-ajax-params=json_encode($config), style='width: 100%;', multiple=($config['multiple']==1?'multiple':false))
+            each select in field->getHistory()
+              if (in_array($select['id'], $data))
+                option(value=select.id selected='selected')!=select.value."&nbsp;(".$select['id'].")"
+        else
+          select.form-control.rfselect(id=field->getId(), style='width: 100%;', multiple=($config['multiple']==1?'multiple':false))
+            each select in field->getHistory()
+              option(value=select.id, selected=(in_array($select['id'], $data)?'selected':false))!=select.value."&nbsp;(".$select['id'].")"
+
     .box-footer
       include select.addrelation.jade

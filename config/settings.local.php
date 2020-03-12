@@ -10,6 +10,7 @@ return [
         'timezone'          => "Europe/Zurich",                    // Ref. http://php.net/manual/de/timezones.php
         'locale'            => 'de_DE.utf8',                       // Currently only de_DE
         'google_maps_api'   => '',                                 // Required for adress resolution
+        'skip_database_check' => false,                            // Skipping Database Check
 
         /*
          * Upload Handling
