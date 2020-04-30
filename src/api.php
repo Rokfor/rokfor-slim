@@ -95,7 +95,7 @@ $app->group('/api', function () {
 
       /* Result Contributions */
       $_result_contribs = $c->find()->toArray();
-      array_walk($_result_contribs, function(&$a){$a = $a[Id];});
+      array_walk($_result_contribs, function(&$a){$a = $a['Id'];});
       // No Recursion on multiple contributions
       $recursion = false;
       // Creating Cache Signature
@@ -108,7 +108,7 @@ $app->group('/api', function () {
           ->filterBySignature($signature)
           ->find()
           ->toArray() as $_value) {
-        $_caches[$_value[Forcontribution]] = $_value[Cache];
+        $_caches[$_value['Forcontribution']] = $_value['Cache'];
       }
 
 
@@ -186,8 +186,11 @@ $app->group('/api', function () {
         case 'both':
           $_status = ['Draft', 'Close'];
           break;
-        default:
+        case 'published':
           $_status = 'Close';
+          break;          
+        default:
+          $_status = ['Draft', 'Close'];        
           break;
       }
 
@@ -356,7 +359,7 @@ $app->group('/api', function () {
               if ($data->Users) {
                 $users = [];
                 foreach ($data->Users as $key => $value) {
-                  $users[] = [key => $key, value => $value];
+                  $users[] = ['key' => $key, 'value' => $value];
                 }
                 if (count($users)>0) {
                    $this->db->{'rights'.ucfirst($args['type'])}($issueid, $users);
@@ -407,7 +410,7 @@ $app->group('/api', function () {
       if ($u['role'] === "root") {
         if ($issueid = $this->db->{'delete'.ucfirst($args['type'])}($args['id'])) {
         } else {
-          $_error = $args[type]." not known";
+          $_error = $args['type']." not known";
         }
       }
       else {
@@ -1123,32 +1126,32 @@ $app->group('/api', function () {
         $j = [];
         foreach (\PluginsQuery::create() as $p) {
           $plug = [
-            Id => $p->getId(),
-            Name => $p->getName()
+            'Id' => $p->getId(),
+            'Name' => $p->getName()
           ];
           if ($filter === false || $filter === "Book")
             foreach ($p->getRPluginBooks()->toArray() as $e) {
               $plug['Mode'] = "issues";
-              if ($filterId === false || $filterId == $e[Bookid])
-                $j['Book'][$e[Bookid]][] = $plug;
+              if ($filterId === false || $filterId == $e['Bookid'])
+                $j['Book'][$e['Bookid']][] = $plug;
             }
           if ($filter === false || $filter === "Chapter")            
             foreach ($p->getRPluginFormats()->toArray() as $e) {
               $plug['Mode'] = "chapters";
-              if ($filterId === false || $filterId === $e[Formatid])
-                $j['Chapter'][$e[Formatid]][] = $plug;
+              if ($filterId === false || $filterId === $e['Formatid'])
+                $j['Chapter'][$e['Formatid']][] = $plug;
             }   
           if ($filter === false || $filter === "Issue")   
             foreach ($p->getRPluginIssues()->toArray() as $e) {
               $plug['Mode'] = "issues";
-              if ($filterId === false || $filterId === $e[Issueid])
-                $j['Issue'][$e[Issueid]][] = $plug;
+              if ($filterId === false || $filterId === $e['Issueid'])
+                $j['Issue'][$e['Issueid']][] = $plug;
             } 
           if ($filter === false || $filter === "Template")   
             foreach ($p->getRPluginTemplates()->toArray() as $e) {
               $plug['Mode'] = "contribution";
-              if ($filterId === false || $filterId === $e[Templateid])
-                $j['Template'][$e[Templateid]][] = $plug;
+              if ($filterId === false || $filterId === $e['Templateid'])
+                $j['Template'][$e['Templateid']][] = $plug;
             }
         }
         $json  = json_encode($j);
@@ -1190,15 +1193,15 @@ $app->group('/api', function () {
                   ->_if($filter)
                     ->filterByIssue($filter)
                   ->_endif()
-                  ->orderByDate(desc)
+                  ->orderByDate('desc')
                   ->limit($limit);
         foreach($pdfs as $_pdf) {
           $_exports[] = [
-            Date   => $_pdf->getDate(),
-            Files  => json_decode($_pdf->getFile()),
-            Meta   => json_decode($_pdf->getPages()),
-            Filter => $_pdf->getIssue(),
-            Type   => $_pdf->getConfigSys()
+            'Date'   => $_pdf->getDate(),
+            'Files'  => json_decode($_pdf->getFile()),
+            'Meta'   => json_decode($_pdf->getPages()),
+            'Filter' => $_pdf->getIssue(),
+            'Type'   => $_pdf->getConfigSys()
           ];
         }
       }
