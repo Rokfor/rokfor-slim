@@ -150,8 +150,8 @@ $app->group('/rf', function () {
           $config = new stdClass;
         }
         $config->cors = [
-          get => $form[5]['value'],
-          postputdel => $form[6]['value'],
+          'get' => $form[5]['value'],
+          'postputdel' => $form[6]['value'],
         ];
         $config->assetdomain = $form[7]['value'];
         $config->assetkey    = $form[8]['value'];
@@ -274,7 +274,7 @@ $app->group('/rf', function () {
       $json = $this->view->offsetGet('csrf');
       if ($args['id'] == "new") {
         foreach ($this->db->getRights() as $_allright) {
-          $rights[] = [id => $_allright->getId(),  name => $_allright->getGroup(), selected => false];
+          $rights[] = ['id' => $_allright->getId(),  'name' => $_allright->getGroup(), 'selected' => false];
         }
         $json['user']  = [
           "group"     => $rights,
@@ -289,7 +289,7 @@ $app->group('/rf', function () {
         }
         $rights = [];
         foreach ($this->db->getRights() as $_allright) {
-          $rights[] = [id => $_allright->getId(),  name => $_allright->getGroup(), selected => in_array($_allright->getId(), $act_rights) ? true : false];
+          $rights[] = ['id' => $_allright->getId(),  'name' => $_allright->getGroup(), 'selected' => in_array($_allright->getId(), $act_rights) ? true : false];
         }
 
         $_config = json_decode($u->getConfigSys());
@@ -346,13 +346,13 @@ $app->group('/rf', function () {
   $this->map(['GET','POST'], '/group[/{id:new|[0-9]*}]', function ($request, $response, $args) {
     if ($request->getParsedBody()['data']) {
       $data = [
-        id => "",
-        group => "",
-        rbook => [],
-        rissue => [],
-        rformat => [],
-        rtemplate => [],
-        ruser => []
+        'id' => "",
+        'group' => "",
+        'rbook' => [],
+        'rissue' => [],
+        'rformat' => [],
+        'rtemplate' => [],
+        'ruser' => []
       ];
       foreach ($request->getParsedBody()['data'] as $key) {
         if ($key['name'] == "group" || $key['name'] == "id")
@@ -385,9 +385,9 @@ $app->group('/rf', function () {
       $r = $response->withHeader('Content-type', 'application/json');
       $json = $this->view->offsetGet('csrf');
       $json['groups'] = [
-        books => [],
-        templates => [],
-        users => []
+        'books' => [],
+        'templates' => [],
+        'users' => []
       ];
 
       $checkedbooks     = [];
@@ -549,7 +549,7 @@ $app->group('/rf', function () {
                                 ->sign($signer,  $otcstack->otc)   // creates a signature using "testing" as key
                                 ->getToken();                         // Retrieves the generated token
 
-        $_mailtext = $this->translations['remember-mail'].'<br><br><a href="'.$_SERVER[HTTP_REFERER].'?otc='.$token.'">'.$this->translations['remember-mail-send'].'</a>';
+        $_mailtext = $this->translations['remember-mail'].'<br><br><a href="'.$_SERVER['HTTP_REFERER'].'?otc='.$token.'">'.$this->translations['remember-mail-send'].'</a>';
         $this->get('sendmail')->sendmail($email, '[ROKFOR CMS] - Password Reminder', $_mailtext);
         $args["message"] = $this->translations['send_reminder_success'];
         $args["showform"] = false;
@@ -935,7 +935,7 @@ $app->group('/rf', function () {
         $config = json_decode($_c->getConfigSys(), true);
         if ($config === NULL || !$config['lockdate']) $config = json_decode($this->db->ContributionDefaultConfig(), true);
         $parsed = date_parse_from_format('d/m/Y H:i', $data);
-        $config['lockdate'] = mktime($parsed[hour], $parsed[minute], $parsed[second], $parsed[month], $parsed[day], $parsed[year]);
+        $config['lockdate'] = mktime($parsed['hour'], $parsed['minute'], $parsed['second'], $parsed['month'], $parsed['day'], $parsed['year']);
         $_c
           ->setConfigSys(json_encode($config))
           ->save();
@@ -1083,9 +1083,9 @@ $app->group('/rf', function () {
           else {
             $parsed = date_parse_from_format($settings['dateformat'] ? $settings['dateformat'] : 'd/m/Y H:i', $request->getParsedBody()['data']);
             // Set Zero Months and Days to 1
-            $parsed[month] = $parsed[month] ? $parsed[month] : 1;
-            $parsed[day]   = $parsed[day] ? $parsed[day] : 1;
-            $value = mktime($parsed[hour], $parsed[minute], $parsed[second], $parsed[month], $parsed[day], $parsed[year]);
+            $parsed['month'] = $parsed['month'] ? $parsed['month'] : 1;
+            $parsed['day']   = $parsed['day'] ? $parsed['day'] : 1;
+            $value = mktime($parsed['hour'], $parsed['minute'], $parsed['second'], $parsed['month'], $parsed['day'], $parsed['year']);
           }
           $json['success'] = $this->db->setField($args['id'], $value);
         break;

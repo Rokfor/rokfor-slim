@@ -130,7 +130,7 @@ $app->group('/api', function () {
         }
         // Create new Entry and store in Cache
         else {
-          $_contribution["Contribution"]  = $this->helpers->prepareApiContribution($_c, $compact, $request, [], $recursion, $follow_references);
+          $_contribution["Contribution"]  = $this->helpers->prepareApiContribution($_c, $compact, $request, [], $recursion, $follow_references, $_status);
           $_contribution["Data"]          = $this->helpers->prepareApiContributionData($_c, $compact, $request, $recursion);
           $this->db->NewContributionCache($_c, ["Contribution" => $_contribution["Contribution"], "Data" => $_contribution["Data"]], $signature);
         }
@@ -164,6 +164,7 @@ $app->group('/api', function () {
   /* Single Contribution
    *
    *  - verbose=true|false
+   *  - status=Draft|Close|Both
    */
   $this->options('/contribution/{id:[0-9]*}',
     function ($request, $response, $args) {}
@@ -176,6 +177,20 @@ $app->group('/api', function () {
       $compact = $request->getQueryParams()['verbose'] ? false : true;
       $follow_references = $request->getQueryParams()['references'] == "false" ? false : true;
 
+      // Translate $_status to Rokfor Standards
+      $_status   = 'Close';
+      switch (strtolower($request->getQueryParams()['status'])) {
+        case 'draft':
+          $_status = 'Draft';
+          break;
+        case 'both':
+          $_status = ['Draft', 'Close'];
+          break;
+        default:
+          $_status = 'Close';
+          break;
+      }
+
       $c = $this->db->getContribution($args['id']);
       if ($c && ($c->getStatus()=="Close" || $c->getStatus()=="Draft")) {
         $signature = md5($this->db->getUser()['username'].'-'.$compact.($follow_references===false?'-noref':''));
@@ -185,11 +200,11 @@ $app->group('/api', function () {
         }
         else {
           if ($follow_references === false) {
-            $jc = $this->helpers->prepareApiContribution($c, $compact, null, [], false, false);
+            $jc = $this->helpers->prepareApiContribution($c, $compact, null, [], false, false, $_status);
             $j  = $this->helpers->prepareApiContributionData($c, $compact, null, false);
           }
           else {
-            $jc = $this->helpers->prepareApiContribution($c, $compact);
+            $jc = $this->helpers->prepareApiContribution($c, $compact, null, [], true,  true, $_status);
             $j  = $this->helpers->prepareApiContributionData($c, $compact);
           }
           $this->db->NewContributionCache($c, ["Contribution" => $jc, "Data" => $j], $signature);

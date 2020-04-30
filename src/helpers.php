@@ -1352,7 +1352,7 @@ class helpers
    * @return void
    * @author Urs Hofer
    */
-  function prepareApiContribution($c, $compact = true, $request = null, $_recursion_check = [], $_recursion = true, $_follow_references = true)
+  function prepareApiContribution($c, $compact = true, $request = null, $_recursion_check = [], $_recursion = true, $_follow_references = true, $_initial_state = ["Close","Draft"])
   {
     /* Checks */
     if (!$c) return false;
@@ -1377,10 +1377,10 @@ class helpers
       foreach ($_reference_object as $_referencedContribution) {
         $_f = $_referencedContribution->getRData();
         $_c = $_f->getContributions();
-        if ($_c && in_array($_c->getStatus(),["Close","Draft"])) {
+        if ($_c && (is_array($_initial_state) ? in_array($_c->getStatus(),$_initial_state) : $_c->getStatus() == $_initial_state)) {
           array_push($_references, [
             "ByField"       => $_f->getId(),
-            "Contribution"  => $this->prepareApiContribution($_c, $compact, $request, $_recursion_check, $_recursion, $_recursion == true ? true : false),
+            "Contribution"  => $this->prepareApiContribution($_c, $compact, $request, $_recursion_check, $_recursion, $_recursion == true ? true : false, $_initial_state),
             "Data"          => $this->prepareApiContributionData($_c, $compact, $request)
           ]);
         }
