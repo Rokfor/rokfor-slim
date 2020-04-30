@@ -179,24 +179,29 @@ $app->group('/api', function () {
 
       // Translate $_status to Rokfor Standards
       $_status   = 'Close';
+      $_status_for_signature = "";
       switch (strtolower($request->getQueryParams()['status'])) {
         case 'draft':
           $_status = 'Draft';
+          $_status_for_signature = "-d-";
           break;
         case 'both':
           $_status = ['Draft', 'Close'];
+          $_status_for_signature = "-d-c-";
           break;
         case 'published':
           $_status = 'Close';
+          $_status_for_signature = "-c-";
           break;          
         default:
           $_status = ['Draft', 'Close'];        
+          $_status_for_signature = "-d-c-";
           break;
       }
 
       $c = $this->db->getContribution($args['id']);
       if ($c && ($c->getStatus()=="Close" || $c->getStatus()=="Draft")) {
-        $signature = md5($this->db->getUser()['username'].'-'.$compact.($follow_references===false?'-noref':''));
+        $signature = md5($this->db->getUser()['username'].'-'.$compact.$_status_for_signature.($follow_references===false?'-noref':''));
         if ($h = $c->checkCache($signature)) {
           $jc = $h->Contribution;
           $j  = $h->Data;
