@@ -1338,7 +1338,7 @@ class helpers
             $_fieldlist = false;
           }
         }
-        $d[$field->getTemplates()->getFieldname()] = $this->prepareApiData($field, $compact, [], $_fieldlist, $recursion, $_reference_status);
+        $d[$field->getTemplates()->getFieldname()] = $this->prepareApiData($field, $compact, [], $_fieldlist, $recursion, true, $_reference_status);
       }
     }
 
