@@ -35,6 +35,7 @@ $app->group('/api', function () {
    *  - template=id                      (default: false)
    *  - status=draft|published|both      (default: published)
    *  - references=true|false            (default: true)
+   *  - refstatus=draft|published|both   (default: both)
    */
   $this->options('/contributions/{issue:[0-9-]*}/{chapter:[0-9-]*}',
     function ($request, $response, $args) {}
@@ -74,6 +75,19 @@ $app->group('/api', function () {
         break;
     }
 
+    $_refstatus   = ['Draft', 'Close'];
+    $_refstatus_for_signature = "";
+    switch (strtolower($request->getQueryParams()['refstatus'])) {
+      case 'draft':
+        $_refstatus = ['Draft'];
+        $_refstatus_for_signature = "-d-";
+        break;
+      case 'published':
+        $_refstatus = ['Close'];
+        $_refstatus_for_signature = "-c-";
+        break;          
+    }
+
     // Parse Query Strings...
     if ($_query == "date:now") {
       $_query = time();
@@ -101,7 +115,7 @@ $app->group('/api', function () {
       // Creating Cache Signature
       $signatur_fields = explode("|", strtolower($request->getQueryParams()['data']));
       sort($signatur_fields);
-      $signature = md5($this->db->getUser()['username'].'-'.$compact."-".$follow_references."-".$recursion."-".$request->getQueryParams()['populate'].join(".",$signatur_fields));
+      $signature = md5($this->db->getUser()['username'].'-'.$compact.$_refstatus_for_signature."-".$follow_references."-".$recursion."-".$request->getQueryParams()['populate'].join(".",$signatur_fields));
       $_caches = [];
       foreach (\ContributionscacheQuery::create()
           ->filterByForcontribution($_result_contribs)
@@ -130,8 +144,8 @@ $app->group('/api', function () {
         }
         // Create new Entry and store in Cache
         else {
-          $_contribution["Contribution"]  = $this->helpers->prepareApiContribution($_c, $compact, $request, [], $recursion, $follow_references, $_status);
-          $_contribution["Data"]          = $this->helpers->prepareApiContributionData($_c, $compact, $request, $recursion);
+          $_contribution["Contribution"]  = $this->helpers->prepareApiContribution($_c, $compact, $request, [], $recursion, $follow_references, $_refstatus);
+          $_contribution["Data"]          = $this->helpers->prepareApiContributionData($_c, $compact, $request, $recursion, $_refstatus);
           $this->db->NewContributionCache($_c, ["Contribution" => $_contribution["Contribution"], "Data" => $_contribution["Data"]], $signature);
         }
         $j[] = $_contribution;
@@ -163,8 +177,8 @@ $app->group('/api', function () {
 
   /* Single Contribution
    *
-   *  - verbose=true|false
-   *  - status=Draft|Close|Both
+   *  - verbose=true|false               (default: false)
+   *  - refstatus=draft|published|both   (default: both)
    */
   $this->options('/contribution/{id:[0-9]*}',
     function ($request, $response, $args) {}
@@ -178,42 +192,34 @@ $app->group('/api', function () {
       $follow_references = $request->getQueryParams()['references'] == "false" ? false : true;
 
       // Translate $_status to Rokfor Standards
-      $_status   = 'Close';
-      $_status_for_signature = "";
-      switch (strtolower($request->getQueryParams()['status'])) {
+      $_refstatus   = ['Draft', 'Close'];
+      $_refstatus_for_signature = "";
+      switch (strtolower($request->getQueryParams()['refstatus'])) {
         case 'draft':
-          $_status = 'Draft';
-          $_status_for_signature = "-d-";
-          break;
-        case 'both':
-          $_status = ['Draft', 'Close'];
-          $_status_for_signature = "-d-c-";
+          $_refstatus = ['Draft'];
+          $_refstatus_for_signature = "-d-";
           break;
         case 'published':
-          $_status = 'Close';
-          $_status_for_signature = "-c-";
+          $_refstatus = ['Close'];
+          $_refstatus_for_signature = "-c-";
           break;          
-        default:
-          $_status = ['Draft', 'Close'];        
-          $_status_for_signature = "-d-c-";
-          break;
       }
 
       $c = $this->db->getContribution($args['id']);
       if ($c && ($c->getStatus()=="Close" || $c->getStatus()=="Draft")) {
-        $signature = md5($this->db->getUser()['username'].'-'.$compact.$_status_for_signature.($follow_references===false?'-noref':''));
+        $signature = md5($this->db->getUser()['username'].'-'.$compact.$_refstatus_for_signature.($follow_references===false?'-noref':''));
         if ($h = $c->checkCache($signature)) {
           $jc = $h->Contribution;
           $j  = $h->Data;
         }
         else {
           if ($follow_references === false) {
-            $jc = $this->helpers->prepareApiContribution($c, $compact, null, [], false, false, $_status);
-            $j  = $this->helpers->prepareApiContributionData($c, $compact, null, false);
+            $jc = $this->helpers->prepareApiContribution($c, $compact, null, [], false, false, $_refstatus);
+            $j  = $this->helpers->prepareApiContributionData($c, $compact, null, false, $_refstatus);
           }
           else {
-            $jc = $this->helpers->prepareApiContribution($c, $compact, null, [], true,  true, $_status);
-            $j  = $this->helpers->prepareApiContributionData($c, $compact);
+            $jc = $this->helpers->prepareApiContribution($c, $compact, null, [], true,  true, $_refstatus);
+            $j  = $this->helpers->prepareApiContributionData($c, $compact, null, true, $_refstatus);
           }
           $this->db->NewContributionCache($c, ["Contribution" => $jc, "Data" => $j], $signature);
         }

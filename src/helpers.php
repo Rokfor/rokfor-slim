@@ -1101,11 +1101,11 @@ class helpers
    * @return void
    * @author Urs Hofer
    */
-  public function prepareApiData($field, $compact = true, $_recursion_check = [], $_fieldlist = false, $_recursion = true, $_follow_references = true) {
+  public function prepareApiData($field, $compact = true, $_recursion_check = [], $_fieldlist = false, $_recursion = true, $_follow_references = true, $_reference_status = ['Draft', 'Close']) {
     /* Preliminary Checks */
     if (!$field) return false;
     if (!$field_id = $field->getId()) return false;
-    if ($field->getContributions()->getStatus() == 'Open') {
+    if (!in_array($field->getContributions()->getStatus(), $_reference_status)) {
       return false;
     }
 
@@ -1196,7 +1196,7 @@ class helpers
         case 'other':
           foreach ($field->getRelationsAsObject($_fieldsettings->history_command) as $related_object) {
             if ($related_object)
-              $_nc[$related_object->getId()] = $this->prepareApiData($related_object, $compact, $_recursion_check, $_fieldlist, $_recursion, $_recursion == true ? true : false);
+              $_nc[$related_object->getId()] = $this->prepareApiData($related_object, $compact, $_recursion_check, $_fieldlist, $_recursion, $_recursion == true ? true : false, $_reference_status);
           }
           $_content = count($_nc)>0 ? array_keys($_nc) : $_content;
           break;
@@ -1211,7 +1211,7 @@ class helpers
               ];
               foreach ($_c->getDatas() as $_f) {
                 if ($_follow_references && $_f->getId() && ($_fieldlist == false || (is_array($_fieldlist) && (in_array($_f->getTemplates()->getFieldname(), $_fieldlist)))))
-                  $_temp[$_f->getTemplates()->getFieldname()] = $this->prepareApiData($_f, $compact, $_recursion_check, $_fieldlist, $_recursion, $_recursion == true ? true : false);
+                  $_temp[$_f->getTemplates()->getFieldname()] = $this->prepareApiData($_f, $compact, $_recursion_check, $_fieldlist, $_recursion, $_recursion == true ? true : false, $_reference_status);
               }
               $_nc[$_c->getId()] = $_temp;
             }
@@ -1289,7 +1289,7 @@ class helpers
    * @return void
    * @author Urs Hofer
    */
-  function prepareApiContributionData($c, $compact, $request = null, $recursion = true) {
+  function prepareApiContributionData($c, $compact, $request = null, $recursion = true, $_reference_status = ['Draft', 'Close']) {
     /* Checks */
     if (!$c) return false;
     if (!$c->getId()) return false;
@@ -1338,7 +1338,7 @@ class helpers
             $_fieldlist = false;
           }
         }
-        $d[$field->getTemplates()->getFieldname()] = $this->prepareApiData($field, $compact, [], $_fieldlist, $recursion);
+        $d[$field->getTemplates()->getFieldname()] = $this->prepareApiData($field, $compact, [], $_fieldlist, $recursion, $_reference_status);
       }
     }
 
@@ -1377,11 +1377,11 @@ class helpers
       foreach ($_reference_object as $_referencedContribution) {
         $_f = $_referencedContribution->getRData();
         $_c = $_f->getContributions();
-        if ($_c && (is_array($_initial_state) ? in_array($_c->getStatus(),$_initial_state) : $_c->getStatus() == $_initial_state)) {
+        if ($_c && in_array($_c->getStatus(),$_initial_state)) {
           array_push($_references, [
             "ByField"       => $_f->getId(),
             "Contribution"  => $this->prepareApiContribution($_c, $compact, $request, $_recursion_check, $_recursion, $_recursion == true ? true : false, $_initial_state),
-            "Data"          => $this->prepareApiContributionData($_c, $compact, $request)
+            "Data"          => $this->prepareApiContributionData($_c, $compact, $request, true, $_initial_state)
           ]);
         }
       }
