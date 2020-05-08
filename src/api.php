@@ -30,12 +30,14 @@ $app->group('/api', function () {
    *  - offset=int
    *  - filter=[int|...]:[lt|gt|eq|like] (default operator: like)
    *  - data=[Fieldname|...]             (default: empty)
+   *  - keys=[Fieldname:Key|...]         (default: empty)
    *  - populate=true|false              (default: false)
    *  - verbose=true|false               (default: false)
    *  - template=id                      (default: false)
    *  - status=draft|published|both      (default: published)
    *  - references=true|false            (default: true)
    *  - refstatus=draft|published|both   (default: both)
+   *  - flat=true|false                  (default: false)
    */
   $this->options('/contributions/{issue:[0-9-]*}/{chapter:[0-9-]*}',
     function ($request, $response, $args) {}
@@ -60,6 +62,8 @@ $app->group('/api', function () {
     $_query    = isset($request->getQueryParams()['query']) ? $request->getQueryParams()['query'] : false;
     $_template = isset($request->getQueryParams()['template']) ? (int)$request->getQueryParams()['template'] : false;
     $_sort     = isset($request->getQueryParams()['sort']) ? $request->getQueryParams()['sort'] : 'asc';
+    $flat      = $request->getQueryParams()['flat'] == "true" ? true : false;
+
 
     // Translate $_status to Rokfor Standards
     $_status   = 'Close';
@@ -114,8 +118,20 @@ $app->group('/api', function () {
       $recursion = false;
       // Creating Cache Signature
       $signatur_fields = explode("|", strtolower($request->getQueryParams()['data']));
+      $queryParams['data'] = $request->getQueryParams()['data'];
       sort($signatur_fields);
-      $signature = md5($this->db->getUser()['username'].'-'.$compact.$_refstatus_for_signature."-".$follow_references."-".$recursion."-".$request->getQueryParams()['populate'].join(".",$signatur_fields));
+      if ($request->getQueryParams()['keys']) {
+        $queryParams['keys'] = $request->getQueryParams()['keys'];
+        $signatur_keys = explode("|", strtolower($request->getQueryParams()['keys']));
+        sort($signatur_keys);      
+        $signatur_keys = join(".", $signatur_keys);
+      }
+      else {
+        $signatur_keys = "";
+      }
+      $queryParams['populate'] = $request->getQueryParams()['populate'];
+
+      $signature = md5($this->db->getUser()['username'].'-'.$compact.$_refstatus_for_signature."-".$follow_references."-".$recursion."-".$queryParams['populate'].join(".",$signatur_fields).$signatur_keys.($flat===true?'-flat':''));
       $_caches = [];
       foreach (\ContributionscacheQuery::create()
           ->filterByForcontribution($_result_contribs)
@@ -144,11 +160,16 @@ $app->group('/api', function () {
         }
         // Create new Entry and store in Cache
         else {
-          $_contribution["Contribution"]  = $this->helpers->prepareApiContribution($_c, $compact, $request, [], $recursion, $follow_references, $_refstatus);
-          $_contribution["Data"]          = $this->helpers->prepareApiContributionData($_c, $compact, $request, $recursion, $_refstatus);
+          $_contribution["Contribution"]  = $this->helpers->prepareApiContribution($_c, $compact, $queryParams, [], $recursion, $follow_references, $_refstatus, $flat);
+          $_contribution["Data"]          = $this->helpers->prepareApiContributionData($_c, $compact, $queryParams, $recursion, $_refstatus, $flat);
           $this->db->NewContributionCache($_c, ["Contribution" => $_contribution["Contribution"], "Data" => $_contribution["Data"]], $signature);
         }
-        $j[] = $_contribution;
+        if ($flat === true) {
+          $j[] = array_merge((array)$_contribution["Data"],(array)$_contribution["Contribution"]);
+        }
+        else {
+          $j[] = $_contribution;
+        }
       }
       if ($this->get('redis')['client']) {
         $this->get('redis')['client']->set('expiration', $_cache_expiration);
@@ -179,6 +200,10 @@ $app->group('/api', function () {
    *
    *  - verbose=true|false               (default: false)
    *  - refstatus=draft|published|both   (default: both)
+   *  - flat=true|false                  (default: false)
+   *  - references=true|false            (default: true)
+   *  - data=[Fieldname|...]             (default: empty)
+   *  - keys=[Fieldname:Key|...]         (default: empty)
    */
   $this->options('/contribution/{id:[0-9]*}',
     function ($request, $response, $args) {}
@@ -189,6 +214,7 @@ $app->group('/api', function () {
       $j = [];
       $qt = microtime(true);
       $compact = $request->getQueryParams()['verbose'] ? false : true;
+      $flat = $request->getQueryParams()['flat'] == "true" ? true : false;
       $follow_references = $request->getQueryParams()['references'] == "false" ? false : true;
 
       // Translate $_status to Rokfor Standards
@@ -207,28 +233,61 @@ $app->group('/api', function () {
 
       $c = $this->db->getContribution($args['id']);
       if ($c && ($c->getStatus()=="Close" || $c->getStatus()=="Draft")) {
-        $signature = md5($this->db->getUser()['username'].'-'.$compact.$_refstatus_for_signature.($follow_references===false?'-noref':''));
+
+        if ($request->getQueryParams()['keys']) {
+          $queryParams['keys'] = $request->getQueryParams()['keys'];
+          $signatur_keys = explode("|", strtolower($request->getQueryParams()['keys']));
+          sort($signatur_keys);      
+          $signatur_keys = join(".", $signatur_keys);
+        }
+        else {
+          $signatur_keys = "";
+        }
+        if ($request->getQueryParams()['data']) {
+          $queryParams['data'] = $request->getQueryParams()['data'];
+          $signatur_fields = explode("|", strtolower($request->getQueryParams()['data']));
+          sort($signatur_fields);        
+          $signatur_fields = join(".", $signatur_fields);
+        }
+        else {
+          $signatur_fields = "";
+          $queryParams['populate'] = "true";
+        }
+
+        $signature = md5($this->db->getUser()['username'].'-'.$compact.$signatur_fields.$signatur_keys.$_refstatus_for_signature.($follow_references===false?'-noref':'').($flat===true?'-flat':''));
         if ($h = $c->checkCache($signature)) {
           $jc = $h->Contribution;
           $j  = $h->Data;
         }
         else {
+
+          // POPULATE ON SINGLE CONTRIBUTION TODO TODO
+
           if ($follow_references === false) {
-            $jc = $this->helpers->prepareApiContribution($c, $compact, null, [], false, false, $_refstatus);
-            $j  = $this->helpers->prepareApiContributionData($c, $compact, null, false, $_refstatus);
+            $jc = $this->helpers->prepareApiContribution($c, $compact, $queryParams, [], false, false, $_refstatus, $flat);
+            $j  = $this->helpers->prepareApiContributionData($c, $compact, $queryParams, false, $_refstatus, $flat);
           }
           else {
-            $jc = $this->helpers->prepareApiContribution($c, $compact, null, [], true,  true, $_refstatus);
-            $j  = $this->helpers->prepareApiContributionData($c, $compact, null, true, $_refstatus);
+            $jc = $this->helpers->prepareApiContribution($c, $compact, $queryParams, [], true,  true, $_refstatus, $flat);
+            $j  = $this->helpers->prepareApiContributionData($c, $compact, $queryParams, true, $_refstatus, $flat);
           }
           $this->db->NewContributionCache($c, ["Contribution" => $jc, "Data" => $j], $signature);
         }
-        $response->withHeader('Content-type', 'application/json')->getBody()->write(json_encode([
-          "Contribution"              => $jc,
-          "Data"                      => $j,
-          "QueryTime"                 => (microtime(true) - $qt),
-          "Hash"                      => md5(json_encode([$j, $jc])),
-        ], JSON_CONSTANTS));
+        if ($flat === true) {
+            $response->withHeader('Content-type', 'application/json')->getBody()->write(json_encode(
+              array_merge((array)$jc,(array)$j,[
+                "QueryTime"                 => (microtime(true) - $qt),
+                "Hash"                      => md5(json_encode([$j, $jc])),
+              ]), JSON_CONSTANTS));
+        }
+        else {
+          $response->withHeader('Content-type', 'application/json')->getBody()->write(json_encode([
+            "Contribution"              => $jc,
+            "Data"                      => $j,
+            "QueryTime"                 => (microtime(true) - $qt),
+            "Hash"                      => md5(json_encode([$j, $jc])),
+          ], JSON_CONSTANTS));
+        }
       }
       else if ($c === false) {
         $errcode = 500;
@@ -457,69 +516,69 @@ $app->group('/api', function () {
    */
 
   $this->post('/{action:issue|chapter}/{id:[0-9]*}',
-  function ($request, $response, $args) {
-    // Actions
-    $_error = false;
+    function ($request, $response, $args) {
+      // Actions
+      $_error = false;
 
-    $_json = ($request->getParsedBody()['body'] ? $request->getParsedBody()['body'] : $request->getBody());
-    if ($data = json_decode($_json)) {
+      $_json = ($request->getParsedBody()['body'] ? $request->getParsedBody()['body'] : $request->getBody());
+      if ($data = json_decode($_json)) {
 
-      // Get Previous Data
-              
-        
-      if ($args['action'] == "issue")
-        $oldvalue = @json_decode($this->db->getIssue($args['id'])->getConfigSys());
-      else
-        $oldvalue = @json_decode($this->db->getFormat($args['id'])->getConfigSys());        
+        // Get Previous Data
+                
+          
+        if ($args['action'] == "issue")
+          $oldvalue = @json_decode($this->db->getIssue($args['id'])->getConfigSys());
+        else
+          $oldvalue = @json_decode($this->db->getFormat($args['id'])->getConfigSys());        
 
-      if ($data->Options) {
-        if (is_array($data->Options)) {
-          $oldvalue->editorcolumns = $data->Options;
+        if ($data->Options) {
+          if (is_array($data->Options)) {
+            $oldvalue->editorcolumns = $data->Options;
+          }
+          else {
+            $_error = "The 'Options' parameter must be an array";
+          }
         }
-        else {
-          $_error = "The 'Options' parameter must be an array";
+        if ($data->Locale) {
+          if (is_array($data->Locale)) {
+            $oldvalue->locale = $data->Locale;
+          }
+          else {
+            $_error = "The 'Locale' parameter must be an array";
+          }
+        }      
+        if (($data->Locale || $data->Options) && $_error === false) {
+          $funcname = 'settings'.ucfirst($args['action']);
+          $this->db->$funcname($args['id'], json_encode($oldvalue));
+        }
+
+        if ($data->Name) {
+          if (is_string($data->Name)) {
+            $funcname = 'rename'.ucfirst($args['action']);
+            $this->db->$funcname($args['id'], $request->getParsedBody()['Name']);
+          }
+          else {
+          $_error = "The 'Name' parameter must be a type of string"; 
+          }
         }
       }
-      if ($data->Locale) {
-        if (is_array($data->Locale)) {
-          $oldvalue->locale = $data->Locale;
-        }
-        else {
-          $_error = "The 'Locale' parameter must be an array";
-        }
-      }      
-      if (($data->Locale || $data->Options) && $_error === false) {
-        $funcname = 'settings'.ucfirst($args['action']);
-        $this->db->$funcname($args['id'], json_encode($oldvalue));
+      else {
+        $_error = "Body is not a valid json string.";
       }
-
-      if ($data->Name) {
-        if (is_string($data->Name)) {
-          $funcname = 'rename'.ucfirst($args['action']);
-          $this->db->$funcname($args['id'], $request->getParsedBody()['Name']);
-        }
-        else {
-         $_error = "The 'Name' parameter must be a type of string"; 
-        }
+      
+      if ($_error === false) {
+        $response->getBody()->write(json_encode([
+          "Id" => $args['id']
+        ]));
+      }
+      else {
+        $errcode = 404;
+        $newResponse = $response->withStatus($errcode);
+        $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>$_error], JSON_CONSTANTS));
+        return $newResponse;
       }
     }
-    else {
-      $_error = "Body is not a valid json string.";
-    }
-    
-    if ($_error === false) {
-      $response->getBody()->write(json_encode([
-        "Id" => $args['id']
-      ]));
-    }
-    else {
-      $errcode = 404;
-      $newResponse = $response->withStatus($errcode);
-      $newResponse->getBody()->write(json_encode(['code'=>$errcode, 'message'=>$_error], JSON_CONSTANTS));
-      return $newResponse;
-    }
-  }
-);
+  );
 
 
   /* Binary Proxy
@@ -971,9 +1030,6 @@ $app->group('/api', function () {
                             }
                           }
                           // Delete all with empty captions
-//                        print_r($_old_data);
-//                          print_r($_to_delete);
-
                           foreach ($_to_delete as $_delkey) {
                             unset($_old_data[$_delkey]);
                           }
@@ -1175,17 +1231,17 @@ $app->group('/api', function () {
   );
 
 
-/*
- * Get Exported Files
- *
- * Additional Query Params:
- * limit: int (default: 10, max 100)
- * type: string (contribution, format or issues)
- * filter: int
- *
- */
+  /*
+   * Get Exported Files
+   *
+   * Additional Query Params:
+   * limit: int (default: 10, max 100)
+   * type: string (contribution, format or issues)
+   * filter: int
+   *
+   */
 
- $this->get('/exporter/{id:[0-9]*}',
+  $this->get('/exporter/{id:[0-9]*}',
     function ($request, $response, $args) {
       $r        = $response->withHeader('Content-type', 'application/json');
       $_error   = false;
@@ -1231,199 +1287,205 @@ $app->group('/api', function () {
 
 
     }
- );
+  );
 
-/* Start a new Exporter Job for exporter with id 
- * Returns Job Id
- * Only Root/Admin User is allowed to call this.
- * 
- * Json Payload:
- * {
- * "Callback": String,
- * "Mode": "chapters" | "issues" | "books" | "contribution"
- * "Selection": int
- * }
- */
+  /* Start a new Exporter Job for exporter with id 
+  * Returns Job Id
+  * Only Root/Admin User is allowed to call this.
+  * 
+  * Json Payload:
+  * {
+  * "Callback": String,
+  * "Mode": "chapters" | "issues" | "books" | "contribution"
+  * "Selection": int
+  * }
+  */
 
-$this->post('/exporter/{id:[0-9]*}',
-  function ($request, $response, $args) {
-    $r = $response->withHeader('Content-type', 'application/json');
-    $_error = false;
-    $u = $this->db->getUser();
-    if ($u['role'] === "root" || $u['role'] === "admin") {
-      $_json = ($request->getParsedBody()['body'] ? $request->getParsedBody()['body'] : $request->getBody());
-      if ($data = json_decode($_json)) {
-        if (filter_var($data->Callback, FILTER_VALIDATE_URL) === false && $data->Callback != "") {
-          $_error = "Callback is not a valid Url";
-        }
-        if (!in_array($data->Mode, ["chapters", "issues", "books", "contribution"])) {
-          $_error = "Mode must be one of: 'chapters', 'issues', 'books' or 'contribution'";
-        } 
-        if (is_int($data->Selection) === false) {
-          $_error = "Selection not set or not a number.";
-        }       
-        if ($_error === false) {
-          $job = $this->helpers->triggerExporter($args['id'], $data->Mode, $data->Selection, $data->Callback);
-          if ($job === false) {
-            $_error = "Could not trigger Exporter.";
+  $this->post('/exporter/{id:[0-9]*}',
+    function ($request, $response, $args) {
+      $r = $response->withHeader('Content-type', 'application/json');
+      $_error = false;
+      $u = $this->db->getUser();
+      if ($u['role'] === "root" || $u['role'] === "admin") {
+        $_json = ($request->getParsedBody()['body'] ? $request->getParsedBody()['body'] : $request->getBody());
+        if ($data = json_decode($_json)) {
+          if (filter_var($data->Callback, FILTER_VALIDATE_URL) === false && $data->Callback != "") {
+            $_error = "Callback is not a valid Url";
           }
+          if (!in_array($data->Mode, ["chapters", "issues", "books", "contribution"])) {
+            $_error = "Mode must be one of: 'chapters', 'issues', 'books' or 'contribution'";
+          } 
+          if (is_int($data->Selection) === false) {
+            $_error = "Selection not set or not a number.";
+          }       
+          if ($_error === false) {
+            $job = $this->helpers->triggerExporter($args['id'], $data->Mode, $data->Selection, $data->Callback);
+            if ($job === false) {
+              $_error = "Could not trigger Exporter.";
+            }
 
+          }
+        } else {
+          $_error = "Payload is no json string.";
         }
       } else {
-        $_error = "Payload is no json string.";
+        $_error = "Not allowed. You must be at least administrator.";
       }
-    } else {
-      $_error = "Not allowed. You must be at least administrator.";
+
+      if ($_error === false) {
+        $r->getBody()->write(json_encode(["Success" => "ok", "Job" => $job]));
+      }
+      else {
+        $r->withStatus(500)->getBody()->write(json_encode(["Error" => $_error]));
+      }
     }
+  );
 
-    if ($_error === false) {
-      $r->getBody()->write(json_encode(["Success" => "ok", "Job" => $job]));
-    }
-    else {
-      $r->withStatus(500)->getBody()->write(json_encode(["Error" => $_error]));
-    }
-  }
-);
+  /*
+   * Posting exporter updates, closing jobs
+   *
+   * Json Payload:
+   * {"Status": String, "Url": String, "Pages": Int
+   *
+   */
 
-/*
- * Posting exporter updates, closing jobs
- *
- * Json Payload:
- * {"Status": String, "Url": String, "Pages": Int
- *
- */
+  $this->post('/exporter',
+    function ($request, $response, $args) {
+      $r = $response->withHeader('Content-type', 'application/json');
+      $_error = false;
 
-$this->post('/exporter',
-  function ($request, $response, $args) {
-    $r = $response->withHeader('Content-type', 'application/json');
-    $_error = false;
+        // Check for Valid Payload, either json body
+        // or a json string in the json post variable
 
-      // Check for Valid Payload, either json body
-      // or a json string in the json post variable
+      $_json = ($request->getParsedBody()['body'] ? $request->getParsedBody()['body'] : $request->getBody());
+      if ($data = json_decode($_json)) {
+        $otc = $data->Token;
+        if ($otc) {
+          try {
+            $signer = new Sha256();
+            $token  = (new Parser())->parse((string) $otc); // Parses from a string
+            $process_id = $token->getClaim('uid');
+            $vdata   = new ValidationData(); // It will use the current time to validate (iat, nbf and exp)
+            $vdata->setIssuer($_SERVER['HTTP_HOST']);
+            $vdata->setAudience($_SERVER['HTTP_HOST']);
+          } catch (Exception $e) {
+            $args["message"]  = 'Link is not valid';
+            $args["showform"] = false;
+          }
+          $pdf =\PdfQuery::create()->findPk($process_id);
+          if ($pdf) {
+            $otcstack = $pdf->getOtc();
+            if ($token && $token->verify($signer, $otcstack) && $token->validate($vdata)) {
+              if ($pdf->getConfigValue() == 1 ) {
+                if (time() - $pdf->getDate() < 3600) {
+                    switch (strtolower($data->Status)) {
+                      case 'complete':
+                        if ($data->Url) {
+                          $testurl = (array)$data->Url;
+                          $array_tested = false;
+                          foreach ($testurl as $_testurl) {
+                            if (!filter_var($_testurl, FILTER_VALIDATE_URL)) {
+                              $array_tested = false;
+                              break;
+                            }
+                            else {
+                              $array_tested = true;
+                            }
+                          }
+                          if ($array_tested) {
 
-    $_json = ($request->getParsedBody()['body'] ? $request->getParsedBody()['body'] : $request->getBody());
-    if ($data = json_decode($_json)) {
-      $otc = $data->Token;
-      if ($otc) {
-        try {
-          $signer = new Sha256();
-          $token  = (new Parser())->parse((string) $otc); // Parses from a string
-          $process_id = $token->getClaim('uid');
-          $vdata   = new ValidationData(); // It will use the current time to validate (iat, nbf and exp)
-          $vdata->setIssuer($_SERVER['HTTP_HOST']);
-          $vdata->setAudience($_SERVER['HTTP_HOST']);
-        } catch (Exception $e) {
-          $args["message"]  = 'Link is not valid';
-          $args["showform"] = false;
-        }
-        $pdf =\PdfQuery::create()->findPk($process_id);
-        if ($pdf) {
-          $otcstack = $pdf->getOtc();
-          if ($token && $token->verify($signer, $otcstack) && $token->validate($vdata)) {
-            if ($pdf->getConfigValue() == 1 ) {
-              if (time() - $pdf->getDate() < 3600) {
-                  switch (strtolower($data->Status)) {
-                    case 'complete':
-                      if ($data->Url) {
-                        $testurl = (array)$data->Url;
-                        $array_tested = false;
-                        foreach ($testurl as $_testurl) {
-                          if (!filter_var($_testurl, FILTER_VALIDATE_URL)) {
-                            $array_tested = false;
-                            break;
+                            $callback = $pdf->getFile();
+
+                            $pdf->setDate(time())
+                                ->setPages($data->Pages ? json_encode($data->Pages) : "")
+                                ->setFile(json_encode($testurl))
+                                ->setConfigValue(2)
+                                ->save();
+
+                            if ($callback != "") {
+                              $this->helpers->apiCall($callback, 'POST', [
+                                'status' => $data->Status, 
+                                'id' => $pdf->getId(),
+                                'data' => $pdf->toArray()
+                              ]);
+                            }
                           }
                           else {
-                            $array_tested = true;
-                          }
-                        }
-                        if ($array_tested) {
-
-                          $callback = $pdf->getFile();
-
-                          $pdf->setDate(time())
-                              ->setPages($data->Pages ? json_encode($data->Pages) : "")
-                              ->setFile(json_encode($testurl))
-                              ->setConfigValue(2)
-                              ->save();
-
-                          if ($callback != "") {
-                            $this->helpers->apiCall($callback, 'POST', [
-                              'status' => $data->Status, 
-                              'id' => $pdf->getId(),
-                              'data' => $pdf->toArray()
-                            ]);
+                            $_error = $_testurl." is not a valid URL.";
                           }
                         }
                         else {
-                          $_error = $_testurl." is not a valid URL.";
+                          $_error = "Url mandatory for job completion.";
                         }
-                      }
-                      else {
-                        $_error = "Url mandatory for job completion.";
-                      }
-                      break;
-                    case 'processing':
-                      $pdf->setDate(time())
-                          ->setConfigValue(1)
-                          ->save();
-                      break;
-                    case 'error':
-                      $callback = $pdf->getFile();
-                      $pdf->setDate(time())
-                          ->setConfigValue(0)
-                          ->setPages($data->Pages ? json_encode($data->Pages) : "")
-                          ->save();
-                      if ($callback != "") {
-                        $this->helpers->apiCall($callback, 'POST', [
-                          'status' => $data->Status, 
-                          'id' => $pdf->getId(),
-                          'data' => $pdf->toArray()
-                        ]);
-                      }
-                      break;                      
-                    default:
-                      $_error = "Status must be 'complete' or 'processing' or 'error'.";
-                      break;
+                        break;
+                      case 'processing':
+                        $pdf->setDate(time())
+                            ->setConfigValue(1)
+                            ->save();
+                        break;
+                      case 'error':
+                        $callback = $pdf->getFile();
+                        $pdf->setDate(time())
+                            ->setConfigValue(0)
+                            ->setPages($data->Pages ? json_encode($data->Pages) : "")
+                            ->save();
+                        if ($callback != "") {
+                          $this->helpers->apiCall($callback, 'POST', [
+                            'status' => $data->Status, 
+                            'id' => $pdf->getId(),
+                            'data' => $pdf->toArray()
+                          ]);
+                        }
+                        break;                      
+                      default:
+                        $_error = "Status must be 'complete' or 'processing' or 'error'.";
+                        break;
+                    }
                   }
-                }
-                else {
-                  $_error = "Job expired";
-                  $pdf->setConfigValue(3);
-                  $pdf->save();
-                }
+                  else {
+                    $_error = "Job expired";
+                    $pdf->setConfigValue(3);
+                    $pdf->save();
+                  }
+              }
+              else {
+                $_error = "Job already completed";
+              }            
             }
             else {
-               $_error = "Job already completed";
-            }            
+              $_error = "token not valid";
+            }
           }
           else {
-            $_error = "token not valid";
+            $_error = "Id missing or not existing.";
           }
         }
         else {
-          $_error = "Id missing or not existing.";
+          $_error = "token missing";
         }
       }
       else {
-        $_error = "token missing";
+        $_error = "JSON Post Payload missing";
+      }
+
+      if ($_error === false) {
+        $r->getBody()->write(json_encode(["Success" => "ok"]));
+      }
+      else {
+        $r->withStatus(500)->getBody()->write(json_encode(["Error" => $_error]));
       }
     }
-    else {
-      $_error = "JSON Post Payload missing";
-    }
-
-    if ($_error === false) {
-      $r->getBody()->write(json_encode(["Success" => "ok"]));
-    }
-    else {
-      $r->withStatus(500)->getBody()->write(json_encode(["Error" => $_error]));
-    }
-  }
-);
+  );
 
 })->add($cors)->add($apiauth)->add($redis);
 
-/* Asset Rewriting - only running on nginx. all other servers are just redirecting to */
+/* 
+ * Asset Rewriting
+ * - Presigning files if S3 is used as Storage Backend
+ * - Using X-Accel-Redirect on nginx
+ * - Using Location (s3) header and passthru (local storage) on other servers
+ * all other servers are just redirecting
+ */
 
 $app->options('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}',
   function ($request, $response, $args) {}
@@ -1431,11 +1493,12 @@ $app->options('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}',
 
 $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $response, $args) {
 
-  // QUICK PUBLIC CHECK ON REDIS
   $s3        = $this->get('settings')['paths']['s3'];
-  // Check for NGINX
-  $_isnginx = (strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== false);
+  $_isnginx  = (strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== false);
+  $backend   = $request->getQueryParams()['backend'] == "true" ? true : false;
 
+  // Redis Cache: check if public asset
+  // avoiding MySQL query on each asset call
 
   if ($this->get('redis')['client']) {
     if ($this->redis['client']->get('%%asset%%'.$args['field'].'-'.$args['file']) === "public") {
@@ -1452,15 +1515,15 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
       }
       else {
         if ($_isnginx === true) {
-          if ($_file = $this->db->presign_file($args['file'], $public, false)) {
-            header('X-Accel-Redirect: /cdn-local'.($public?'-public':'-private') . $_file);
+          if ($_file = $this->db->presign_file($args['file'], true, false)) {
+            header('X-Accel-Redirect: /cdn-local-public' . $_file);
           }
           else {
             throw new \Slim\Exception\NotFoundException($request, $response);
           }
         }
         else {
-          if ($_file = $this->db->presign_file($args['file'], $public)) {
+          if ($_file = $this->db->presign_file($args['file'], true)) {
             header('Content-Type: '.mime_content_type($_file));
             header('Expires: 0');
             header('Cache-Control: must-revalidate');
@@ -1477,13 +1540,9 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
     }
   }
 
-
-
-
   // Check if user is logged in
   // only if the asset is called with the backend = True query param.
 
-  $backend = $request->getQueryParams()['backend'] == "true" ? true : false;
   if ($backend === true) {
     $auth      = new \Zend\Authentication\AuthenticationService();
     $logged_in = $auth->getIdentity()['username'];
@@ -1518,11 +1577,9 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
   } else {
     $_current_data_in_db = $f->getContent();
   }
-    
 
-
-
-  // Check for Authentification if Public = 0
+  // Check for Authentification 
+  // if public is false
 
   if (!$public) {
     if ($request->getQueryParams()['access_token']) {
@@ -1548,6 +1605,7 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
 
   // Do the presigining if contribution
   if (($public || $access || $logged_in) && stristr($_current_data_in_db, $args['file']) !== false) {
+    // Store Redis Cache
     if ($this->get('redis')['client'] && $public === true) {
       $this->redis['client']->set('%%asset%%'.$args['field'].'-'.$args['file'], "public");
     }

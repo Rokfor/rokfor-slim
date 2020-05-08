@@ -74,11 +74,13 @@ class Acl extends ZendAcl
         $_api_routes['guest'][] = ['/api/contribution',                                                     'PUT'];
         $_api_routes['guest'][] = ['/api/contribution/{id:[0-9]*}',                                         ['GET', 'POST', 'DEL']];
         $_api_routes['guest'][] = ['/api/contributions/{issue:[0-9]*}/{chapter:[0-9]*}',                    'GET'];
-        //$_api_routes['guest'][] = ['/api/proxy/{id:[0-9]*}/{file}',                                         'GET'];
         $_api_routes['guest'][] = ['/api/users',                                                            'GET'];
-        $_api_routes['guest'][] = ['/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}',                           'GET'];
         $_api_routes['guest'][] = ['/api/exporter/{id:[0-9]*}',                                             ['GET', 'POST']];
         $_api_routes['guest'][] = ['/api/exporter',                                                         ['GET', 'POST']];
+
+        // Asset Storage
+        $_api_routes['guest'][] = ['/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}',                           'GET'];
+
 
         // Store Routes
         foreach ([$_api_routes, $_rf_routes] as $_routes) {
