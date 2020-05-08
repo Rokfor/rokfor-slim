@@ -955,9 +955,15 @@ class helpers
         foreach ($object->getRDatas() as $_field) {
           $_c = $_field->getContributions();
           if ($_c && in_array($_c->getStatus(),["Close","Draft"])) {
+
+            $queryParams = [
+              'data'      => $request->getQueryParams()['data'],
+              'keys'      => $request->getQueryParams()['keys'],
+              'populate'  => $request->getQueryParams()['populate']
+            ];
             $_refs[] = array (
-              "Contribution"  => $this->prepareApiContribution($_c, $compact, $request),
-              "Data"          => $this->prepareApiContributionData($_c, $compact, $request)
+              "Contribution"  => $this->prepareApiContribution($_c, $compact, $queryParams),
+              "Data"          => $this->prepareApiContributionData($_c, $compact, $queryParams)
             );
           }
         }
