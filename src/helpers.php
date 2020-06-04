@@ -1221,7 +1221,11 @@ class helpers
               if ($flat === true) {
                 $_temp = [
                   "_id"                     => $_c->getId(),
-                  "_name"                   => $_c->getName()
+                  "_sort"                   => $_c->getSort(),
+                  "_name"                   => $_c->getName(),
+                  "_template"               => $_c->getFortemplate(),
+                  "_issue"                  => $_c->getForissue(),
+                  "_chapter"                => $_c->getForchapter()
                 ];
                 foreach ($_c->getDatas() as $_f) {
                   if ($_follow_references && $_f->getId() && ($_fieldlist == false || (is_array($_fieldlist) && (in_array($_f->getTemplates()->getFieldname(), $_fieldlist)))))
@@ -1455,7 +1459,11 @@ class helpers
     if ($flat === true) {
       return [
         "_id"                     => $c->getId(),
+        "_sort"                   => $c->getSort(),
         "_name"                   => $c->getName(),
+        "_template"               => $c->getFortemplate(),
+        "_issue"                  => $c->getForissue(),
+        "_chapter"                => $c->getForchapter(),
         "_referenced"             => $_references,
       ];
     }
