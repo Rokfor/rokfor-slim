@@ -1310,7 +1310,7 @@ class helpers
     if ($flat === true) {
       if (count($_nc)>0) {
         $_sorted = [];
-        foreach ($_content as $_key) {
+        foreach ((array)$_content as $_key) {
           $_sorted[] = $_nc[$_key];
         }
         return $_sorted;
