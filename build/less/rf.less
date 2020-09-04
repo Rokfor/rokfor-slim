@@ -193,6 +193,18 @@ p.divider {
   }
 }
 
+.rftable {
+  tbody {
+    tr {
+      height: 4em;
+      transition: height cubic-bezier(0.075, 0.82, 0.165, 1) 0.5s;
+      &.rftable-rowmarked {
+        height: 10em;
+      }
+    }  
+  }
+}
+
 #ptable,
 #rftable {
   table-layout: fixed;

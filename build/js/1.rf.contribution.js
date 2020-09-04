@@ -65,10 +65,17 @@
             template.push(data.newindex);
             template.push('<a class="rfimagetablepreview" href="' + data.relative + '?backend=true" target="_blank"><img data-file="' + data.original + '" src="' + data.thumb + '?backend=true"></a>');
             for (var i = 0; i < table.columns().nodes().length - 2; i++) {
-              if (typeof data.caption == "object" && data.caption[i])
-                template.push(data.caption[i]);
-              else
+              try {
+                if (data.caption[i] !== undefined) {
+                  template.push(data.caption[i]);
+                }
+                else {
+                  template.push(data.caption);
+                }
+              } catch (error) {
                 template.push(data.caption);
+              }
+               
             }
             supress_submission = true;
             if (data.growing) {
@@ -746,7 +753,7 @@
                           "targets": '_all',
                           "defaultContent": '',
                           "render": function(data) {
-                            return ('<textarea class="rowedit">' + data + '</textarea>');
+                            return ('<textarea class="rowedit">' + (data ? data : "") + '</textarea>');
                           },
                           "width": "auto"
                         }
@@ -756,13 +763,29 @@
         $(this).next().html($(this).val());
         serialize();
       });
+      dt.on('focus', 'textarea', function(e){
+        $(this).parents('tr').addClass('rftable-rowmarked')
+        return e;
+      });
+      dt.on('blur', 'textarea', function(e){
+        $(this).parents('tr').removeClass('rftable-rowmarked')
+        return e;
+      });
+      dt.on('dblclick', 'textarea', function(e){
+        $(this).select();
+        return e;
+      });
       dt.on('click', 'a', function(e){
         e.stopPropagation();
+        $(this).parents('tr').removeClass('rftable-rowmarked')
         dt.row($(this).parents('tr')).remove().draw();
         return false;
       });
-      addbutton.click(function(e){
+      addbutton.mousedown(function(e){
         e.stopPropagation();
+        dt.rows().every(function(){
+          $(this.node()).removeClass('rftable-rowmarked')
+        })
         dt.row.add([dt.rows().count()]).draw();
         return false;
       });
