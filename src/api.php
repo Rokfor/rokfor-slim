@@ -257,7 +257,7 @@ $app->group('/api', function () {
           $queryParams['populate'] = "true";
         }
 
-        $signature = md5($this->db->getUser()['username'].'-'.$compact.$signatur_fields.$signatur_keys.$_refstatus_for_signature.($follow_references===false?'-noref':'').($flat===true?'-flat':''));
+        $signature = md5($this->db->getUser()['username'].'-'.$compact.$signatur_fields.$signatur_keys.$_refstatus_for_signature.($follow_references===false?'-noref':'').($flat===true?'-flat':'').($_maxdepth!==false?('-'.$_maxdepth):''));
         if ($h = $c->checkCache($signature)) {
           $jc = $h->Contribution;
           $j  = $h->Data;
