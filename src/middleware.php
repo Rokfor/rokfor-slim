@@ -30,7 +30,7 @@ $app->add(function ($request, $response, $next) {
   try {
     $_p = $this->db->PDO();
   } catch (Exception $e) {
-    _mailer($this, "MYSQL:\n". $e->getMessage());
+    _mailer($this, "MYSQL Check:\n". $e->getMessage());
     return $this->settings['multiple_spaces'] === true
       ? $response->withRedirect($this->settings['unknow_space_redirect'])
       : $this->view->render($response->withStatus(404), 'error.jade', [
@@ -51,7 +51,7 @@ $app->add(function ($request, $response, $next) {
           _mailer($this, "MYSQL:\nInitialized");
           return $next($request, $response);
         }
-        _mailer($this, "MYSQL:\n". join('<br>', $_messages));
+        _mailer($this, "MYSQL:\nYour database failed to initialize\n". join('<br>', $_messages));
         return $this->view->render($response->withStatus(404), 'error.jade', [
           "message" => "Your database failed to initialize",
           "help"    => "Run <i>$ propel sql:insert</i> manually from the command line."
@@ -59,7 +59,7 @@ $app->add(function ($request, $response, $next) {
       }
     }
   } catch (Exception $e) {
-    _mailer($this, "MYSQL:\n". $e->getMessage());
+    _mailer($this, "MYSQL:\nCould not check the database\n". $e->getMessage());
     return $this->view->render($response->withStatus(404), 'error.jade', [
       "message" => "Could not check the database",
       "help"    => "A Message has been sent to the administrator."

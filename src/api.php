@@ -201,6 +201,7 @@ $app->group('/api', function () {
    *  - verbose=true|false               (default: false)
    *  - refstatus=draft|published|both   (default: both)
    *  - flat=true|false                  (default: false)
+   *  - depth=0..x|false                 (default: false)
    *  - references=true|false            (default: true)
    *  - data=[Fieldname|...]             (default: empty)
    *  - keys=[Fieldname:Key|...]         (default: empty)
@@ -215,6 +216,8 @@ $app->group('/api', function () {
       $qt = microtime(true);
       $compact = $request->getQueryParams()['verbose'] ? false : true;
       $flat = $request->getQueryParams()['flat'] == "true" ? true : false;
+      $_maxdepth = $request->getQueryParams()['depth'] ? (int)$request->getQueryParams()['depth'] : false;
+
       $follow_references = $request->getQueryParams()['references'] == "false" ? false : true;
 
       // Translate $_status to Rokfor Standards
@@ -264,12 +267,12 @@ $app->group('/api', function () {
           // POPULATE ON SINGLE CONTRIBUTION TODO TODO
 
           if ($follow_references === false) {
-            $jc = $this->helpers->prepareApiContribution($c, $compact, $queryParams, [], false, false, $_refstatus, $flat);
-            $j  = $this->helpers->prepareApiContributionData($c, $compact, $queryParams, false, $_refstatus, $flat);
+            $jc = $this->helpers->prepareApiContribution($c, $compact, $queryParams, [], false, false, $_refstatus, $flat, $_maxdepth);
+            $j  = $this->helpers->prepareApiContributionData($c, $compact, $queryParams, false, $_refstatus, $flat, $_maxdepth);
           }
           else {
-            $jc = $this->helpers->prepareApiContribution($c, $compact, $queryParams, [], true,  true, $_refstatus, $flat);
-            $j  = $this->helpers->prepareApiContributionData($c, $compact, $queryParams, true, $_refstatus, $flat);
+            $jc = $this->helpers->prepareApiContribution($c, $compact, $queryParams, [], true,  true, $_refstatus, $flat, $_maxdepth);
+            $j  = $this->helpers->prepareApiContributionData($c, $compact, $queryParams, true, $_refstatus, $flat, $_maxdepth);
           }
           $this->db->NewContributionCache($c, ["Contribution" => $jc, "Data" => $j], $signature);
         }

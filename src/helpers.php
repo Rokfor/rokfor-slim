@@ -1107,7 +1107,7 @@ class helpers
    * @return void
    * @author Urs Hofer
    */
-  public function prepareApiData($field, $compact = true, $_recursion_check = [], $_fieldlist = false, $_recursion = true, $_follow_references = true, $_reference_status = ['Draft', 'Close'], $flat = false, $_keys = []) {
+  public function prepareApiData($field, $compact = true, $_recursion_check = [], $_fieldlist = false, $_recursion = true, $_follow_references = true, $_reference_status = ['Draft', 'Close'], $flat = false, $_keys = [], $_maxdepth = false) {
     /* Preliminary Checks */
     if (!$field) return false;
     if (!$field_id = $field->getId()) return false;
@@ -1118,6 +1118,13 @@ class helpers
 
     /* Recursion Check */
     if (in_array($field_id, $_recursion_check)) return false;
+
+    /* Depth Check */
+
+    if ($_maxdepth !== false) {
+      if (count($_recursion_check) >= (int)$_maxdepth) return false;
+    }
+
     $_recursion_check[] = $field_id;
 
     $t = $field->getTemplates();
@@ -1210,7 +1217,7 @@ class helpers
         case 'other':
           foreach ($field->getRelationsAsObject($_fieldsettings->history_command) as $related_object) {
             if ($related_object)
-              $_nc[$related_object->getId()] = $this->prepareApiData($related_object, $compact, $_recursion_check, $_fieldlist, $_recursion, $_recursion == true ? true : false, $_reference_status, $flat, $_keys);
+              $_nc[$related_object->getId()] = $this->prepareApiData($related_object, $compact, $_recursion_check, $_fieldlist, $_recursion, $_recursion == true ? true : false, $_reference_status, $flat, $_keys, $_maxdepth);
           }
           $_content = count($_nc)>0 ? array_keys($_nc) : $_content;
           break;
@@ -1229,7 +1236,7 @@ class helpers
                 ];
                 foreach ($_c->getDatas() as $_f) {
                   if ($_follow_references && $_f->getId() && ($_fieldlist == false || (is_array($_fieldlist) && (in_array($_f->getTemplates()->getFieldname(), $_fieldlist)))))
-                    $_temp[$_f->getTemplates()->getFieldname()] = $this->prepareApiData($_f, $compact, $_recursion_check, $_fieldlist, $_recursion, $_recursion == true ? true : false, $_reference_status, $flat, $_keys);
+                    $_temp[$_f->getTemplates()->getFieldname()] = $this->prepareApiData($_f, $compact, $_recursion_check, $_fieldlist, $_recursion, $_recursion == true ? true : false, $_reference_status, $flat, $_keys, $_maxdepth);
                 }
               }
               else {
@@ -1238,7 +1245,7 @@ class helpers
                 ];
                 foreach ($_c->getDatas() as $_f) {
                   if ($_follow_references && $_f->getId() && ($_fieldlist == false || (is_array($_fieldlist) && (in_array($_f->getTemplates()->getFieldname(), $_fieldlist)))))
-                    $_temp[$_f->getTemplates()->getFieldname()] = $this->prepareApiData($_f, $compact, $_recursion_check, $_fieldlist, $_recursion, $_recursion == true ? true : false, $_reference_status, $flat, $_keys);
+                    $_temp[$_f->getTemplates()->getFieldname()] = $this->prepareApiData($_f, $compact, $_recursion_check, $_fieldlist, $_recursion, $_recursion == true ? true : false, $_reference_status, $flat, $_keys, $_maxdepth);
                 }
               }
               $_nc[$_c->getId()] = $_temp;
@@ -1335,12 +1342,12 @@ class helpers
   /**
    * cycles thru all fields of a contribution and prepares the field data
    *
-   * @param string $c
+   * @param object $c
    * @param string $compact
    * @return array
    * @author Urs Hofer
    */
-  function prepareApiContributionData($c, $compact, $request = null, $recursion = true, $_reference_status = ['Draft', 'Close'], $flat = false) {
+  function prepareApiContributionData($c, $compact, $request = null, $recursion = true, $_reference_status = ['Draft', 'Close'], $flat = false, $_maxdepth = false) {
     /* Checks */
     if (!$c) return false;
     if (!$c->getId()) return false;
@@ -1398,7 +1405,7 @@ class helpers
             }
           }          
         }
-        $d[$field->getTemplates()->getFieldname()] = $this->prepareApiData($field, $compact, [], $_fieldlist, $recursion, true, $_reference_status, $flat, $_keys);
+        $d[$field->getTemplates()->getFieldname()] = $this->prepareApiData($field, $compact, [], $_fieldlist, $recursion, true, $_reference_status, $flat, $_keys, $_maxdepth);
       }
     }
 
@@ -1412,7 +1419,7 @@ class helpers
    * @return array
    * @author Urs Hofer
    */
-  function prepareApiContribution($c, $compact = true, $request = null, $_recursion_check = [], $_recursion = true, $_follow_references = true, $_initial_state = ["Close","Draft"], $flat = false)
+  function prepareApiContribution($c, $compact = true, $request = null, $_recursion_check = [], $_recursion = true, $_follow_references = true, $_initial_state = ["Close","Draft"], $flat = false, $_maxdepth = false)
   {
     /* Checks */
     if (!$c) return false;
@@ -1440,15 +1447,15 @@ class helpers
         if ($_c && in_array($_c->getStatus(),$_initial_state)) {
           if ($flat === true) {
             $_references[] = array_merge(
-              $this->prepareApiContribution($_c, $compact, $request, $_recursion_check, $_recursion, $_recursion == true ? true : false, $_initial_state, $flat),
-              $this->prepareApiContributionData($_c, $compact, $request, true, $_initial_state, $flat)
+              $this->prepareApiContribution($_c, $compact, $request, $_recursion_check, $_recursion, $_recursion == true ? true : false, $_initial_state, $flat, $_maxdepth),
+              $this->prepareApiContributionData($_c, $compact, $request, true, $_initial_state, $flat, $_maxdepth)
             );
           }
           else {
             array_push($_references, [
               "ByField"       => $_f->getId(),
-              "Contribution"  => $this->prepareApiContribution($_c, $compact, $request, $_recursion_check, $_recursion, $_recursion == true ? true : false, $_initial_state, $flat),
-              "Data"          => $this->prepareApiContributionData($_c, $compact, $request, true, $_initial_state, $flat)
+              "Contribution"  => $this->prepareApiContribution($_c, $compact, $request, $_recursion_check, $_recursion, $_recursion == true ? true : false, $_initial_state, $flat, $_maxdepth),
+              "Data"          => $this->prepareApiContributionData($_c, $compact, $request, true, $_initial_state, $flat, $_maxdepth)
             ]);
           }
         }
