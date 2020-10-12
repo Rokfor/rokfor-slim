@@ -1120,7 +1120,6 @@ class helpers
     if (in_array($field_id, $_recursion_check)) return false;
 
     /* Depth Check */
-
     if ($_maxdepth !== false) {
       if (count($_recursion_check) >= (int)$_maxdepth) return false;
     }
@@ -1431,6 +1430,13 @@ class helpers
 
     /* Recursion Check */
     if (in_array($c->getId(), $_recursion_check)) return false;
+
+    /* Depth Check */
+    if ($_maxdepth !== false) {
+      if (count($_recursion_check) >= (int)$_maxdepth) return false;
+    }
+
+
     $_recursion_check[] = $c->getId();
 
     if (!$__book[$c->getFormats()->getForbook()]) {
