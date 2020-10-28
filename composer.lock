@@ -1166,12 +1166,12 @@
             "version": "v1.1.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/nrk/predis.git",
+                "url": "https://github.com/predis/predis.git",
                 "reference": "f0210e38881631afeafb56ab43405a92cafd9fd1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nrk/predis/zipball/f0210e38881631afeafb56ab43405a92cafd9fd1",
+                "url": "https://api.github.com/repos/predis/predis/zipball/f0210e38881631afeafb56ab43405a92cafd9fd1",
                 "reference": "f0210e38881631afeafb56ab43405a92cafd9fd1",
                 "shasum": ""
             },
@@ -1677,12 +1677,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Rokfor/rokfor-php-db.git",
-                "reference": "03a842469a787db8e3d018fa4f3f9b9a5a791133"
+                "reference": "a0ae3fccc7d32a027a3ec57728f52fc80daee8ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Rokfor/rokfor-php-db/zipball/03a842469a787db8e3d018fa4f3f9b9a5a791133",
-                "reference": "03a842469a787db8e3d018fa4f3f9b9a5a791133",
+                "url": "https://api.github.com/repos/Rokfor/rokfor-php-db/zipball/a0ae3fccc7d32a027a3ec57728f52fc80daee8ca",
+                "reference": "a0ae3fccc7d32a027a3ec57728f52fc80daee8ca",
                 "shasum": ""
             },
             "require": {
@@ -1721,7 +1721,7 @@
                 "source": "https://github.com/Rokfor/rokfor-php-db/tree/versioning-redis",
                 "issues": "https://github.com/Rokfor/rokfor-php-db/issues"
             },
-            "time": "2020-07-06T13:17:29+00:00"
+            "time": "2020-10-28T14:18:18+00:00"
         },
         {
             "name": "slim/csrf",
@@ -2537,7 +2537,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/thefuriouscoder/doctrine-cache-factory.git",
+                "url": "git@github.com:thefuriouscoder/doctrine-cache-factory.git",
                 "reference": "40492b1a5d9134f17ea86c98a703de22a251837d"
             },
             "dist": {
