@@ -25,7 +25,7 @@ $app->group('/api', function () {
    *
    *  Additional query parameters:
    *  - query=string
-   *  - sort=[id|date|name|sort or chapter or issue or fieldname]:[asc|desc]
+   *  - sort=[id|date|name|sort or chapter or issue or fieldname]:[asc|desc|rand()]
    *  - limit=int
    *  - offset=int
    *  - filter=[int|...]:[lt|gt|eq|like] (default operator: like)
