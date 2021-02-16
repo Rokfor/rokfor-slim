@@ -888,7 +888,12 @@
             name: name
           }, function (data) {
             var newOption = new Option(data.newrelation.name + ' (' + data.newrelation.id + ')', data.newrelation.id, true, true);
-            $('select#'+select).append(newOption).trigger('change');
+            $('select').each(function(i, n){
+                var _e = $(this);
+                if (_e.attr('id') == select) {
+                  _e.append(newOption).trigger('change');
+                }
+            })
           });
       }
     }
