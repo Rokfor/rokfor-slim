@@ -888,7 +888,7 @@
             name: name
           }, function (data) {
             var newOption = new Option(data.newrelation.name + ' (' + data.newrelation.id + ')', data.newrelation.id, true, true);
-            $('#'+select).append(newOption).trigger('change');
+            $('#'+select+'.rfselect').append(newOption).trigger('change');
           });
       }
     }
