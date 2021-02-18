@@ -1404,7 +1404,7 @@
             ],
             "authors": [
                 {
-                    "name": "William Durand",
+                    "name": "William DURAND",
                     "email": "william.durand1@gmail.com"
                 }
             ],
@@ -1822,12 +1822,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Rokfor/rokfor-php-db.git",
-                "reference": "11a5214e85483429d05ef2c5a1b750eea6b36425"
+                "reference": "9cde0a89e9a49230c266456f09e10c90512b8031"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Rokfor/rokfor-php-db/zipball/11a5214e85483429d05ef2c5a1b750eea6b36425",
-                "reference": "11a5214e85483429d05ef2c5a1b750eea6b36425",
+                "url": "https://api.github.com/repos/Rokfor/rokfor-php-db/zipball/9cde0a89e9a49230c266456f09e10c90512b8031",
+                "reference": "9cde0a89e9a49230c266456f09e10c90512b8031",
                 "shasum": ""
             },
             "require": {
@@ -1845,7 +1845,6 @@
                     "config/generated-classes/"
                 ]
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1863,7 +1862,11 @@
                 "rokfor",
                 "slim"
             ],
-            "time": "2020-10-28T14:18:18+00:00"
+            "support": {
+                "source": "https://github.com/Rokfor/rokfor-php-db/tree/versioning-redis",
+                "issues": "https://github.com/Rokfor/rokfor-php-db/issues"
+            },
+            "time": "2021-02-18T15:29:26+00:00"
         },
         {
             "name": "slim/csrf",
