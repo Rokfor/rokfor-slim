@@ -203,8 +203,8 @@ $app->group('/api', function () {
    *  - flat=true|false                  (default: false)
    *  - depth=0..x|false                 (default: false)
    *  - references=true|false            (default: true)
-   *  - data=[Fieldname|...]             (default: empty)
-   *  - keys=[Fieldname:Key|...]         (default: empty)
+   *  - data=[Fieldname|...]             (export specific field, default: empty)
+   *  - keys=[Fieldname:Key|...]         (export specific key of an array field, default: empty)
    */
   $this->options('/contribution/{id:[0-9]*}',
     function ($request, $response, $args) {}
