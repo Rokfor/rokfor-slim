@@ -1822,12 +1822,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Rokfor/rokfor-php-db.git",
-                "reference": "b7374d09c02def9112065d23dccadf3a327e31c8"
+                "reference": "8be14861add2f7b78c72aa65caebc803ffdb62bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Rokfor/rokfor-php-db/zipball/b7374d09c02def9112065d23dccadf3a327e31c8",
-                "reference": "b7374d09c02def9112065d23dccadf3a327e31c8",
+                "url": "https://api.github.com/repos/Rokfor/rokfor-php-db/zipball/8be14861add2f7b78c72aa65caebc803ffdb62bf",
+                "reference": "8be14861add2f7b78c72aa65caebc803ffdb62bf",
                 "shasum": ""
             },
             "require": {
@@ -1866,7 +1866,7 @@
                 "source": "https://github.com/Rokfor/rokfor-php-db/tree/versioning-redis",
                 "issues": "https://github.com/Rokfor/rokfor-php-db/issues"
             },
-            "time": "2021-06-03T10:27:59+00:00"
+            "time": "2021-07-01T19:19:00+00:00"
         },
         {
             "name": "slim/csrf",
@@ -2779,7 +2779,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/thefuriouscoder/doctrine-cache-factory.git",
+                "url": "git@github.com:thefuriouscoder/doctrine-cache-factory.git",
                 "reference": "40492b1a5d9134f17ea86c98a703de22a251837d"
             },
             "dist": {
