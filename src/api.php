@@ -1011,31 +1011,32 @@ $app->group('/api', function () {
                         $_old_data = json_decode($field->getContent(), true);
                         $_to_delete = [];
                         $_processed = [];
-                        foreach ((array)$fieldvalue as $file_part_name => $captions) {
-                          foreach ($_old_data as $_old_image_key =>&$_old_image) {
-                            if ($_old_image[1] == $file_part_name) {
-                              // Empty Captions - delete
-                              if (empty((array) $captions)) {
-                                $_to_delete[] = $_old_image_key;
-                                $this->db->DeleteFiles((array)$_old_image[1], (array)$_old_image[2]['thumbnail'], (array)$_old_image[2]['scaled'],  !$c->getTemplatenames()->getPublic());
-                                $_sort_possible = false;
-                              }
-                              // Rename
-                              else {
-                                if (is_array($_old_image[0])) {
-                                  $_processed[] = $file_part_name;
-                                  foreach ($_old_image[0] as $_old_caption_key => &$_old_caption)  {
-                                    $_old_caption = $captions[$_old_caption_key] ? $captions[$_old_caption_key] : "";
-                                  }
+                        if ($upload === false) {
+                          foreach ((array)$fieldvalue as $file_part_name => $captions) {
+                            foreach ($_old_data as $_old_image_key =>&$_old_image) {
+                              if ($_old_image[1] == $file_part_name) {
+                                // Empty Captions - delete
+                                if (empty((array) $captions)) {
+                                  $_to_delete[] = $_old_image_key;
+                                  $this->db->DeleteFiles((array)$_old_image[1], (array)$_old_image[2]['thumbnail'], (array)$_old_image[2]['scaled'],  !$c->getTemplatenames()->getPublic());
+                                  $_sort_possible = false;
                                 }
+                                // Rename
                                 else {
-                                  $_old_image[0] = $captions;
+                                  if (is_array($_old_image[0])) {
+                                    $_processed[] = $file_part_name;
+                                    foreach ($_old_image[0] as $_old_caption_key => &$_old_caption)  {
+                                      $_old_caption = $captions[$_old_caption_key] ? $captions[$_old_caption_key] : "";
+                                    }
+                                  }
+                                  else {
+                                    $_old_image[0] = $captions;
+                                  }
                                 }
                               }
                             }
                           }
                         }
-
                         // Delete all with empty captions
                         if (count($_to_delete) > 0) {
                           foreach ($_to_delete as $_delkey) {
