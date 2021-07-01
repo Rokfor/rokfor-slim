@@ -988,40 +988,42 @@ $app->group('/api', function () {
                          $_data_store[] = $this->db->FileModify($field->getId(),  []);
                       }
 
-                      // Cycle thru uploads
-                      foreach ((array)$fieldvalue as $file_part_name => $captions) {
-
+                      else {
                         // Add the file if a uploaded filed with the same key existts
-
-                        if ($file = $request->getUploadedFiles()[$file_part_name]) {
-                          $process = [];
-                          $_data_store[] = $this->db->FileStore(
-                            $field->getId(),
-                            $file,
-                            $process['original'],
-                            $process['relative'],
-                            $process['thumb'],
-                            $process['caption'],
-                            $process['newindex'],
-                            $captions);
+                        $upload = false;
+                        foreach ((array)$fieldvalue as $file_part_name => $captions) {
+                          if ($file = $request->getUploadedFiles()[$file_part_name]) {
+                            $process = [];
+                            $upload = true;
+                            $_data_store[] = $this->db->FileStore(
+                              $field->getId(),
+                              $file,
+                              $process['original'],
+                              $process['relative'],
+                              $process['thumb'],
+                              $process['caption'],
+                              $process['newindex'],
+                              $captions);
+                          }
                         }
 
                         // Otherwise cycle through the existing data and change captions
-
-                        else {
-                          $_old_data = json_decode($field->getContent(), true);
-                          $_to_delete = [];
+                        $_old_data = json_decode($field->getContent(), true);
+                        $_to_delete = [];
+                        $_processed = [];
+                        foreach ((array)$fieldvalue as $file_part_name => $captions) {
                           foreach ($_old_data as $_old_image_key =>&$_old_image) {
                             if ($_old_image[1] == $file_part_name) {
                               // Empty Captions - delete
                               if (empty((array) $captions)) {
                                 $_to_delete[] = $_old_image_key;
                                 $this->db->DeleteFiles((array)$_old_image[1], (array)$_old_image[2]['thumbnail'], (array)$_old_image[2]['scaled'],  !$c->getTemplatenames()->getPublic());
+                                $_sort_possible = false;
                               }
-
                               // Rename
                               else {
                                 if (is_array($_old_image[0])) {
+                                  $_processed[] = $file_part_name;
                                   foreach ($_old_image[0] as $_old_caption_key => &$_old_caption)  {
                                     $_old_caption = $captions[$_old_caption_key] ? $captions[$_old_caption_key] : "";
                                   }
@@ -1032,15 +1034,37 @@ $app->group('/api', function () {
                               }
                             }
                           }
-                          // Delete all with empty captions
+                        }
+
+                        // Delete all with empty captions
+                        if (count($_to_delete) > 0) {
                           foreach ($_to_delete as $_delkey) {
                             unset($_old_data[$_delkey]);
                           }
-                          // Store
-                          $field->setContent(json_encode($_old_data))
-                            ->setIsjson(true)
-                            ->save();
+                          $_old_data = array_values($_old_data);
+                          $_data_store[] = 'deleted '.join(',',$_to_delete);
                         }
+                        // Do a resort
+                        else {
+                          if (count($_processed) === count($_old_data) && $upload === false) {
+                            $_sorted = [];
+                            foreach ((array)$fieldvalue as $file_part_name => $captions) {
+                              foreach ($_old_data as $__old_image) {
+                                if ($__old_image[1] == $file_part_name) {
+                                  $_sorted[] = $__old_image;
+                                }
+                              }
+                            }
+                            $_data_store[] = 'sorted';                    
+                            $_old_data = $_sorted;
+                          }
+                        }
+
+                        // Store
+                        $field->setContent(json_encode($_old_data))
+                          ->setIsjson(true)
+                          ->save();
+                      
                       }
 
 
