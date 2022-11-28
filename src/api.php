@@ -18,6 +18,12 @@ $app->group('/api', function () {
 
   define('MAXLIMIT_PER_REQUEST', 1000);
 
+  /*
+   * Hardcoded max Depth for Multi Contributions
+   */
+
+  define('MAXDEPTH_GET_CONTRIBUTIONS', 2);
+
   /*  Contributions Access
    *
    *  Issue and chapter is either an integer or a combination of values seperated
@@ -62,6 +68,10 @@ $app->group('/api', function () {
     $_query    = isset($request->getQueryParams()['query']) ? $request->getQueryParams()['query'] : false;
     $_template = isset($request->getQueryParams()['template']) ? (int)$request->getQueryParams()['template'] : false;
     $_sort     = isset($request->getQueryParams()['sort']) ? $request->getQueryParams()['sort'] : 'asc';
+    $_maxdepth = $request->getQueryParams()['depth'] ? (int)$request->getQueryParams()['depth'] : false;
+    if ($_maxdepth > MAXDEPTH_GET_CONTRIBUTIONS) {
+      $_maxdepth = MAXDEPTH_GET_CONTRIBUTIONS;
+    }
     $flat      = $request->getQueryParams()['flat'] == "true" ? true : false;
 
 
@@ -115,7 +125,9 @@ $app->group('/api', function () {
       $_result_contribs = $c->find()->toArray();
       array_walk($_result_contribs, function(&$a){$a = $a['Id'];});
       // No Recursion on multiple contributions
-      $recursion = false;
+      $recursion = $_maxdepth === false 
+                    ? false
+                    : true;
       // Creating Cache Signature
       $signatur_fields = explode("|", strtolower($request->getQueryParams()['data']));
       $queryParams['data'] = $request->getQueryParams()['data'];
@@ -131,7 +143,7 @@ $app->group('/api', function () {
       }
       $queryParams['populate'] = $request->getQueryParams()['populate'];
 
-      $signature = md5($this->db->getUser()['username'].'-'.$compact.$_refstatus_for_signature."-".$follow_references."-".$recursion."-".$queryParams['populate'].join(".",$signatur_fields).$signatur_keys.($flat===true?'-flat':''));
+      $signature = md5($this->db->getUser()['username'].'-'.$compact.$_refstatus_for_signature."-".$follow_references."-".$recursion."-".$queryParams['populate'].join(".",$signatur_fields).$signatur_keys.($flat===true?'-flat':'').($_maxdepth!==false?('-'.$_maxdepth):''));
       $_caches = [];
       foreach (\ContributionscacheQuery::create()
           ->filterByForcontribution($_result_contribs)
@@ -160,8 +172,8 @@ $app->group('/api', function () {
         }
         // Create new Entry and store in Cache
         else {
-          $_contribution["Contribution"]  = $this->helpers->prepareApiContribution($_c, $compact, $queryParams, [], $recursion, $follow_references, $_refstatus, $flat);
-          $_contribution["Data"]          = $this->helpers->prepareApiContributionData($_c, $compact, $queryParams, $recursion, $_refstatus, $flat);
+          $_contribution["Contribution"]  = $this->helpers->prepareApiContribution($_c, $compact, $queryParams, [], $recursion, $follow_references, $_refstatus, $flat, $_maxdepth);
+          $_contribution["Data"]          = $this->helpers->prepareApiContributionData($_c, $compact, $queryParams, $recursion, $_refstatus, $flat, $_maxdepth);
           $this->db->NewContributionCache($_c, ["Contribution" => $_contribution["Contribution"], "Data" => $_contribution["Data"]], $signature);
         }
         if ($flat === true) {
