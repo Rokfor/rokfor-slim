@@ -22,7 +22,7 @@ $app->group('/api', function () {
    * Hardcoded max Depth for Multi Contributions
    */
 
-  define('MAXDEPTH_GET_CONTRIBUTIONS', 2);
+  define('MAXDEPTH_GET_CONTRIBUTIONS', 3);
 
   /*  Contributions Access
    *
