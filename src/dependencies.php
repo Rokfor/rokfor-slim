@@ -61,6 +61,8 @@ function _mailer($c, $message, $die = false) {
 class Mailer
 {
 
+  var $settings;
+
   function __construct($c)
   {
     $this->settings = $c->get('settings')['mail'];

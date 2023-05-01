@@ -1371,7 +1371,7 @@ $app->group('/rf', function () {
     // Fields array to overrule the enums for lengthInfluence in the schema.
     // Done via javascript on load in rf.templates.js
     $criteria = new \Propel\Runtime\ActiveQuery\Criteria();
-    $criteria->addAscendingOrderByColumn(__sort__);
+    $criteria->addAscendingOrderByColumn('__sort__');
     $fields_in_template = [];
     foreach ($args['template']->getTemplatess($criteria) as $field) {
       $fields_in_template["id"][] = $field->getId();

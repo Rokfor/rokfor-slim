@@ -5,12 +5,14 @@
  */
 class helpers
 {
-    /**
-   * container reference stored as class var.
-   *
-   * @var string
-   */
-  private $container;
+      /**
+     * container reference stored as class var.
+     *
+     * @var object
+     */
+    private $container;
+    
+    private $Parsedown;
 
     public function __construct(&$_container)
     {
@@ -102,7 +104,7 @@ class helpers
    * - contributions with the same template
    * - templates within the same chapter.
    *
-   * @param string $contribution
+   * @param object $contribution
    *
    * @author Urs Hofer
    */
@@ -940,10 +942,10 @@ class helpers
   /**
    * prepares the data for chapters, books or issues
    *
-   * @param string $object
+   * @param object $object
    * @param string $followrefs
    * @param string $compact
-   * @param string $request
+   * @param object $request
    * @return void
    * @author Urs Hofer
    */
@@ -1580,7 +1582,7 @@ class helpers
       $u->save();
 
       $criteria = new \Propel\Runtime\ActiveQuery\Criteria();
-      $criteria->addAscendingOrderByColumn(__sort__);
+      $criteria->addAscendingOrderByColumn('__sort__');
       $this->apiCall(
         $exporter->getApi(),
         'POST',

@@ -67,7 +67,7 @@ $app->add(function ($request, $response, $next) {
   }
   
 });
-$GLOBALS[timers]['e1'] = microtime(true) - $GLOBALS[starttime];
+$GLOBALS['timers']['e1'] = microtime(true) - $GLOBALS['starttime'];
 
 /**
  * Trailing Slash Middleware
@@ -90,7 +90,7 @@ $app->add(function ($request, $response, $next) {
 
     return $next($request, $response);
 });
-$GLOBALS[timers]['e2'] = microtime(true) - $GLOBALS[starttime];
+$GLOBALS['timers']['e2'] = microtime(true) - $GLOBALS['starttime'];
 
 /**
  * IP Resolver Middleware
@@ -117,7 +117,7 @@ $app->add(function ($request, $response, $next) {
   $ip = new RKA\Middleware\IpAddress($checkProxyHeaders, $trustedProxies, null, $headersToInspect);
   return $ip->__invoke($request, $response, $next);
 });
-$GLOBALS[timers]['e3'] = microtime(true) - $GLOBALS[starttime];
+$GLOBALS['timers']['e3'] = microtime(true) - $GLOBALS['starttime'];
 
 /**
  * Settings Middleware
@@ -134,7 +134,7 @@ $app->add(function ($request, $response, $next) {
   $response = $next($request, $response);
   return $response;
 });
-$GLOBALS[timers]['e4'] = microtime(true) - $GLOBALS[starttime];
+$GLOBALS['timers']['e4'] = microtime(true) - $GLOBALS['starttime'];
 
 /**
  * Logging Middleware
@@ -151,7 +151,7 @@ $app->add(function ($request, $response, $next) {
   $response = $next($request, $response);
   return $response;
 });
-$GLOBALS[timers]['e5'] = microtime(true) - $GLOBALS[starttime];
+$GLOBALS['timers']['e5'] = microtime(true) - $GLOBALS['starttime'];
 
 /**
  * Ajax Check Middleware
@@ -185,7 +185,7 @@ $ajaxcheck = function ($request, $response, $next) {
   $response = $next($request, $response);
   return $response;
 };
-$GLOBALS[timers]['e6'] = microtime(true) - $GLOBALS[starttime];
+$GLOBALS['timers']['e6'] = microtime(true) - $GLOBALS['starttime'];
 
 /**
  * Authentification Middleware
@@ -204,7 +204,7 @@ if (substr($uri, 0, 3) === "/rf") {
   } catch (Exception $e) {
   }
 }
-$GLOBALS[timers]['e7'] = microtime(true) - $GLOBALS[starttime];
+$GLOBALS['timers']['e7'] = microtime(true) - $GLOBALS['starttime'];
 
 
 
@@ -492,8 +492,8 @@ $redis = function ($request, $response, $next) {
           ->withAddedHeader('X-Redis-Expiration', $redis_expiration ? date('r', $redis_expiration) : -1 )
           ->withAddedHeader('X-Redis-Time', (microtime(true) - $qt))
           ->withAddedHeader('X-Cache-Hash', $hash)
-          ->withAddedHeader('X-Rokfor-Exectime', microtime(true) - $GLOBALS[starttime])
-          ->withAddedHeader('X-Rokfor-Timers', json_encode($GLOBALS[timers]));
+          ->withAddedHeader('X-Rokfor-Exectime', microtime(true) - $GLOBALS['starttime'])
+          ->withAddedHeader('X-Rokfor-Timers', json_encode($GLOBALS['timers']));
       }
       // Send Original
       else {
@@ -513,19 +513,19 @@ $redis = function ($request, $response, $next) {
             ->withHeader('Access-Control-Allow-Credentials', 'true')
             ->withHeader('Access-Control-Allow-Origin', '*')
             ->withHeader('X-Cache-Hash', $hash)
-            ->withHeader('X-Rokfor-Exectime', microtime(true) - $GLOBALS[starttime])
+            ->withHeader('X-Rokfor-Exectime', microtime(true) - $GLOBALS['starttime'])
             ->withHeader('X-Redis-Write-Time', $qt2)
             ->withHeader('X-Response-Write-Time', $qt1)
-            ->withHeader('X-Rokfor-Timers', json_encode($GLOBALS[timers]))              
+            ->withHeader('X-Rokfor-Timers', json_encode($GLOBALS['timers']))              
             ->write($_hash);
         }
         else {
           return $response
                   ->withAddedHeader('X-Cache-Hash', $hash)
-                  ->withAddedHeader('X-Rokfor-Exectime', microtime(true) - $GLOBALS[starttime])
+                  ->withAddedHeader('X-Rokfor-Exectime', microtime(true) - $GLOBALS['starttime'])
                   ->withAddedHeader('X-Redis-Write-Time', $qt2)
                   ->withAddedHeader('X-Response-Write-Time', $qt1)
-                  ->withAddedHeader('X-Rokfor-Timers', json_encode($GLOBALS[timers]));
+                  ->withAddedHeader('X-Rokfor-Timers', json_encode($GLOBALS['timers']));
         }
       }
     }
@@ -562,7 +562,7 @@ $redis = function ($request, $response, $next) {
         }
       }
       $response = $next($request, $response);
-      return $response->withAddedHeader('X-Rokfor-Exectime', microtime(true) - $GLOBALS[starttime]);
+      return $response->withAddedHeader('X-Rokfor-Exectime', microtime(true) - $GLOBALS['starttime']);
     }
 
   }
@@ -572,7 +572,7 @@ $redis = function ($request, $response, $next) {
     $response = $response->withHeader('Content-type', 'application/json');
   }
   $response = $next($request, $response);
-  return $response->withAddedHeader('X-Rokfor-Exectime', microtime(true) - $GLOBALS[starttime]);
+  return $response->withAddedHeader('X-Rokfor-Exectime', microtime(true) - $GLOBALS['starttime']);
 };
 
 

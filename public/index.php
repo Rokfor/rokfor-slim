@@ -2,8 +2,8 @@
 
 use Slim\CallableResolver;
 error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED);
-$GLOBALS[starttime] = microtime(true);
-$GLOBALS[timers] = [];
+$GLOBALS['starttime'] = microtime(true);
+$GLOBALS['timers'] = [];
 
 /* To help the built-in PHP dev server, check if the request was actually for
  * something which should probably be served as a static file
@@ -55,25 +55,25 @@ if (stristr($_SERVER['REQUEST_URI'], '/rf/') || stristr($_SERVER['REQUEST_URI'],
 $settings = require __DIR__ . '/../config/settings.php';
 date_default_timezone_set($settings['settings']['timezone']);
 $app = new \Slim\App($settings);
-$GLOBALS[timers]['a'] = microtime(true) - $GLOBALS[starttime];
+$GLOBALS['timers']['a'] = microtime(true) - $GLOBALS['starttime'];
 // Set up acl
 require __DIR__ . '/../src/acl.php';
-$GLOBALS[timers]['b'] = microtime(true) - $GLOBALS[starttime];
+$GLOBALS['timers']['b'] = microtime(true) - $GLOBALS['starttime'];
 // Set up dependencies
 require __DIR__ . '/../src/dependencies.php';
-$GLOBALS[timers]['c'] = microtime(true) - $GLOBALS[starttime];
+$GLOBALS['timers']['c'] = microtime(true) - $GLOBALS['starttime'];
 // Set up helper functions
 require __DIR__ . '/../src/helpers.php';
-$GLOBALS[timers]['d'] = microtime(true) - $GLOBALS[starttime];
+$GLOBALS['timers']['d'] = microtime(true) - $GLOBALS['starttime'];
 // Register middleware
 require __DIR__ . '/../src/middleware.php';
-$GLOBALS[timers]['e'] = microtime(true) - $GLOBALS[starttime];
+$GLOBALS['timers']['e'] = microtime(true) - $GLOBALS['starttime'];
 // Register routes
 require __DIR__ . '/../src/routes.php';
-$GLOBALS[timers]['f'] = microtime(true) - $GLOBALS[starttime];
+$GLOBALS['timers']['f'] = microtime(true) - $GLOBALS['starttime'];
 // Register API specific routes
 require __DIR__ . '/../src/api.php';
-$GLOBALS[timers]['g'] = microtime(true) - $GLOBALS[starttime];
+$GLOBALS['timers']['g'] = microtime(true) - $GLOBALS['starttime'];
 
 // Run app
 $app->run();
