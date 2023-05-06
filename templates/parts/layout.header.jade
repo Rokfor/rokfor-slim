@@ -25,8 +25,8 @@ header.main-header
                 ul.menu
                   each shortcut in shortcuts
                     li
-                      span.pull-right.margin.label.label-success=$shortcut['__config__'][template][name]
-                      a.directshortcut(href=$shortcut['__config__']['destination'][url], data-template=$shortcut['__config__'][template][id])
+                      span.pull-right.margin.label.label-success=$shortcut['__config__']['template'][name]
+                      a.directshortcut(href=$shortcut['__config__']['destination'][url], data-template=$shortcut['__config__']['template'][id])
                         i.fa.fa-book &nbsp;
                         span=$shortcut['__config__']['destination']['book']
                         br
