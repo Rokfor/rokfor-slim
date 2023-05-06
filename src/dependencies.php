@@ -43,7 +43,7 @@ function _mailer($c, $message, $die = false) {
                         "\n" .
                         "Backtrace\n" .
                         "\n" .
-                        print_r(debug_backtrace(), true).
+                        print_r(debug_backtrace(), true, 1).
                         "\n" .
                         "Best wishes,\n" .
                         "Rokfor";
