@@ -25,16 +25,16 @@ header.main-header
                 ul.menu
                   each shortcut in shortcuts
                     li
-                      span.pull-right.margin.label.label-success=$shortcut[__config__][template][name]
-                      a.directshortcut(href=$shortcut[__config__][destination][url], data-template=$shortcut[__config__][template][id])
+                      span.pull-right.margin.label.label-success=$shortcut['__config__'][template][name]
+                      a.directshortcut(href=$shortcut['__config__']['destination'][url], data-template=$shortcut['__config__'][template][id])
                         i.fa.fa-book &nbsp;
-                        span=$shortcut[__config__][destination][book]
+                        span=$shortcut['__config__']['destination']['book']
                         br
-                        if ($shortcut[__config__][destination][book]<>$shortcut[__config__][destination][issue] || $shortcut[__config__][destination][book]<>$shortcut[__config__][destination][chapter])
+                        if ($shortcut['__config__']['destination']['book']<>$shortcut['__config__']['destination']['issue'] || $shortcut['__config__']['destination']['book']<>$shortcut['__config__']['destination']['chapter'])
                           i.fa.fa-files-o &nbsp;
-                          if ($shortcut[__config__][destination][book]<>$shortcut[__config__][destination][issue])
-                            span=$shortcut[__config__][destination][issue].($shortcut[__config__][destination][chapter]<>$shortcut[__config__][destination][issue]?' > ':'')
-                          span=($shortcut[__config__][destination][chapter]<>$shortcut[__config__][destination][issue]?$shortcut[__config__][destination][chapter]:'')
+                          if ($shortcut['__config__']['destination']['book']<>$shortcut['__config__']['destination']['issue'])
+                            span=$shortcut['__config__']['destination']['issue'].($shortcut['__config__']['destination']['chapter']<>$shortcut['__config__']['destination']['issue']?' > ':'')
+                          span=($shortcut['__config__']['destination']['chapter']<>$shortcut['__config__']['destination']['issue']?$shortcut['__config__']['destination']['chapter']:'')
         if (is_array($favourites))
           li.dropdown.tasks-menu
             a.dropdown-toggle(href='#', data-toggle='dropdown')
@@ -47,16 +47,16 @@ header.main-header
                   each favourite in favourites
                     li
                       span.pull-right.margin.label.label-success=$favourite['count']
-                      a.ajaxload(href=$favourite[__config__][url], target=".content-wrapper#list")
+                      a.ajaxload(href=$favourite['__config__'][url], target=".content-wrapper#list")
                         i.fa.fa-book &nbsp;
-                        span=$favourite[__config__][book]
+                        span=$favourite['__config__']['book']
                         br
-                        if ($favourite[__config__][book]<>$favourite[__config__][issue] || $favourite[__config__][book]<>$favourite[__config__][chapter])
+                        if ($favourite['__config__']['book']<>$favourite['__config__']['issue'] || $favourite['__config__']['book']<>$favourite['__config__']['chapter'])
                           i.fa.fa-files-o &nbsp;
-                          if ($favourite[__config__][issue] <> $favourite[__config__][book])
-                            span=$favourite[__config__][issue].($favourite[__config__][issue]<>$favourite[__config__][chapter]?" > ":'')
-                          if ($favourite[__config__][issue]<>$favourite[__config__][chapter])
-                            span=$favourite[__config__][chapter]
+                          if ($favourite['__config__']['issue'] <> $favourite['__config__']['book'])
+                            span=$favourite['__config__']['issue'].($favourite['__config__']['issue']<>$favourite['__config__']['chapter']?" > ":'')
+                          if ($favourite['__config__']['issue']<>$favourite['__config__']['chapter'])
+                            span=$favourite['__config__']['chapter']
         li
           a.ajaxload(href='/rf/exporters', target=".content-wrapper#list")
             i.fa.fa-external-link

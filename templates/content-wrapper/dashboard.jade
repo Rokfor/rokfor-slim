@@ -12,13 +12,13 @@ section.content
     .row
       each box in contribution
         .col-sm-6.col-xs-12
-          a.info-box.ajaxload(href='/rf/contribution/'.$box[__config__]->getId(), target=".content-wrapper#detail")
+          a.info-box.ajaxload(href='/rf/contribution/'.$box['__config__']->getId(), target=".content-wrapper#detail")
             span.info-box-icon.bg-green
               i.fa.fa-pencil
             .info-box-content
               span.info-box-text.text-muted
-                b=$box[__config__]->getName()
-              span.info-box-text.text-muted=$box[__config__]->getTemplatenames()->getName()
+                b=$box['__config__']->getName()
+              span.info-box-text.text-muted=$box['__config__']->getTemplatenames()->getName()
               span.info-box-text.text-muted=date($translations['datefield'], $box['date'])
 
   if (is_array($contributions))
@@ -26,17 +26,17 @@ section.content
     .row
       each box in contributions
         .col-sm-6.col-xs-12
-          a.info-box.ajaxload(href=$box[__config__][url], target=".content-wrapper#list")
+          a.info-box.ajaxload(href=$box['__config__'][url], target=".content-wrapper#list")
             span.info-box-icon.bg-red
               i.fa.fa-files-o
             .info-box-content
               span.info-box-text.text-muted
                 b=date($translations['datefield'], $box['date'])
-              span.info-box-text.text-muted=$box[__config__][book]
-              if ($box[__config__][issue] <> $box[__config__][book])
-                span.info-box-text.text-muted=$box[__config__][issue]
-              if ($box[__config__][issue] <> $box[__config__][chapter])
-                span.info-box-text.text-muted=$box[__config__][chapter]
+              span.info-box-text.text-muted=$box['__config__']['book']
+              if ($box['__config__']['issue'] <> $box['__config__']['book'])
+                span.info-box-text.text-muted=$box['__config__']['issue']
+              if ($box['__config__']['issue'] <> $box['__config__']['chapter'])
+                span.info-box-text.text-muted=$box['__config__']['chapter']
 
 include ../js/csrf.js.jade
 if ($remember)
