@@ -85,9 +85,11 @@ $app->group('/rf', function () {
 
   $this->get('/ping', function ($request, $response, $args) {
     $r = $response->withHeader('Content-type', 'application/json');
-    $userlist = [];
     if ($this->get('redis')['client']) {
       $userlist = unserialize($this->redis['client']->get("%%asset%%__userlist__"));
+      if (!is_array($userlist)) {
+        $userlist = [];
+      }
       $userlist = array_filter($userlist, function($e){return time()-$e<120;});
       if ($this->db->getUser()) {
         $userlist[$this->db->getUser()["username"]] = time();
