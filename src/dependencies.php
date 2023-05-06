@@ -186,18 +186,24 @@ $container['db'] = function ($c) {
     $settings['dbname'] = preg_replace("/[^A-Za-z0-9-_]/", '', $host[0]);
   }
 
-
+  if ($rsettings['redis']) {
     \TFC\Cache\DoctrineCacheFactory::setOption(
       array(
-        'storage'     =>  ($rsettings['redis']  ? 'redis' : false),
+        'storage'     => 'redis',
         'prefix'      => 'rokfor-cache-'.$settings['dbname'],
         'host'        => $rsettings['redis_ip'],
         'port'        => $rsettings['redis_port'],
         'default_ttl' => 0
         )
-    );   
-
-
+      );
+  } else {
+    TFC\Cache\DoctrineCacheFactory::setOption(
+      array(
+          'storage'     => 'apc',
+          'default_ttl' => 3600
+      )
+    );
+  }
 
   try {
     $db = new Rokfor\DB(
