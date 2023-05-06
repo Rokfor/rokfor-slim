@@ -32,7 +32,7 @@
           }
           $history_reverse = [];
           foreach ($field->getHistory() as $hist) {
-            $history_reverse[$hist['id']] = $hist[value]." (".$hist['id'].")";
+            $history_reverse[$hist['id']] = $hist['value']." (".$hist['id'].")";
           };
         select.form-control.rfkeyword(id=field->getId(), style='width: 100%;', multiple="multiple", data-tags=($config['history_command']=='self'?'true':'false'))
           each dt in sort
