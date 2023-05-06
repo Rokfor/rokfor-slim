@@ -39,12 +39,6 @@ function _mailer($c, $message, $die = false) {
                         "\n" .
                         print_r($_SERVER, true).
                         "\n" .
-                        "----------------------------------------\n" .
-                        "\n" .
-                        "Backtrace\n" .
-                        "\n" .
-                        print_r(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1), true).
-                        "\n" .
                         "Best wishes,\n" .
                         "Rokfor";
       $mail->send();
