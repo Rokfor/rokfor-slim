@@ -73,7 +73,7 @@ header.main-header
               img.img-circle(src="//www.gravatar.com/avatar/".md5($user['email']))
               p
                 span.username=user.username
-                span="/".$user[role]
+                span="/".$user['role']
                 small=$translations['role_member'].": "
                   each group in user.group
                     span=group.Group
