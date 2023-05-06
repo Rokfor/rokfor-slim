@@ -26,7 +26,7 @@ section.content
     .row
       each box in contributions
         .col-sm-6.col-xs-12
-          a.info-box.ajaxload(href=$box['__config__'][url], target=".content-wrapper#list")
+          a.info-box.ajaxload(href=$box['__config__']['url'], target=".content-wrapper#list")
             span.info-box-icon.bg-red
               i.fa.fa-files-o
             .info-box-content
