@@ -1,5 +1,31 @@
 <?php
 
+class stackWalk
+{
+
+  private static $stack;
+
+  public static function add ($type, $id) {
+    if (!in_array($id, self::$stack[$type], true)) {
+      self::$stack[$type][] = $id;
+    }
+  }
+
+  public static function get() {
+    return self::$stack;
+  }
+
+  public static function reset() {
+    self::$stack = [
+      'issues' => [],
+      'chapters' => [],
+      'templates' => [],
+      'books' => [],
+      'contributions' => []
+    ];
+  }
+}
+
 /**
  * Description.
  */
@@ -1197,8 +1223,10 @@ class helpers
         case 'issues':
         case 'books':
           foreach ($field->getRelationsAsObject($_fieldsettings->history_command) as $related_object) {
-            if ($related_object)
+            if ($related_object) {
               $_nc[$related_object->getId()] = $this->prepareApiStructureInfo($related_object);
+              stackWalk::add($_fieldsettings->history_command, $related_object->getId());
+            }
           }
           $_content = count($_nc)>0 ? array_keys($_nc) : $_content;
           break;
@@ -1226,6 +1254,7 @@ class helpers
         case 'contributional':
           foreach ($field->getRelationsAsObject($_fieldsettings->history_command) as $_c) {
             if ($_c) {
+              stackWalk::add('contributions', $_c->getId());
               if ($flat === true) {
                 $_temp = [
                   "_id"                     => $_c->getId(),
@@ -1448,6 +1477,13 @@ class helpers
       $__book[$c->getFormats()->getForbook()] = $this->container->db->getBook($c->getFormats()->getForbook());
     }
     $_book = $__book[$c->getFormats()->getForbook()];
+
+    stackWalk::add('contributions', $c->getId());
+    stackWalk::add('books', $c->getFormats()->getForbook());
+    stackWalk::add('templates', $c->getFortemplate());
+    stackWalk::add('issues', $c->getForissue());
+    stackWalk::add('chapters', $c->getForchapter());
+
     $_references = [];
     $_reference_object = $c->getRDataContributions();
     // Referenced Contributions

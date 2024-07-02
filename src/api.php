@@ -143,7 +143,7 @@ $app->group('/api', function () {
       }
       $queryParams['populate'] = $request->getQueryParams()['populate'];
 
-      $signature = md5($this->db->getUser()['username'].'-'.$compact.$_refstatus_for_signature."-".$follow_references."-".$recursion."-".$queryParams['populate'].join(".",$signatur_fields).$signatur_keys.($flat===true?'-flat':'').($_maxdepth!==false?('-'.$_maxdepth):''));
+      $signature = 'v1_'.md5($this->db->getUser()['username'].'-'.$compact.$_refstatus_for_signature."-".$follow_references."-".$recursion."-".$queryParams['populate'].join(".",$signatur_fields).$signatur_keys.($flat===true?'-flat':'').($_maxdepth!==false?('-'.$_maxdepth):''));
       $_caches = [];
       foreach (\ContributionscacheQuery::create()
           ->filterByForcontribution($_result_contribs)
@@ -151,6 +151,13 @@ $app->group('/api', function () {
           ->find()
           ->toArray() as $_value) {
         $_caches[$_value['Forcontribution']] = $_value['Cache'];
+      }
+
+      if (count($_caches) > 0) {
+        \ContributionscacheQuery::create()
+          ->filterByForcontribution($_result_contribs)
+          ->filterBySignature($signature)
+          ->update(array('Touched' => new \DateTime()));
       }
 
 
@@ -172,9 +179,10 @@ $app->group('/api', function () {
         }
         // Create new Entry and store in Cache
         else {
+          stackWalk::reset();
           $_contribution["Contribution"]  = $this->helpers->prepareApiContribution($_c, $compact, $queryParams, [], $recursion, $follow_references, $_refstatus, $flat, $_maxdepth);
           $_contribution["Data"]          = $this->helpers->prepareApiContributionData($_c, $compact, $queryParams, $recursion, $_refstatus, $flat, $_maxdepth);
-          $this->db->NewContributionCache($_c, ["Contribution" => $_contribution["Contribution"], "Data" => $_contribution["Data"]], $signature);
+          $this->db->NewContributionCache($_c, ["Contribution" => $_contribution["Contribution"], "Data" => $_contribution["Data"]], $signature, stackWalk::get());
         }
         if ($flat === true) {
           $j[] = array_merge((array)$_contribution["Data"],(array)$_contribution["Contribution"]);
@@ -269,7 +277,7 @@ $app->group('/api', function () {
           $queryParams['populate'] = "true";
         }
 
-        $signature = md5($this->db->getUser()['username'].'-'.$compact.$signatur_fields.$signatur_keys.$_refstatus_for_signature.($follow_references===false?'-noref':'').($flat===true?'-flat':'').($_maxdepth!==false?('-'.$_maxdepth):''));
+        $signature = 'v1_'.md5($this->db->getUser()['username'].'-'.$compact.$signatur_fields.$signatur_keys.$_refstatus_for_signature.($follow_references===false?'-noref':'').($flat===true?'-flat':'').($_maxdepth!==false?('-'.$_maxdepth):''));
         if ($h = $c->checkCache($signature)) {
           $jc = $h->Contribution;
           $j  = $h->Data;
@@ -277,7 +285,7 @@ $app->group('/api', function () {
         else {
 
           // POPULATE ON SINGLE CONTRIBUTION TODO TODO
-
+          stackWalk::reset();
           if ($follow_references === false) {
             $jc = $this->helpers->prepareApiContribution($c, $compact, $queryParams, [], false, false, $_refstatus, $flat, $_maxdepth);
             $j  = $this->helpers->prepareApiContributionData($c, $compact, $queryParams, false, $_refstatus, $flat, $_maxdepth);
@@ -286,7 +294,7 @@ $app->group('/api', function () {
             $jc = $this->helpers->prepareApiContribution($c, $compact, $queryParams, [], true,  true, $_refstatus, $flat, $_maxdepth);
             $j  = $this->helpers->prepareApiContributionData($c, $compact, $queryParams, true, $_refstatus, $flat, $_maxdepth);
           }
-          $this->db->NewContributionCache($c, ["Contribution" => $jc, "Data" => $j], $signature);
+          $this->db->NewContributionCache($c, ["Contribution" => $jc, "Data" => $j], $signature, stackWalk::get());
         }
         if ($flat === true) {
             $response->withHeader('Content-type', 'application/json')->getBody()->write(json_encode(
