@@ -30,7 +30,7 @@ $app->add(function ($request, $response, $next) {
   try {
     $_p = $this->db->PDO();
   } catch (Exception $e) {
-    _mailer($this, "MYSQL Check:\n". $e->getMessage());
+    _mailer($this, "MYSQL Connection Check Error:\n". $e->getMessage());
     return $this->settings['multiple_spaces'] === true
       ? $response->withRedirect($this->settings['unknow_space_redirect'])
       : $this->view->render($response->withStatus(404), 'error.jade', [
@@ -59,7 +59,9 @@ $app->add(function ($request, $response, $next) {
       }
     }
   } catch (Exception $e) {
-    _mailer($this, "MYSQL:\nCould not check the database\n". $e->getMessage());
+    $arr = $_p ? $_p->errorInfo() : [];
+    $arr[] = $e->getMessage();
+    _mailer($this, "MYSQL Setup Error:\nCould not check the database:\n- ". join('\n- ', $arr));
     return $this->view->render($response->withStatus(404), 'error.jade', [
       "message" => "Could not check the database",
       "help"    => "A Message has been sent to the administrator."
