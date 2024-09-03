@@ -1,0 +1,13 @@
+{
+    "i18n-ally.localesPaths": [
+        "locale",
+        "bower_components/bootstrap-markdown/locale",
+        "bower_components/jquery-ui/ui/i18n",
+        "bower_components/AdminLTE/plugins/ckeditor/lang",
+        "bower_components/AdminLTE/plugins/datepicker/locales",
+        "bower_components/AdminLTE/plugins/select2/i18n",
+        "bower_components/jquery-ui/ui/minified/i18n",
+        "bower_components/AdminLTE/plugins/ckeditor/plugins/a11yhelp/dialogs/lang",
+        "bower_components/AdminLTE/plugins/ckeditor/plugins/specialchar/dialogs/lang"
+    ]
+}
