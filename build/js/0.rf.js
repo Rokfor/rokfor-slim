@@ -4,6 +4,23 @@
  */
 
 (function ($) {
+
+  Inputmask.extendDefinitions({
+    y: {
+      validator: "(16|17|18|19|20)\\d{2}",
+      cardinality: 4,
+      prevalidator: [ {
+          validator: "[12]",
+          cardinality: 1
+      }, {
+          validator: "(16|17|18|19|20)",
+          cardinality: 2
+      }, {
+          validator: "(16|17|18|19|20)\\d",
+          cardinality: 3
+      } ]
+    }
+  })
   
   if (typeof console === "undefined" || typeof console.log === "undefined") {
     console = {};
