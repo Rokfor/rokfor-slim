@@ -269,13 +269,22 @@
       })
       .on('keyup', 'input.nameedit', function(e) {
         $.rokfor.contribution.rename($(this).parents('tr').attr('id'),$(this).val());
+        $(this).next().html($(this).val());
+        /*
         if ($('#ptable').length) {
             $(this).next().html($(this).val());
         }
         else {
           var _self = this;
-          $.rokfor.delay(function(){table.cell($(_self).parent('td')).data($(_self).val());}, 1000, 't_'+$(this).parents('tr').attr('id') );
-        }        
+          table.cell($(_self).parent('td')).data($(_self).val(), false);
+        } */
+      })
+      .on('blur', 'input.nameedit', function(e) {
+        if ($('#ptable').length) {
+            // no need to update data. search is server side
+        } else {
+          table.cell($(this).parent('td')).data($(this).val());
+        }
       })
 
   
