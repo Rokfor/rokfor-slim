@@ -1,0 +1,6 @@
+composer.phar
+config/generated-conf
+vendor/
+.idea/
+.DS_STORE
+.phpintel

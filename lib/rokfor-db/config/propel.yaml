@@ -1,0 +1,23 @@
+# Database Connection Settings
+# Used to generate the configuration file via propel cli
+# Since the configuration is moved into the constructor of the
+# DB Class, you don't need this file normally.
+
+propel:
+  database:
+      connections:
+          rokfor:
+              adapter: mysql
+              classname: Propel\Runtime\Connection\DebugPDO
+              dsn: mysql:host=localhost;dbname=***;unix_socket=/tmp/mysql.sock;
+              user: ***
+              password: ***
+              attributes:
+  runtime:
+      defaultConnection: rokfor
+      connections:
+          - rokfor
+  generator:
+      defaultConnection: rokfor
+      connections:
+          - rokfor

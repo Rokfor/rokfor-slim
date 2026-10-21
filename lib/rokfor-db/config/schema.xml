@@ -1,0 +1,703 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="rokfor" defaultIdMethod="native" defaultPhpNamingMethod="underscore">
+  <table name="R_batch_forbook" idMethod="native" phpName="RBatchForbook" isCrossRef="true">
+    <column name="_batchid" phpName="Batchid" type="INTEGER" primaryKey="true" required="true"/>
+    <column name="_bookid" phpName="Bookid" type="INTEGER" primaryKey="true" required="true"/>
+    <foreign-key foreignTable="_batch" name="r_batch_a" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_batchid" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="_books" name="r_batch_b" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_bookid" foreign="id"/>
+    </foreign-key>
+    <index name="r_batch_b">
+      <index-column name="_bookid"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="R_fieldpostprocessor_forfield" idMethod="native" phpName="RFieldpostprocessorForfield" isCrossRef="true">
+    <column name="_postprocessorid" phpName="Postprocessorid" type="INTEGER" primaryKey="true" required="true"/>
+    <column name="_templateid" phpName="Templateid" type="INTEGER" primaryKey="true" required="true"/>
+    <foreign-key foreignTable="_fieldpostprocessor" name="r_post_a" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_postprocessorid" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="_templates" name="r_post_b" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_templateid" foreign="id"/>
+    </foreign-key>
+    <index name="r_post_b">
+      <index-column name="_templateid"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="R_rights_forbook" idMethod="native" phpName="RRightsForbook" isCrossRef="true">
+    <column name="_rightid" phpName="Rightid" type="INTEGER" primaryKey="true" required="true"/>
+    <column name="_bookid" phpName="Bookid" type="INTEGER" primaryKey="true" required="true"/>
+    <foreign-key foreignTable="_rights" name="r_rights3_a" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_rightid" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="_books" name="r_rights3_b" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_bookid" foreign="id"/>
+    </foreign-key>
+    <index name="r_rights3_b">
+      <index-column name="_bookid"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="R_rights_forissue" idMethod="native" phpName="RRightsForissue" isCrossRef="true">
+    <column name="_rightid" phpName="Rightid" type="INTEGER" primaryKey="true" required="true"/>
+    <column name="_issueid" phpName="Issueid" type="INTEGER" primaryKey="true" required="true"/>
+    <foreign-key foreignTable="_rights" name="r_rights2_a" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_rightid" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="_issues" name="r_rights2_b" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_issueid" foreign="id"/>
+    </foreign-key>
+    <index name="r_rights2_b">
+      <index-column name="_issueid"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="R_rights_fortemplate" idMethod="native" phpName="RRightsFortemplate" isCrossRef="true">
+    <column name="_rightid" phpName="Rightid" type="INTEGER" primaryKey="true" required="true"/>
+    <column name="_templateid" phpName="Templateid" type="INTEGER" primaryKey="true" required="true"/>
+    <foreign-key foreignTable="_rights" name="r_rights1_a" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_rightid" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="_templatenames" name="r_rights1_b" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_templateid" foreign="id"/>
+    </foreign-key>
+    <index name="r_rights1_b">
+      <index-column name="_templateid"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="R_rights_forformat" idMethod="native" phpName="RRightsForformat" isCrossRef="true">
+    <column name="_rightid" phpName="Rightid" type="INTEGER" primaryKey="true" required="true"/>
+    <column name="_formatid" phpName="Formatid" type="INTEGER" primaryKey="true" required="true"/>
+    <foreign-key foreignTable="_rights" name="r_rights5_a" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_rightid" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="_formats" name="r_rights5_b" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_formatid" foreign="id"/>
+    </foreign-key>
+    <index name="r_rights5_b">
+      <index-column name="_formatid"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="R_rights_foruser" idMethod="native" phpName="RRightsForuser" isCrossRef="true">
+    <column name="_rightid" phpName="Rightid" type="INTEGER" primaryKey="true" required="true"/>
+    <column name="_userid" phpName="Userid" type="INTEGER" primaryKey="true" required="true"/>
+    <foreign-key foreignTable="_rights" name="r_rights4_a" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_rightid" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="users" name="r_rights4_b" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_userid" foreign="id"/>
+    </foreign-key>
+    <index name="r_rights4_b">
+      <index-column name="_userid"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="R_templatenames_forbook" idMethod="native" phpName="RTemplatenamesForbook" isCrossRef="true">
+    <column name="_templateid" phpName="Templateid" type="INTEGER" primaryKey="true" required="true"/>
+    <column name="_bookid" phpName="Bookid" type="INTEGER" primaryKey="true" required="true"/>
+    <foreign-key foreignTable="_templatenames" name="r_templates2_a" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_templateid" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="_books" name="r_templates2_b" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_bookid" foreign="id"/>
+    </foreign-key>
+    <index name="r_templates2_b">
+      <index-column name="_bookid"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="R_templatenames_inchapter" idMethod="native" phpName="RTemplatenamesInchapter" isCrossRef="true">
+    <column name="_templateid" phpName="Templateid" type="INTEGER" primaryKey="true" required="true"/>
+    <column name="_chapterid" phpName="Chapterid" type="INTEGER" primaryKey="true" required="true"/>
+    <foreign-key foreignTable="_templatenames" name="r_templates1_a" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_templateid" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="_formats" name="r_templates1_b" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_chapterid" foreign="id"/>
+    </foreign-key>
+    <index name="r_templates1_b">
+      <index-column name="_chapterid"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="_batch" idMethod="native" phpName="Batch">
+    <column name="id" phpName="Id" type="INTEGER" size="4" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="_name" phpName="Name" type="LONGVARCHAR"/>
+    <column name="_description" phpName="Description" type="LONGVARCHAR"/>
+    <column name="_precode" phpName="Precode" type="LONGVARCHAR"/>
+    <column name="_postcode" phpName="Postcode" type="LONGVARCHAR"/>
+    <column name="__config__" phpName="ConfigSys" type="LONGVARCHAR"/>
+    <column name="__split__" phpName="Split" type="LONGVARCHAR"/>
+    <column name="__parentnode__" phpName="Parentnode" type="INTEGER" size="32"/>
+    <column name="__sort__" phpName="Sort" type="INTEGER" size="32"/>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+
+  </table>
+  <table name="_books" idMethod="native" phpName="Books">
+    <column name="id" phpName="Id" type="INTEGER" size="4" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="_name" phpName="Name" type="LONGVARCHAR"/>
+    <column name="__user__" phpName="UserSys" type="INTEGER" size="4"/>
+    <column name="__config__" phpName="ConfigSys" type="LONGVARCHAR"/>
+    <column name="__split__" phpName="Split" type="LONGVARCHAR"/>
+    <column name="__parentnode__" phpName="Parentnode" type="INTEGER" size="32"/>
+    <column name="__sort__" phpName="Sort" type="INTEGER" size="32"/>
+    <foreign-key foreignTable="users" phpName="userSysRef" name="user_ref_books" onDelete="SET NULL" onUpdate="SET NULL">
+      <reference local="__user__" foreign="id"/>
+    </foreign-key>
+    <index name="_user_index">
+      <index-column name="__user__"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+
+  </table>
+  <table name="_contributions" idMethod="native" phpName="Contributions">
+    <column name="id" phpName="Id" type="INTEGER" size="4" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="_fortemplate" phpName="Fortemplate" type="INTEGER" size="32"/>
+    <column name="_forissue" phpName="Forissue" type="INTEGER" size="32"/>
+    <column name="_name" phpName="Name" type="LONGVARCHAR"/>
+    <column name="_status" phpName="Status" type="LONGVARCHAR"/>
+    <column name="_newdate" phpName="Newdate" type="INTEGER" size="40"/>
+    <column name="_moddate" phpName="Moddate" type="INTEGER" size="40"/>
+    <column name="__user__" phpName="UserSys" type="INTEGER" size="4"/>
+    <column name="__config__" phpName="ConfigSys" type="LONGVARCHAR"/>
+    <column name="_forchapter" phpName="Forchapter" type="INTEGER" size="32"/>
+    <column name="__parentnode__" phpName="Parentnode" type="INTEGER" size="32"/>
+    <column name="__sort__" phpName="Sort" type="INTEGER" size="32"/>
+    <foreign-key foreignTable="users" phpName="userSysRef" name="user_ref_contribs" onDelete="SET NULL" onUpdate="SET NULL">
+      <reference local="__user__" foreign="id"/>
+    </foreign-key>
+    <index name="_user_index">
+      <index-column name="__user__"/>
+    </index>
+    <foreign-key foreignTable="_formats" name="c_chapter_fk" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_forchapter" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="_issues" name="c_issue_fk" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_forissue" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="_templatenames" name="c_template_fk" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_fortemplate" foreign="id"/>
+    </foreign-key>
+    <index name="_contributionfortemplate_index">
+      <index-column name="_fortemplate"/>
+    </index>
+    <index name="_contributionforissue_index">
+      <index-column name="_forissue"/>
+    </index>
+    <index name="_contributionname_index">
+      <index-column name="_name" size="10"/>
+    </index>
+    <index name="_forchapter_key">
+      <index-column name="_forchapter"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+    <behavior name="versionable">
+      <parameter name="log_created_at" value="true" />
+      <parameter name="log_created_by" value="true" />
+      <parameter name="log_comment" value="true" />
+    </behavior>
+  </table>
+  <table name="_contributions_cache" idMethod="native" phpName="Contributionscache">
+    <column name="id" phpName="Id" type="INTEGER" size="4" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="_signature" phpName="Signature" type="VARCHAR" required="true"/>
+    <column name="_forcontribution" phpName="Forcontribution" type="INTEGER" size="4"/>
+    <column name="_cache" phpName="Cache" type="CLOB"/>
+    <column name="_book" phpName="Book" type="LONGVARCHAR"/>
+    <column name="_issue" phpName="Issue" type="LONGVARCHAR"/>
+    <column name="_chapter" phpName="Chapter" type="LONGVARCHAR"/>
+    <column name="_template" phpName="Template" type="LONGVARCHAR"/>
+    <column name="_contribution" phpName="Contribution" type="LONGVARCHAR"/>
+    <column name="_touched" phpName="Touched" type="TIMESTAMP" defaultExpr="CURRENT_TIMESTAMP"/>
+    <foreign-key foreignTable="_contributions" name="c_contribution_fk" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_forcontribution" foreign="id"/>
+    </foreign-key>
+    <index name="_cacheforcontribution_index">
+      <index-column name="_forcontribution"/>
+    </index>
+    <index name="_signature_index">
+      <index-column name="_signature"/>
+    </index>
+    <index name="_book_index">
+      <index-column name="_book" length="768"/>
+    </index>
+    <index name="_issue_index">
+      <index-column name="_issue" length="768"/>
+    </index>
+    <index name="_chapter_index">
+      <index-column name="_chapter" length="768"/>
+    </index>
+    <index name="_template_index">
+      <index-column name="_template" length="768"/>
+    </index>
+    <index name="_contribution_index">
+      <index-column name="_contribution" length="768"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+    <behavior name="data_cache">
+      <parameter name="backend" value="redis" /> 
+      <parameter name="lifetime" value="0" />
+      <parameter name="auto_cache" value="true" />
+    </behavior>
+  </table>
+  <table name="_data" idMethod="native" phpName="Data">
+    <column name="id" phpName="Id" type="INTEGER" size="4" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="_forcontribution" phpName="Forcontribution" type="INTEGER" size="4"/>
+    <column name="_fortemplatefield" phpName="Fortemplatefield" type="INTEGER" size="32"/>
+    <column name="_content" phpName="Content" type="CLOB"/>
+    <column name="_isjson" phpName="Isjson" type="BOOLEAN"/>
+    <column name="__user__" phpName="UserSys" type="INTEGER" size="4"/>
+    <column name="__config__" phpName="ConfigSys" type="LONGVARCHAR"/>
+    <column name="__split__" phpName="Split" type="LONGVARCHAR"/>
+    <column name="__parentnode__" phpName="Parentnode" type="INTEGER" size="32"/>
+    <column name="__sort__" phpName="Sort" type="INTEGER" size="32"/>
+    <foreign-key foreignTable="users" phpName="userSysRef" name="user_ref_data" onDelete="SET NULL" onUpdate="SET NULL">
+      <reference local="__user__" foreign="id"/>
+    </foreign-key>
+    <index name="_user_index">
+      <index-column name="__user__"/>
+    </index>
+    <foreign-key foreignTable="_contributions" name="d_contribution_fk" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_forcontribution" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="_templates" name="d_template_fk" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_fortemplatefield" foreign="id"/>
+    </foreign-key>
+    <index name="_dataforcontribution_index">
+      <index-column name="_forcontribution"/>
+    </index>
+    <index name="_content">
+      <index-column name="_content"/>
+      <vendor type="mysql">
+        <parameter name="Index_type" value="FULLTEXT"/>
+      </vendor>
+    </index>
+    <index name="_datafortemplatefield_index">
+      <index-column name="_fortemplatefield"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+    <behavior name="versionable">
+      <parameter name="log_created_at" value="true" />
+      <parameter name="log_created_by" value="true" />
+      <parameter name="log_comment" value="true" />
+    </behavior>
+  </table>
+  <table name="R_data_data" idMethod="native" phpName="RDataData" isCrossRef="true">
+    <column name="_src" phpName="Source" type="INTEGER" size="4" primaryKey="true" required="true"/>
+    <column name="_ref" phpName="Target" type="INTEGER" size="4" primaryKey="true" required="true"/>
+    <foreign-key foreignTable="_data" name="r_data1_a" onDelete="CASCADE" onUpdate="CASCADE" phpName="RDataSrc">
+      <reference local="_src" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="_data" name="r_data1_b" onDelete="CASCADE" onUpdate="CASCADE" phpName="RDataRef">
+      <reference local="_ref" foreign="id"/>
+    </foreign-key>
+    <index name="r_data1_a">
+      <index-column name="_src"/>
+    </index>
+    <index name="r_data1_b">
+      <index-column name="_ref"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="R_data_contribution" idMethod="native" phpName="RDataContribution" isCrossRef="true">
+    <column name="_dataid" phpName="Dataid" type="INTEGER" size="4" primaryKey="true" required="true"/>
+    <column name="_contributionid" phpName="Contributionid" type="INTEGER" size="4" primaryKey="true" required="true"/>
+    <foreign-key foreignTable="_data" name="r_data2_a" onDelete="CASCADE" onUpdate="CASCADE" phpName="RData">
+      <reference local="_dataid" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="_contributions" name="r_data2_b" onDelete="CASCADE" onUpdate="CASCADE" phpName="RContribution">
+      <reference local="_contributionid" foreign="id"/>
+    </foreign-key>
+    <index name="r_data2_a">
+      <index-column name="_dataid"/>
+    </index>
+    <index name="r_data2_b">
+      <index-column name="_contributionid"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="R_data_book" idMethod="native" phpName="RDataBook" isCrossRef="true">
+    <column name="_dataid" phpName="Dataid" type="INTEGER" size="4" primaryKey="true" required="true"/>
+    <column name="_bookid" phpName="Bookid" type="INTEGER" size="4" primaryKey="true" required="true"/>
+    <foreign-key foreignTable="_data" name="r_data3_a" onDelete="CASCADE" onUpdate="CASCADE" phpName="RData">
+      <reference local="_dataid" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="_books" name="r_data3_b" onDelete="CASCADE" onUpdate="CASCADE" phpName="RBook">
+      <reference local="_bookid" foreign="id"/>
+    </foreign-key>
+    <index name="r_data3_a">
+      <index-column name="_dataid"/>
+    </index>
+    <index name="r_data3_b">
+      <index-column name="_bookid"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="R_data_format" idMethod="native" phpName="RDataFormat" isCrossRef="true">
+    <column name="_dataid" phpName="Dataid" type="INTEGER" size="4" primaryKey="true" required="true"/>
+    <column name="_formatid" phpName="Formatid" type="INTEGER" size="4" primaryKey="true" required="true"/>
+    <foreign-key foreignTable="_data" name="r_data4_a" onDelete="CASCADE" onUpdate="CASCADE" phpName="RData">
+      <reference local="_dataid" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="_formats" name="r_data4_b" onDelete="CASCADE" onUpdate="CASCADE" phpName="RFormat">
+      <reference local="_formatid" foreign="id"/>
+    </foreign-key>
+    <index name="r_data4_a">
+      <index-column name="_dataid"/>
+    </index>
+    <index name="r_data4_b">
+      <index-column name="_formatid"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="R_data_issue" idMethod="native" phpName="RDataIssue" isCrossRef="true">
+    <column name="_dataid" phpName="Dataid" type="INTEGER" size="4" primaryKey="true" required="true"/>
+    <column name="_issueid" phpName="Issueid" type="INTEGER" size="4" primaryKey="true" required="true"/>
+    <foreign-key foreignTable="_data" name="r_data5_a" onDelete="CASCADE" onUpdate="CASCADE" phpName="RData">
+      <reference local="_dataid" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="_issues" name="r_data5_b" onDelete="CASCADE" onUpdate="CASCADE" phpName="RIssue">
+      <reference local="_issueid" foreign="id"/>
+    </foreign-key>
+    <index name="r_data5_a">
+      <index-column name="_dataid"/>
+    </index>
+    <index name="r_data5_b">
+      <index-column name="_issueid"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="R_data_template" idMethod="native" phpName="RDataTemplate" isCrossRef="true">
+    <column name="_dataid" phpName="Dataid" type="INTEGER" size="4" primaryKey="true" required="true"/>
+    <column name="_templateid" phpName="Templateid" type="INTEGER" size="4" primaryKey="true" required="true"/>
+    <foreign-key foreignTable="_data" name="r_data6_a" onDelete="CASCADE" onUpdate="CASCADE" phpName="RData">
+      <reference local="_dataid" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="_templates" name="r_data6_b" onDelete="CASCADE" onUpdate="CASCADE" phpName="RTemplate">
+      <reference local="_templateid" foreign="id"/>
+    </foreign-key>
+    <index name="r_data6_a">
+      <index-column name="_dataid"/>
+    </index>
+    <index name="r_data6_b">
+      <index-column name="_templateid"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="R_plugin_book" idMethod="native" phpName="RPluginBook" isCrossRef="true">
+    <column name="_pluginid" phpName="Pluginid" type="INTEGER" size="4" primaryKey="true" required="true"/>
+    <column name="_bookid" phpName="Bookid" type="INTEGER" size="4" primaryKey="true" required="true"/>
+    <foreign-key foreignTable="_plugins" name="r_plugin1_a" onDelete="CASCADE" onUpdate="CASCADE" phpName="RPlugin">
+      <reference local="_pluginid" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="_books" name="r_plugin1_b" onDelete="CASCADE" onUpdate="CASCADE" phpName="RBook">
+      <reference local="_bookid" foreign="id"/>
+    </foreign-key>
+    <index name="r_plugin1_a">
+      <index-column name="_pluginid"/>
+    </index>
+    <index name="r_plugin1_b">
+      <index-column name="_bookid"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="R_plugin_format" idMethod="native" phpName="RPluginFormat" isCrossRef="true">
+    <column name="_pluginid" phpName="Pluginid" type="INTEGER" size="4" primaryKey="true" required="true"/>
+    <column name="_formatid" phpName="Formatid" type="INTEGER" size="4" primaryKey="true" required="true"/>
+    <foreign-key foreignTable="_plugins" name="r_plugin2_a" onDelete="CASCADE" onUpdate="CASCADE" phpName="RPlugin">
+      <reference local="_pluginid" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="_formats" name="r_plugin2_b" onDelete="CASCADE" onUpdate="CASCADE" phpName="RFormat">
+      <reference local="_formatid" foreign="id"/>
+    </foreign-key>
+    <index name="r_plugin2_a">
+      <index-column name="_pluginid"/>
+    </index>
+    <index name="r_plugin2_b">
+      <index-column name="_formatid"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="R_plugin_issue" idMethod="native" phpName="RPluginIssue" isCrossRef="true">
+    <column name="_pluginid" phpName="Pluginid" type="INTEGER" size="4" primaryKey="true" required="true"/>
+    <column name="_issueid" phpName="Issueid" type="INTEGER" size="4" primaryKey="true" required="true"/>
+    <foreign-key foreignTable="_plugins" name="r_plugin3_a" onDelete="CASCADE" onUpdate="CASCADE" phpName="RPlugin">
+      <reference local="_pluginid" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="_issues" name="r_plugin3_b" onDelete="CASCADE" onUpdate="CASCADE" phpName="RIssue">
+      <reference local="_issueid" foreign="id"/>
+    </foreign-key>
+    <index name="r_plugin3_a">
+      <index-column name="_pluginid"/>
+    </index>
+    <index name="r_plugin3_b">
+      <index-column name="_issueid"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="R_plugin_template" idMethod="native" phpName="RPluginTemplate" isCrossRef="true">
+    <column name="_pluginid" phpName="Pluginid" type="INTEGER" size="4" primaryKey="true" required="true"/>
+    <column name="_templateid" phpName="Templateid" type="INTEGER" size="4" primaryKey="true" required="true"/>
+    <foreign-key foreignTable="_plugins" name="r_plugin4_a" onDelete="CASCADE" onUpdate="CASCADE" phpName="RPlugin">
+      <reference local="_pluginid" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="_templatenames" name="r_plugin4_b" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_templateid" foreign="id"/>
+    </foreign-key>
+    <index name="r_plugin4_a">
+      <index-column name="_pluginid"/>
+    </index>
+    <index name="r_plugin4_b">
+      <index-column name="_templateid"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="_fieldpostprocessor" idMethod="native" phpName="Fieldpostprocessor">
+    <column name="id" phpName="Id" type="INTEGER" size="4" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="_name" phpName="Name" type="LONGVARCHAR"/>
+    <column name="_code" phpName="Code" type="LONGVARCHAR"/>
+    <column name="__config__" phpName="ConfigSys" type="LONGVARCHAR"/>
+    <column name="__split__" phpName="Split" type="LONGVARCHAR"/>
+    <column name="__parentnode__" phpName="Parentnode" type="INTEGER" size="32"/>
+    <column name="__sort__" phpName="Sort" type="INTEGER" size="32"/>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+
+  </table>
+  <table name="_formats" idMethod="native" phpName="Formats">
+    <column name="id" phpName="Id" type="INTEGER" size="4" autoIncrement="true" primaryKey="true" required="true"/>
+    <column name="_name" phpName="Name" type="LONGVARCHAR" required="true"/>
+    <column name="_forbook" phpName="Forbook" type="INTEGER" size="32"/>
+    <column name="__user__" phpName="UserSys" type="INTEGER" size="4"/>
+    <column name="__config__" phpName="ConfigSys" type="LONGVARCHAR"/>
+    <column name="__split__" phpName="Split" type="LONGVARCHAR"/>
+    <column name="__sort__" phpName="Sort" type="INTEGER" size="32"/>
+    <column name="__parentnode__" phpName="Parentnode" type="INTEGER" size="32"/>
+    <foreign-key foreignTable="users" phpName="userSysRef" name="user_ref_formats" onDelete="SET NULL" onUpdate="SET NULL">
+      <reference local="__user__" foreign="id"/>
+    </foreign-key>
+    <index name="_user_index">
+      <index-column name="__user__"/>
+    </index>
+    <foreign-key foreignTable="_books" name="f_book_fk" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_forbook" foreign="id"/>
+    </foreign-key>
+    <index name="id">
+      <index-column name="id"/>
+    </index>
+    <index name="f_book_fk">
+      <index-column name="_forbook"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+
+  </table>
+  <table name="_issues" idMethod="native" phpName="Issues">
+    <column name="id" phpName="Id" type="INTEGER" size="4" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="_name" phpName="Name" type="LONGVARCHAR"/>
+    <column name="_opendate" phpName="Opendate" type="INTEGER" size="40"/>
+    <column name="_closedate" phpName="Closedate" type="INTEGER" size="40"/>
+    <column name="_status" phpName="Status" type="LONGVARCHAR"/>
+    <column name="_infotext" phpName="Infotext" type="LONGVARCHAR"/>
+    <column name="_forbook" phpName="Forbook" type="INTEGER" size="32"/>
+    <column name="__user__" phpName="UserSys" type="INTEGER" size="4"/>
+    <column name="__config__" phpName="ConfigSys" type="LONGVARCHAR"/>
+    <column name="__split__" phpName="Split" type="LONGVARCHAR"/>
+    <column name="__parentnode__" phpName="Parentnode" type="INTEGER" size="32"/>
+    <column name="__sort__" phpName="Sort" type="INTEGER" size="32"/>
+    <foreign-key foreignTable="users" phpName="userSysRef" name="user_ref_issues" onDelete="SET NULL" onUpdate="SET NULL">
+      <reference local="__user__" foreign="id"/>
+    </foreign-key>
+    <index name="_user_index">
+      <index-column name="__user__"/>
+    </index>
+    <foreign-key foreignTable="_books" name="i_book_fk" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_forbook" foreign="id"/>
+    </foreign-key>
+    <index name="i_book_fk">
+      <index-column name="_forbook"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+
+  </table>
+  <table name="_log" idMethod="native" phpName="Log">
+    <column name="id" phpName="Id" type="INTEGER" size="4" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="_ip" phpName="Ip" type="LONGVARCHAR"/>
+    <column name="_agent" phpName="Agent" type="LONGVARCHAR"/>
+    <column name="_user" phpName="User" type="LONGVARCHAR"/>
+    <column name="_date" phpName="Date" type="INTEGER" size="40"/>
+    <column name="__config__" phpName="ConfigSys" type="LONGVARCHAR"/>
+    <column name="__split__" phpName="Split" type="LONGVARCHAR"/>
+    <column name="__parentnode__" phpName="Parentnode" type="INTEGER" size="32"/>
+    <column name="__sort__" phpName="Sort" type="INTEGER" size="32"/>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+
+  </table>
+  <table name="_pdf" idMethod="native" phpName="Pdf">
+    <column name="id" phpName="Id" type="INTEGER" size="4" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="_file" phpName="File" type="LONGVARCHAR"/>
+    <column name="_date" phpName="Date" type="INTEGER" size="40"/>
+    <column name="_issue" phpName="Issue" type="INTEGER" size="32"/>
+    <column name="_plugin" phpName="Plugin" type="INTEGER" size="32"/>
+    <column name="_fileinfo" phpName="Pages" type="LONGVARCHAR"/>
+    <column name="_otc" phpName="Otc" type="LONGVARCHAR"/>
+    <column name="_config" phpName="ConfigSys" type="LONGVARCHAR"/>
+    <column name="_configvalue" phpName="ConfigValue" type="INTEGER" size="32"/>
+    <column name="__sort__" phpName="Sort" type="INTEGER" size="32"/>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+    <foreign-key foreignTable="_plugins" name="i_pdf_fk" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_plugin" foreign="id"/>
+    </foreign-key>
+    <index name="i_pdf_fk">
+      <index-column name="_plugin"/>
+    </index>
+
+  </table>
+  <table name="_plugins" idMethod="native" phpName="Plugins">
+    <column name="id" phpName="Id" type="INTEGER" size="4" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="_name" phpName="Name" type="LONGVARCHAR"/>
+    <column name="_api"  phpName="Api" type="LONGVARCHAR"/>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+
+  </table>
+  <table name="_rights" idMethod="native" phpName="Rights">
+    <column name="id" phpName="Id" type="INTEGER" size="4" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="_group" phpName="Group" type="LONGVARCHAR"/>
+    <column name="__config__" phpName="ConfigSys" type="LONGVARCHAR"/>
+    <column name="__split__" phpName="Split" type="LONGVARCHAR"/>
+    <column name="__parentnode__" phpName="Parentnode" type="INTEGER" size="32"/>
+    <column name="__sort__" phpName="Sort" type="INTEGER" size="32"/>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+
+  </table>
+  <table name="_templatenames" idMethod="native" phpName="Templatenames">
+    <column name="id" phpName="Id" type="INTEGER" size="4" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="_name" phpName="Name" type="LONGVARCHAR" required="true"/>
+    <column name="_helptext" phpName="Helptext" type="LONGVARCHAR"/>
+    <column name="_helpimage" phpName="Helpimage" type="LONGVARCHAR"/>
+    <column name="_category" phpName="Category" type="LONGVARCHAR"/>
+    <column name="_public" phpName="Public" type="LONGVARCHAR"/>
+    <column name="__config__" phpName="ConfigSys" type="LONGVARCHAR"/>
+    <column name="__split__" phpName="Split" type="LONGVARCHAR"/>
+    <column name="__sort__" phpName="Sort" type="INTEGER" size="32"/>
+    <column name="__parentnode__" phpName="Parentnode" type="INTEGER" size="32"/>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+
+  </table>
+  <table name="_templates" idMethod="native" phpName="Templates">
+    <column name="id" phpName="Id" type="INTEGER" size="4" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="_fortemplate" phpName="Fortemplate" type="INTEGER" size="32"/>
+    <column name="_fieldname" phpName="Fieldname" type="LONGVARCHAR"/>
+    <column name="_helpdescription" phpName="Helpdescription" type="LONGVARCHAR"/>
+    <column name="_helpimage" phpName="Helpimage" type="LONGVARCHAR"/>
+    <column name="_fieldtype" phpName="Fieldtype" type="LONGVARCHAR"/>
+    <column name="__config__" phpName="ConfigSys" type="LONGVARCHAR"/>
+    <column name="__split__" phpName="Split" type="LONGVARCHAR"/>
+    <column name="__parentnode__" phpName="Parentnode" type="INTEGER" size="32"/>
+    <column name="__sort__" phpName="Sort" type="INTEGER" size="32"/>
+    <foreign-key foreignTable="_templatenames" name="t_template_fk" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="_fortemplate" foreign="id"/>
+    </foreign-key>
+    <index name="_fortemplate_key">
+      <index-column name="_fortemplate"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+
+  </table>
+  <table name="session" idMethod="native" phpName="Session">
+    <column name="id" phpName="Id" type="BIGINT" size="40" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="session" phpName="Session" type="BIGINT" size="40" required="true" defaultValue="0"/>
+    <column name="userid" phpName="Userid" type="TINYINT" required="true" defaultValue="0"/>
+    <column name="starttime" phpName="Starttime" type="BIGINT" size="40" required="true" defaultValue="0"/>
+    <column name="currenttime" phpName="Currenttime" type="BIGINT" size="40" required="true" defaultValue="0"/>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="users" idMethod="native" phpName="Users">
+    <column name="id" phpName="Id" type="INTEGER" size="4" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="username" phpName="Username" type="LONGVARCHAR" required="true"/>
+    <column name="password" phpName="Password" type="LONGVARCHAR" required="true"/>
+    <column name="usergroup" phpName="Usergroup" type="LONGVARCHAR" required="true"/>
+    <column name="email" phpName="Email" type="LONGVARCHAR"/>
+    <column name="roapikey" phpName="Roapikey" type="LONGVARCHAR"/>
+    <column name="rwapikey" phpName="Rwapikey" type="LONGVARCHAR"/>
+    <column name="__ip__" phpName="Ip" type="LONGVARCHAR"/>
+    <column name="__config__" phpName="ConfigSys" type="LONGVARCHAR"/>
+    <index name="id">
+      <index-column name="id"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+</database>

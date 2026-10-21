@@ -1,0 +1,36 @@
+{
+  "name": "rokfor/db",
+  "description": "PHP Library to access a Rokfor DB Structure",
+  "keywords": ["rokfor", "slim","framework","propelorm"],  
+  "type": "Library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Urs Hofer",
+      "email": "inquiries@rokfor.ch",
+      "homepage": "http://cloud.rokfor.ch"    
+    }
+  ],
+  "repositories": [
+    {
+        "type": "vcs",
+        "url": "https://github.com/urshofer/image"
+    },
+    {
+        "type": "vcs",
+        "url": "https://github.com/Rokfor/propel2-data-cache-behavior"
+    }
+  ],
+  "require": {
+    "propel/propel": "2.0.0-alpha8",
+    "intervention/image": "dev-master",
+    "aws/aws-sdk-php": "^3.0",
+    "thefuriouscoder/propel2-data-cache-behavior": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {"Rokfor\\": "src/"},
+    "classmap": ["config/generated-classes/"]
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
