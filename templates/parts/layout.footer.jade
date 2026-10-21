@@ -2,6 +2,8 @@ footer.main-footer
   small!=copy
     span Version&nbsp;
     span=$version."-".$commit
+    span &nbsp;&middot;&nbsp;PHP&nbsp;
+    span=$phpversion
     :php
       $dev = (PHP_SAPI == 'cli-server');
     if dev

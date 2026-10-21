@@ -129,6 +129,7 @@ class helpers
     public function GetVersionInfo(&$args) {
       $composer = json_decode(file_get_contents(__DIR__ . '/../composer.json'));
       $args['commit']  = file_get_contents(__DIR__ . '/../version.txt');
+      $args['phpversion'] = PHP_VERSION;
       $args['release_notification'] = [];
       foreach ($_SESSION["releasenotification"] as $_notification=>$_active) {
         if ($_active === true)
