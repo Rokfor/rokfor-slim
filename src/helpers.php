@@ -272,7 +272,7 @@ class helpers
    *
    * @author Urs Hofer
    */
-  public function createPreviewLinks($_string, $_book, $_issue, $_chapter, $_id) {
+  public static function createPreviewLinks($_string, $_book, $_issue, $_chapter, $_id) {
     $_previewstring = [];
     if ($_rawpreviewstring = explode(';', $_string)) {
       foreach ($_rawpreviewstring as $_p) {
