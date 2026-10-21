@@ -100,7 +100,7 @@ section.content(data-path=base_path)
 
     .box-body
       :php
-        $criteria = new \Propel\Runtime\ActiveQuery\Criteria(); $criteria->addAscendingOrderByColumn(__sort__);
+        $criteria = new \Propel\Runtime\ActiveQuery\Criteria(); $criteria->addAscendingOrderByColumn('__sort__');
       each field in $contribution->getDatas($criteria)
         :php
           $template = $field->getTemplates(); $config = json_decode($template->getConfigSys(), true);

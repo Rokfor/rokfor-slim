@@ -1,4 +1,4 @@
-if (($config[rtfeditor] || $config[markdowneditor]) && !$config[arrayeditor])
+if (($config['rtfeditor'] || $config['markdowneditor']) && !$config['arrayeditor'])
 
   // RTF EDITOR
 
@@ -14,10 +14,10 @@ if (($config[rtfeditor] || $config[markdowneditor]) && !$config[arrayeditor])
           button.btn.btn-default.btn-sm(data-widget="collapse")
            i.fa.fa-minus
       .box-body
-        if ($config[rtfeditor])
+        if ($config['rtfeditor'])
           include rtfeditor.toolbar.jade
           .rtftextarea.form-control(data-counter="#counter_".$field->getId(), data-maxlength=config.textlength, style="min-height:".(str_replace(',', '.', $config['maxlines']*1.5))."em;", id=field->getId())!=field->getContent()
-        if ($config[markdowneditor])
+        if ($config['markdowneditor'])
           textarea.mdtextarea.form-control(data-counter="#counter_".$field->getId(), data-maxlength=config.textlength, style="min-height:".(str_replace(',', '.', $config['maxlines']*1.5))."em;", rows=config.maxlines, id=field->getId())!=field->getContent()
 
 else if config.arrayeditor

@@ -21,6 +21,6 @@ each book in menu
           ul.treeview-menu(class=(count($book['issues'])==1?'menu-open menu-force':''))
             each chapter in issue.chapters
               li
-                a.ajaxload(id="chapter_".str_replace("/","_",$chapter[url]), href=chapter.url, target=".content-wrapper#list")
+                a.ajaxload(id="chapter_".str_replace("/","_",$chapter['url']), href=chapter.url, target=".content-wrapper#list")
                   i.fa.fa-files-o.text-white
                   span=chapter.name

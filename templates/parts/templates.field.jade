@@ -20,7 +20,7 @@
           span.input-group-btn
             button.btn.btn-success.fieldaction.disabled(id="button_newfield_".$template->getId() data-input="#input_newfield_".$template->getId())=$translations['field_add']
         :php
-          $criteria = new \Propel\Runtime\ActiveQuery\Criteria(); $criteria->addAscendingOrderByColumn(__sort__);
+          $criteria = new \Propel\Runtime\ActiveQuery\Criteria(); $criteria->addAscendingOrderByColumn('__sort__');
           $fields_in_template = [];
         .sortable.margin
           each field in $template->getTemplatess($criteria)
