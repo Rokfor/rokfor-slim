@@ -1820,12 +1820,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/urshofer/Propel2.git",
-                "reference": "4ea9c367e89fd8721d262a8f1388e3862b5f087b"
+                "reference": "9889f15aafbed399f68348659bb2f8f087546370"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/urshofer/Propel2/zipball/4ea9c367e89fd8721d262a8f1388e3862b5f087b",
-                "reference": "4ea9c367e89fd8721d262a8f1388e3862b5f087b",
+                "url": "https://api.github.com/repos/urshofer/Propel2/zipball/9889f15aafbed399f68348659bb2f8f087546370",
+                "reference": "9889f15aafbed399f68348659bb2f8f087546370",
                 "shasum": ""
             },
             "require": {
@@ -1875,7 +1875,7 @@
                 "ORM",
                 "persistence"
             ],
-            "time": "2026-10-21T14:29:12+00:00"
+            "time": "2026-10-21T16:03:18+00:00"
         },
         {
             "name": "psr/clock",
