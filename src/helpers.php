@@ -27,6 +27,64 @@ class stackWalk
 }
 
 /**
+ * Issues and validates the JWT tokens used for read/write api access,
+ * password reminders and exporter callbacks (lcobucci/jwt 5).
+ *
+ * Tokens are only ever signed and verified by this server, so the HMAC
+ * key is derived from the secret: api keys and one time codes can be
+ * shorter than the 256 bits HS256 requires.
+ */
+class jwtToken
+{
+
+  private static function config($secret) {
+    return \Lcobucci\JWT\Configuration::forSymmetricSigner(
+      new \Lcobucci\JWT\Signer\Hmac\Sha256(),
+      \Lcobucci\JWT\Signer\Key\InMemory::plainText(hash('sha256', (string)$secret, true))
+    );
+  }
+
+  public static function issue($secret, $uid, $ttl) {
+    $config = self::config($secret);
+    $now = new \DateTimeImmutable('@' . time());
+    return $config->builder()
+      ->issuedBy($_SERVER['HTTP_HOST'])
+      ->permittedFor($_SERVER['HTTP_HOST'])
+      ->identifiedBy(uniqid('rf', true))
+      ->issuedAt($now)
+      ->canOnlyBeUsedAfter($now)
+      ->expiresAt($now->modify('+' . (int)$ttl . ' seconds'))
+      ->withClaim('uid', $uid)
+      ->getToken($config->signer(), $config->signingKey())
+      ->toString();
+  }
+
+  /* Parses without verifying, throws on malformed tokens */
+  public static function parse($token) {
+    return self::config('')->parser()->parse((string)$token);
+  }
+
+  public static function uid($token) {
+    return $token->claims()->get('uid');
+  }
+
+  public static function valid($token, $secret) {
+    $config = self::config($secret);
+    return $config->validator()->validate(
+      $token,
+      new \Lcobucci\JWT\Validation\Constraint\SignedWith($config->signer(), $config->verificationKey()),
+      new \Lcobucci\JWT\Validation\Constraint\IssuedBy($_SERVER['HTTP_HOST']),
+      new \Lcobucci\JWT\Validation\Constraint\PermittedFor($_SERVER['HTTP_HOST']),
+      new \Lcobucci\JWT\Validation\Constraint\LooseValidAt(new class implements \Psr\Clock\ClockInterface {
+        public function now(): \DateTimeImmutable {
+          return new \DateTimeImmutable();
+        }
+      })
+    );
+  }
+}
+
+/**
  * Description.
  */
 class helpers
@@ -1594,16 +1652,7 @@ class helpers
       $uid = uniqid('otc-', true);
       $u = new \Pdf();
       $u->save();
-      $signer = new \Lcobucci\JWT\Signer\Hmac\Sha256();
-      $token = (new \Lcobucci\JWT\Builder())->setIssuer($_SERVER['HTTP_HOST'])    // Configures the issuer (iss claim)
-                              ->setAudience($_SERVER['HTTP_HOST'])  // Configures the audience (aud claim)
-                              ->setId(uniqid('rf', true), true)     // Configures the id (jti claim), replicating as a header item
-                              ->setIssuedAt(time())                 // Configures the time that the token was issue (iat claim)
-                              ->setNotBefore(time())                // Configures the time that the token can be used (nbf claim)
-                              ->set('uid', $u->getId())             // Configures a new claim, called "uid"
-                              ->setExpiration(time() + 86400)        // Configures the expiration time of the token (nbf claim)
-                              ->sign($signer,  $uid)      // creates a signature using "testing" as key
-                              ->getToken();                         // Retrieves the generated token
+      $token = jwtToken::issue($uid, $u->getId(), 86400);
 
 
 

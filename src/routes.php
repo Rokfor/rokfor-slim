@@ -1,10 +1,5 @@
 <?php
 use Monolog\Processor\GitProcessor;
-use Lcobucci\JWT\Builder;
-use Lcobucci\JWT\Signer\Hmac\Sha256;
-use Lcobucci\JWT\Parser;
-use Lcobucci\JWT\ValidationData;
-
 
 if ($container->get('settings')['multiple_spaces'] === true)  {
   $app->get('/', function ($request, $response, $args) {
@@ -538,16 +533,7 @@ $app->group('/rf', function () {
         $user->setConfigSys(json_encode($otcstack))->save();
 
 
-        $signer = new Sha256();
-        $token = (new Builder())->setIssuer($_SERVER['HTTP_HOST'])    // Configures the issuer (iss claim)
-                                ->setAudience($_SERVER['HTTP_HOST'])  // Configures the audience (aud claim)
-                                ->setId(uniqid('rf', true), true)     // Configures the id (jti claim), replicating as a header item
-                                ->setIssuedAt(time())                 // Configures the time that the token was issue (iat claim)
-                                ->setNotBefore(time())                // Configures the time that the token can be used (nbf claim)
-                                ->setExpiration(time() + 3600)        // Configures the expiration time of the token (nbf claim)
-                                ->set('uid', $user->getId())             // Configures a new claim, called "uid"
-                                ->sign($signer,  $otcstack->otc)   // creates a signature using "testing" as key
-                                ->getToken();                         // Retrieves the generated token
+        $token = jwtToken::issue($otcstack->otc, $user->getId(), 3600);
 
         $_mailtext = $this->translations['remember-mail'].'<br><br><a href="'.$_SERVER['HTTP_REFERER'].'?otc='.$token.'">'.$this->translations['remember-mail-send'].'</a>';
         $this->get('sendmail')->sendmail($email, '[ROKFOR CMS] - Password Reminder', $_mailtext);
@@ -559,19 +545,15 @@ $app->group('/rf', function () {
       $otc = $request->getQueryParams()['otc'] ? $request->getQueryParams()['otc'] : $request->getParsedBody()['otc'];
       if ($otc) {
         try {
-          $signer = new Sha256();
-          $token  = (new Parser())->parse((string) $otc); // Parses from a string
-          $u      = $this->db->getUsers()->findPk((int)$token->getClaim('uid'));
-          $data   = new ValidationData(); // It will use the current time to validate (iat, nbf and exp)
-          $data->setIssuer($_SERVER['HTTP_HOST']);
-          $data->setAudience($_SERVER['HTTP_HOST']);
+          $token  = jwtToken::parse($otc);
+          $u      = $this->db->getUsers()->findPk((int)jwtToken::uid($token));
         } catch (Exception $e) {
           $args["message"]  = 'Link is not valid';
           $args["showform"] = false;
         }
         if ($u) {
           $otcstack = json_decode($u->getConfigSys());
-          if ($token->verify($signer, $otcstack->otc ? $otcstack->otc : "-") && $token->validate($data)) {
+          if (jwtToken::valid($token, $otcstack->otc ? $otcstack->otc : "-")) {
             $args["otc"] = $otc;
             $template = 'newpw.jade';
             $errors = [];

@@ -2,9 +2,9 @@
 
 namespace Rokfor;
 
-use Zend\Permissions\Acl\Acl as ZendAcl;
+use Laminas\Permissions\Acl\Acl as LaminasAcl;
 
-class Acl extends ZendAcl
+class Acl extends LaminasAcl
 {
     public function __construct()
     {

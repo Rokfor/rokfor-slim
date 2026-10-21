@@ -2,9 +2,6 @@
 
 use Slim\Exception\NotFoundException;
 use Slim\Http\Response;
-use Lcobucci\JWT\Parser;
-use Lcobucci\JWT\Signer\Hmac\Sha256;
-use Lcobucci\JWT\ValidationData;
 
 /**
  * Database Check Middleware
@@ -379,15 +376,10 @@ $apiauth = function ($request, $response, $next) {
       // Pos/Put/Delete Requests: JWT Token Required
 
       if ($request->isPost() || $request->isPut() || $request->isDelete()) {
-        $signer = new Sha256();
-        $token  = (new Parser())->parse((string) $apikey); // Parses from a string
-        $u      = $this->db->getUsers()->findPk((int)$token->getClaim('uid'));
+        $token  = jwtToken::parse($apikey);
+        $u      = $this->db->getUsers()->findPk((int)jwtToken::uid($token));
 
-        $data   = new ValidationData(); // It will use the current time to validate (iat, nbf and exp)
-        $data->setIssuer($_SERVER['HTTP_HOST']);
-        $data->setAudience($_SERVER['HTTP_HOST']);
-
-        if ($u && $token->verify($signer, $u->GetRwapikey()) && $token->validate($data)) {
+        if ($u && jwtToken::valid($token, $u->GetRwapikey())) {
           $this->db->setUser($u->getId());
           $access = true;
           if ($this->db->getUser()['ip']) {

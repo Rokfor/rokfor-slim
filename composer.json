@@ -28,14 +28,14 @@
         }
     ],
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": "^8.2",
         "slim/slim": "~3.0",
         "jlndk/slim-jade": "dev-pug",
         "propel/propel": "dev-php8 as 2.0.0-alpha8",
         "thefuriouscoder/propel2-data-cache-behavior": "dev-master",
         "intervention/image": "dev-master#032263954ca2a5258fb5fe7492962c1a16ca9f3c",
         "aws/aws-sdk-php": "^3.0",
-        "jeremykendall/slim-auth": "dev-slim-3.x",
+        "jeremykendall/slim-auth": "dev-php8",
         "monolog/monolog": "^1.17",
         "slim/csrf": "^0.6.0",
         "slim/flash": "^0.1.0",
@@ -43,7 +43,7 @@
         "palanik/corsslim": "dev-slim3",
         "erusev/parsedown": "^1.6",
         "predis/predis": "^1.0",
-        "lcobucci/jwt": "^3.1",
+        "lcobucci/jwt": "^5.6",
         "phpmailer/phpmailer": "^6.0",
         "ext-imagick": "*",
         "ext-gd": "*",
@@ -54,7 +54,7 @@
         "classmap": ["lib/rokfor-db/config/generated-classes/"]
     },
     "require-dev": {
-        "phpunit/phpunit": "*"
+        "phpunit/phpunit": "^11.5"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,

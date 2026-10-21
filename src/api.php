@@ -1,10 +1,5 @@
 <?php
 
-use Lcobucci\JWT\Builder;
-use Lcobucci\JWT\Signer\Hmac\Sha256;
-use Lcobucci\JWT\Parser;
-use Lcobucci\JWT\ValidationData;
-
 $app->group('/api', function () {
   /*
    * Pretty Print JSON
@@ -669,18 +664,9 @@ $app->group('/api', function () {
       if ($u) {
         $this->db->setUser($u->getId());
         $this->db->addLog('post_api', 'POST' , $request->getAttribute('ip_address'));
-        $signer = new Sha256();
-        $token = (new Builder())->setIssuer($_SERVER['HTTP_HOST'])    // Configures the issuer (iss claim)
-                                ->setAudience($_SERVER['HTTP_HOST'])  // Configures the audience (aud claim)
-                                ->setId(uniqid('rf', true), true)     // Configures the id (jti claim), replicating as a header item
-                                ->setIssuedAt(time())                 // Configures the time that the token was issue (iat claim)
-                                ->setNotBefore(time())                // Configures the time that the token can be used (nbf claim)
-                                ->setExpiration(time() + 3600)        // Configures the expiration time of the token (nbf claim)
-                                ->set('uid', $u->getId())             // Configures a new claim, called "uid"
-                                ->sign($signer,  $u->getRwapikey()) // creates a signature using "testing" as key
-                                ->getToken();                         // Retrieves the generated token
+        $token = jwtToken::issue($u->getRwapikey(), $u->getId(), 3600);
         $r = $response->withHeader('Content-type', 'application/json');
-        $r->getBody()->write(json_encode((string)$token));
+        $r->getBody()->write(json_encode($token));
         return $r;
       }
       else {
@@ -1409,12 +1395,8 @@ $app->group('/api', function () {
         $otc = $data->Token;
         if ($otc) {
           try {
-            $signer = new Sha256();
-            $token  = (new Parser())->parse((string) $otc); // Parses from a string
-            $process_id = $token->getClaim('uid');
-            $vdata   = new ValidationData(); // It will use the current time to validate (iat, nbf and exp)
-            $vdata->setIssuer($_SERVER['HTTP_HOST']);
-            $vdata->setAudience($_SERVER['HTTP_HOST']);
+            $token  = jwtToken::parse($otc);
+            $process_id = jwtToken::uid($token);
           } catch (Exception $e) {
             $args["message"]  = 'Link is not valid';
             $args["showform"] = false;
@@ -1422,7 +1404,7 @@ $app->group('/api', function () {
           $pdf =\PdfQuery::create()->findPk($process_id);
           if ($pdf) {
             $otcstack = $pdf->getOtc();
-            if ($token && $token->verify($signer, $otcstack) && $token->validate($vdata)) {
+            if ($token && jwtToken::valid($token, $otcstack)) {
               if ($pdf->getConfigValue() == 1 ) {
                 if (time() - $pdf->getDate() < 3600) {
                     switch (strtolower($data->Status)) {
@@ -1591,7 +1573,7 @@ $app->get('/asset/{id:[0-9]*}/{field:[0-9]*}/{file:.+}', function ($request, $re
   // only if the asset is called with the backend = True query param.
 
   if ($backend === true) {
-    $auth      = new \Zend\Authentication\AuthenticationService();
+    $auth      = new \Laminas\Authentication\AuthenticationService();
     $logged_in = $auth->getIdentity()['username'];
   }
   else {
