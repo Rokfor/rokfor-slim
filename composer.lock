@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7ae19ccfb44efff771b0fb1247cf3344",
+    "content-hash": "aca40335eb27671a747fc7e0e9a3fdf2",
     "packages": [
         {
             "name": "akrabat/rka-ip-address-middleware",
@@ -1355,16 +1355,16 @@
         },
         {
             "name": "propel/propel",
-            "version": "2.0.0-alpha8",
+            "version": "dev-php8",
             "source": {
                 "type": "git",
-                "url": "https://github.com/propelorm/Propel2.git",
-                "reference": "4c309e3e5adaba077f54c0fab93c34995d7c9b3d"
+                "url": "https://github.com/urshofer/Propel2.git",
+                "reference": "4ea9c367e89fd8721d262a8f1388e3862b5f087b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/propelorm/Propel2/zipball/4c309e3e5adaba077f54c0fab93c34995d7c9b3d",
-                "reference": "4c309e3e5adaba077f54c0fab93c34995d7c9b3d",
+                "url": "https://api.github.com/repos/urshofer/Propel2/zipball/4ea9c367e89fd8721d262a8f1388e3862b5f087b",
+                "reference": "4ea9c367e89fd8721d262a8f1388e3862b5f087b",
                 "shasum": ""
             },
             "require": {
@@ -1398,13 +1398,12 @@
                     "Propel": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "authors": [
                 {
-                    "name": "William DURAND",
+                    "name": "William Durand",
                     "email": "william.durand1@gmail.com"
                 }
             ],
@@ -1412,10 +1411,10 @@
             "homepage": "http://www.propelorm.org/",
             "keywords": [
                 "Active Record",
-                "orm",
+                "ORM",
                 "persistence"
             ],
-            "time": "2018-02-19T12:58:55+00:00"
+            "time": "2026-10-21T14:29:12+00:00"
         },
         {
             "name": "psr/container",
@@ -1815,58 +1814,6 @@
             ],
             "description": "A polyfill for getallheaders.",
             "time": "2019-03-08T08:55:37+00:00"
-        },
-        {
-            "name": "rokfor/db",
-            "version": "dev-versioning-redis",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Rokfor/rokfor-php-db.git",
-                "reference": "857dbbde2efa38e62af536bf256db69b9e3a3f64"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Rokfor/rokfor-php-db/zipball/857dbbde2efa38e62af536bf256db69b9e3a3f64",
-                "reference": "857dbbde2efa38e62af536bf256db69b9e3a3f64",
-                "shasum": ""
-            },
-            "require": {
-                "aws/aws-sdk-php": "^3.0",
-                "intervention/image": "dev-master",
-                "propel/propel": "2.0.0-alpha8",
-                "thefuriouscoder/propel2-data-cache-behavior": "dev-master"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Rokfor\\": "src/"
-                },
-                "classmap": [
-                    "config/generated-classes/"
-                ]
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Urs Hofer",
-                    "email": "inquiries@rokfor.ch",
-                    "homepage": "http://cloud.rokfor.ch"
-                }
-            ],
-            "description": "PHP Library to access a Rokfor DB Structure",
-            "keywords": [
-                "framework",
-                "propelorm",
-                "rokfor",
-                "slim"
-            ],
-            "support": {
-                "source": "https://github.com/Rokfor/rokfor-php-db/tree/versioning-redis",
-                "issues": "https://github.com/Rokfor/rokfor-php-db/issues"
-            },
-            "time": "2024-09-03T12:13:37+00:00"
         },
         {
             "name": "slim/csrf",
@@ -4925,18 +4872,27 @@
             "time": "2020-07-08T17:02:28+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "propel/propel",
+            "version": "dev-php8",
+            "alias": "2.0.0-alpha8",
+            "alias_normalized": "2.0.0.0-alpha8"
+        }
+    ],
     "minimum-stability": "dev",
     "stability-flags": {
         "jlndk/slim-jade": 20,
-        "rokfor/db": 20,
+        "propel/propel": 20,
+        "thefuriouscoder/propel2-data-cache-behavior": 20,
+        "intervention/image": 20,
         "jeremykendall/slim-auth": 20,
         "palanik/corsslim": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.3.0",
+        "php": "^7.4 || ^8.0",
         "ext-imagick": "*",
         "ext-gd": "*",
         "ext-redis": "*"
