@@ -6,6 +6,9 @@ class stackWalk
   private static $stack;
 
   public static function add ($type, $id) {
+    if (!isset(self::$stack[$type])) {
+      self::$stack[$type] = [];
+    }
     if (!in_array($id, self::$stack[$type], true)) {
       self::$stack[$type][] = $id;
     }
