@@ -1555,10 +1555,13 @@ class helpers
         $_c = $_f->getContributions();
         if ($_c && in_array($_c->getStatus(),$_initial_state)) {
           if ($flat === true) {
-            $_references[] = array_merge(
-              $this->prepareApiContribution($_c, $compact, $request, $_recursion_check, $_recursion, $_recursion == true ? true : false, $_initial_state, $flat, $_maxdepth),
-              $this->prepareApiContributionData($_c, $compact, $request, true, $_initial_state, $flat, $_maxdepth)
-            );
+            $_ref_contribution = $this->prepareApiContribution($_c, $compact, $request, $_recursion_check, $_recursion, $_recursion == true ? true : false, $_initial_state, $flat, $_maxdepth);
+            $_ref_data = $this->prepareApiContributionData($_c, $compact, $request, true, $_initial_state, $flat, $_maxdepth);
+            // prepareApiContribution() returns false for circular references: PHP 7's
+            // array_merge() then returned null, which the API has always delivered
+            $_references[] = is_array($_ref_contribution) && is_array($_ref_data)
+              ? array_merge($_ref_contribution, $_ref_data)
+              : null;
           }
           else {
             array_push($_references, [

@@ -351,7 +351,9 @@ $app->group('/api', function () {
           foreach ($_book["issues"] as $_issue) {
             $_issues[] = $this->helpers->prepareApiStructureInfo($_issue["issue"], $references, $compact, $request);
           }
-          $j[] = array_merge($this->helpers->prepareApiStructureInfo($_book["book"], $references, $compact, $request), ["Chapters" => $_chapters, "Issues" => $_issues]);
+          $_bookinfo = $this->helpers->prepareApiStructureInfo($_book["book"], $references, $compact, $request);
+          // false for a missing book: PHP 7's array_merge() returned null, keep that
+          $j[] = is_array($_bookinfo) ? array_merge($_bookinfo, ["Chapters" => $_chapters, "Issues" => $_issues]) : null;
         }
         $response->getBody()->write(json_encode([
           "Books"                     => $j,
