@@ -104,7 +104,7 @@ section.content
                             echo "Timed Out";
                             break;
                         }
-                  td=$export->getPlugins()->getName()
+                  td=($export->getPlugins() ? $export->getPlugins()->getName() : '-')
                   td
                     each info, filetype in (array)json_decode($export->getPages())
                       ul.intable
