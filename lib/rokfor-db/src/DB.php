@@ -1,7 +1,8 @@
 <?php
+namespace Rokfor;
+
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-namespace Rokfor;
 
 /**
  * Rokfor DB
@@ -968,7 +969,7 @@ class DB
    */
   function getStructure($url_prefix = "", $bookid = false, &$valid_paths = []) {
     $criteria = new \Propel\Runtime\ActiveQuery\Criteria();
-    $criteria->addAscendingOrderByColumn(__sort__);
+    $criteria->addAscendingOrderByColumn('__sort__');
     $retval = [];
 
     $books = $this->BooksQuery()
@@ -1360,8 +1361,8 @@ class DB
         ->setName($c->getName() . "[".$suffix."]");
 
       $_reorder[] = [
-        issue => $c->getIssues(),
-        format => $c->getFormats()
+        'issue' => $c->getIssues(),
+        'format' => $c->getFormats()
       ];
 
       /* Clear References in New Contribution */
@@ -1383,8 +1384,8 @@ class DB
     }
 
     foreach ($_reorder as $_r) {
-      if ($_r[issue] && $_r[format]) {
-        $this->ResortContributions($_r[issue], $_r[format]);        
+      if ($_r['issue'] && $_r['format']) {
+        $this->ResortContributions($_r['issue'], $_r['format']);        
       }
     }
 
@@ -1433,7 +1434,7 @@ class DB
   function ChangeTemplateContribution($contributionid, $templateid) {
 
     $criteria = new \Propel\Runtime\ActiveQuery\Criteria();
-    $criteria->addAscendingOrderByColumn(__sort__);
+    $criteria->addAscendingOrderByColumn('__sort__');
     $_template = $this->TemplatenamesQuery()->findPk($templateid);
     $_c = $this->getContribution($contributionid);
     $_oldfields = $_c->getDatas($criteria);
