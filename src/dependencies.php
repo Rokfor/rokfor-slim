@@ -10,7 +10,7 @@ function _mailer($c, $message, $die = false) {
   $settings = $c->get('settings')['mail'];
   if ($settings['active']) {
     $lasttime = file_get_contents($settings['lockfile']);
-    $delta = time() - $lasttime;
+    $delta = time() - (int)$lasttime;
     if ($delta > $settings['locktime']) {
 
       $mail = new PHPMailer\PHPMailer;

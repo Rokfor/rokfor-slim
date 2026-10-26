@@ -21,7 +21,7 @@
           tr
             th
             th=$translations['imageform_image']
-            if (count($config['caption_variants']) > 1)
+            if (count((array)($config['caption_variants'] ?? [])) > 1)
               each caption_variant in config.caption_variants
                 th=$translations['imageform_caption'].' '.$caption_variant
             else
@@ -40,7 +40,7 @@
                 td
                     a.rfimagetablepreview(href=$row[1]."?backend=true", target="_blank")
                       img(data-file=$row[1], src=$row[2]['thumbnail']."?backend=true")
-                if (count($config['caption_variants']) > 1)
+                if (count((array)($config['caption_variants'] ?? [])) > 1)
                   :php
                     $keyvariant = 0;
                   each caption_variant in config.caption_variants

@@ -1157,6 +1157,7 @@ class DB
    * @author Urs Hofer
    */
   function DeleteContributions($ids) {
+    $ids = (array)$ids;
     if (count($ids)> 10) {
       /* GET Contributions with image content */
       foreach ($this->getData()
@@ -1526,7 +1527,7 @@ $this->defaultLogger->info("PRIVATE: " . $private);
       }
 
       // Check passed default captions
-      if (count($settings['caption_variants']) == 1) {
+      if (count((array)($settings['caption_variants'] ?? [])) == 1) {
         if (is_array($default_caption)) {
           $caption = (string)$default_caption[0];
         }

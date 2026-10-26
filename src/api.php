@@ -1017,6 +1017,7 @@ $app->group('/api', function () {
 
                         // Otherwise cycle through the existing data and change captions
                         $_old_data = json_decode($field->getContent(), true);
+                        if (!is_array($_old_data)) $_old_data = [];
                         $_to_delete = [];
                         $_processed = [];
                         foreach ((array)$fieldvalue as $file_part_name => $captions) {
